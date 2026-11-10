@@ -85,6 +85,21 @@ defmodule Taamol.AccountsTest do
       assert is_nil(user.confirmed_at)
       assert is_nil(user.password)
     end
+
+    test "requires a name of at most 100 characters" do
+      assert {:error, changeset} = Accounts.register_user(%{email: unique_user_email()})
+      assert %{name: ["can't be blank"]} = errors_on(changeset)
+
+      attrs = valid_user_attributes(name: String.duplicate("a", 101))
+      assert {:error, changeset} = Accounts.register_user(attrs)
+      assert %{name: ["should be at most 100 character(s)"]} = errors_on(changeset)
+    end
+
+    test "allows users to share a full name" do
+      user = user_fixture()
+      assert {:ok, other} = Accounts.register_user(valid_user_attributes(name: user.name))
+      assert other.name == user.name
+    end
   end
 
   describe "sudo_mode?/2" do
@@ -109,7 +124,23 @@ defmodule Taamol.AccountsTest do
   describe "change_user_email/3" do
     test "returns a user changeset" do
       assert %Ecto.Changeset{} = changeset = Accounts.change_user_email(%User{})
-      assert changeset.required == [:name, :email]
+      assert changeset.required == [:email]
+    end
+
+    test "does not change or require a name" do
+      user = %{user_fixture() | name: nil}
+      new_email = unique_user_email()
+
+      changeset = Accounts.change_user_email(user, %{email: new_email, name: "Other"})
+      assert changeset.valid?
+      assert get_change(changeset, :email) == new_email
+      refute get_change(changeset, :name)
+    end
+
+    test "reports an unchanged email once" do
+      user = user_fixture()
+      changeset = Accounts.change_user_email(user, %{email: user.email})
+      assert %{email: ["did not change"]} = errors_on(changeset)
     end
   end
 

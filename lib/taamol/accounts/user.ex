@@ -16,9 +16,7 @@ defmodule Taamol.Accounts.User do
   end
 
   @doc """
-  A user changeset for registering or changing the email.
-
-  It requires the email to change otherwise an error is added.
+  A user changeset for registration.
 
   ## Options
 
@@ -26,11 +24,31 @@ defmodule Taamol.Accounts.User do
       uniqueness of the email, useful when displaying live validations.
       Defaults to `true`.
   """
-  def email_changeset(user, attrs, opts \\ []) do
+  def registration_changeset(user, attrs, opts \\ []) do
     user
     |> cast(attrs, [:email, :name])
     |> validate_email(opts)
-    |> validate_name(opts)
+    |> validate_required([:name])
+    |> validate_length(:name, max: 100)
+  end
+
+  @doc """
+  A user changeset for changing the email.
+
+  When uniqueness validation is enabled, the email must change.
+  See `registration_changeset/3` for supported options.
+  """
+  def email_changeset(user, attrs, opts \\ []) do
+    changeset =
+      user
+      |> cast(attrs, [:email])
+      |> validate_email(opts)
+
+    if Keyword.get(opts, :validate_unique, true) do
+      validate_email_changed(changeset)
+    else
+      changeset
+    end
   end
 
   defp validate_email(changeset, opts) do
@@ -46,31 +64,6 @@ defmodule Taamol.Accounts.User do
       changeset
       |> unsafe_validate_unique(:email, Taamol.Repo)
       |> unique_constraint(:email)
-      |> validate_email_changed()
-    else
-      changeset
-    end
-  end
-
-  defp validate_name(changeset, opts) do
-    changeset =
-      changeset
-      |> validate_required([:name])
-      |> validate_length(:name, max: 100)
-
-    if Keyword.get(opts, :validate_unique, true) do
-      changeset
-      |> unsafe_validate_unique(:name, Taamol.Repo)
-      |> unique_constraint(:name)
-      |> validate_name_changed()
-    else
-      changeset
-    end
-  end
-
-  defp validate_name_changed(changeset) do
-    if get_field(changeset, :email) && get_change(changeset, :email) == nil do
-      add_error(changeset, :email, "did not change")
     else
       changeset
     end
