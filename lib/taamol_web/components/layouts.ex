@@ -57,7 +57,6 @@ defmodule TaamolWeb.Layouts do
           </li>
           <%= if @current_scope do %>
             <li>
-              {@current_scope.user.email}
               {@current_scope.user.name}
             </li>
             <li>
