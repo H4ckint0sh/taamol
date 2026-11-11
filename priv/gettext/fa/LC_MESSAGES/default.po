@@ -1,0 +1,597 @@
+## "msgid"s in this file come from POT (.pot) files.
+###
+### Do not add, change, or remove "msgid"s manually here as
+### they're tied to the ones in the corresponding POT file
+### (with the same domain).
+###
+### Use "mix gettext.extract --merge" or "mix gettext.merge"
+### to merge POT files into PO files.
+msgid ""
+msgstr ""
+"Language: fa\n"
+"Plural-Forms: nplurals=2; plural=(n>1);\n"
+
+#: lib/taamol_web/live/user_live/settings.ex:182
+#, elixir-autogen, elixir-format
+msgid "A link to confirm your email change has been sent to the new address."
+msgstr "پیوند تأیید تغییر ایمیل به نشانی جدید فرستاده شد."
+
+#: lib/taamol_web/controllers/page_html/home.html.heex:10
+#, elixir-autogen, elixir-format
+msgid "A little more connection."
+msgstr "کمی ارتباط بیشتر."
+
+#: lib/taamol_web/controllers/page_html/home.html.heex:62
+#, elixir-autogen, elixir-format
+msgid "A place to begin"
+msgstr "جایی برای شروع"
+
+#: lib/taamol_web/live/dashboard_live/dashboard_start_live.ex:25
+#, elixir-autogen, elixir-format
+msgid "A quick overview of your Taamol community."
+msgstr "نگاهی کوتاه به جامعه تعامل."
+
+#: lib/taamol_web/components/layouts.ex:73
+#, elixir-autogen, elixir-format
+msgid "Access"
+msgstr "دسترسی"
+
+#: lib/taamol_web/live/admin_access_live.ex:103
+#, elixir-autogen, elixir-format
+msgid "Access could not be updated. Refresh and try again."
+msgstr "دسترسی به‌روزرسانی نشد. صفحه را تازه کنید و دوباره تلاش کنید."
+
+#: lib/taamol_web/live/admin_access_live.ex:24
+#, elixir-autogen, elixir-format
+msgid "Access management"
+msgstr "مدیریت دسترسی"
+
+#: lib/taamol_web/live/admin_access_live.ex:93
+#, elixir-autogen, elixir-format
+msgid "Access updated."
+msgstr "دسترسی به‌روزرسانی شد."
+
+#: lib/taamol_web/live/user_live/settings.ex:14
+#, elixir-autogen, elixir-format
+msgid "Account Settings"
+msgstr "تنظیمات حساب"
+
+#: lib/taamol_web/live/dashboard_live/dashboard_start_live.ex:36
+#, elixir-autogen, elixir-format
+msgid "Account overview"
+msgstr "نمای کلی حساب‌ها"
+
+#: lib/taamol_web/controllers/page_html/home.html.heex:22
+#, elixir-autogen, elixir-format
+msgid "Account settings"
+msgstr "تنظیمات حساب"
+
+#: lib/taamol_web/live/dashboard_live/dashboard_start_live.ex:59
+#, elixir-autogen, elixir-format
+msgid "Accounts with admin access"
+msgstr "حساب‌های دارای دسترسی مدیر"
+
+#: lib/taamol_web/components/core_components.ex:375
+#, elixir-autogen, elixir-format
+msgid "Actions"
+msgstr "عملیات"
+
+#: lib/taamol_web/live/admin_access_live.ex:22
+#: lib/taamol_web/live/dashboard_live/dashboard_start_live.ex:22
+#, elixir-autogen, elixir-format
+msgid "Administration"
+msgstr "مدیریت"
+
+#: lib/taamol_web/live/admin_access_live.ex:40
+#, elixir-autogen, elixir-format
+msgid "Administrator"
+msgstr "مدیر"
+
+#: lib/taamol_web/live/dashboard_live/dashboard_start_live.ex:55
+#, elixir-autogen, elixir-format
+msgid "Administrators"
+msgstr "مدیران"
+
+#: lib/taamol_web/live/admin_access_live.ex:26
+#, elixir-autogen, elixir-format
+msgid "Administrators can manage access. Dashboard access can be granted only to administrators. Changing access signs the affected user out."
+msgstr "مدیران می‌توانند دسترسی‌ها را مدیریت کنند. دسترسی داشبورد فقط به مدیران داده می‌شود. تغییر دسترسی کاربر مربوطه را از حساب خارج می‌کند."
+
+#: lib/taamol_web/controllers/page_html/home.html.heex:43
+#, elixir-autogen, elixir-format
+msgid "Already have an account? Log in"
+msgstr "حساب دارید؟ وارد شوید"
+
+#: lib/taamol_web/live/user_live/registration.ex:16
+#, elixir-autogen, elixir-format
+msgid "Already registered?"
+msgstr "قبلاً ثبت‌نام کرده‌اید؟"
+
+#: lib/taamol_web/live/user_live/registration.ex:79
+#, elixir-autogen, elixir-format
+msgid "An email was sent to %{email}, please access it to confirm your account."
+msgstr "ایمیلی به %{email} فرستاده شد. برای تأیید حساب آن را باز کنید."
+
+#: lib/taamol_web/live/dashboard_live/dashboard_create_article_live.ex:10
+#, elixir-autogen, elixir-format
+msgid "Article creation is not available yet."
+msgstr "ایجاد مقاله هنوز در دسترس نیست."
+
+#: lib/taamol_web/components/layouts.ex:137
+#: lib/taamol_web/components/layouts.ex:152
+#, elixir-autogen, elixir-format
+msgid "Attempting to reconnect"
+msgstr "در حال تلاش برای اتصال دوباره"
+
+#: lib/taamol_web/live/article_live/article_list_live.ex:16
+#, elixir-autogen, elixir-format
+msgid "Body"
+msgstr "متن"
+
+#: lib/taamol_web/live/user_live/settings.ex:51
+#, elixir-autogen, elixir-format
+msgid "Change Email"
+msgstr "تغییر ایمیل"
+
+#: lib/taamol_web/live/user_live/settings.ex:51
+#, elixir-autogen, elixir-format
+msgid "Changing..."
+msgstr "در حال تغییر..."
+
+#: lib/taamol_web/live/user_live/confirmation.ex:34
+#, elixir-autogen, elixir-format
+msgid "Confirm and log in only this time"
+msgstr "تأیید و ورود فقط برای این بار"
+
+#: lib/taamol_web/live/user_live/confirmation.ex:31
+#, elixir-autogen, elixir-format
+msgid "Confirm and stay logged in"
+msgstr "تأیید و وارد ماندن"
+
+#: lib/taamol_web/live/user_live/settings.ex:83
+#, elixir-autogen, elixir-format
+msgid "Confirm new password"
+msgstr "تأیید گذرواژه جدید"
+
+#: lib/taamol/accounts/user_notifier.ex:46
+#, elixir-autogen, elixir-format
+msgid "Confirmation instructions"
+msgstr "راهنمای تأیید"
+
+#: lib/taamol_web/live/dashboard_live/dashboard_start_live.ex:47
+#, elixir-autogen, elixir-format
+msgid "Confirmed accounts"
+msgstr "حساب‌های تأییدشده"
+
+#: lib/taamol_web/live/user_live/confirmation.ex:28
+#: lib/taamol_web/live/user_live/confirmation.ex:33
+#, elixir-autogen, elixir-format
+msgid "Confirming..."
+msgstr "در حال تأیید..."
+
+#: lib/taamol_web/controllers/page_html/home.html.heex:36
+#: lib/taamol_web/live/user_live/registration.ex:45
+#, elixir-autogen, elixir-format
+msgid "Create an account"
+msgstr "ایجاد حساب"
+
+#: lib/taamol_web/live/dashboard_live/dashboard_create_article_live.ex:9
+#, elixir-autogen, elixir-format
+msgid "Create article"
+msgstr "ایجاد مقاله"
+
+#: lib/taamol_web/live/article_live/article_list_live.ex:18
+#, elixir-autogen, elixir-format
+msgid "Created By"
+msgstr "ایجادکننده"
+
+#: lib/taamol_web/live/user_live/registration.ex:44
+#, elixir-autogen, elixir-format
+msgid "Creating account..."
+msgstr "در حال ایجاد حساب..."
+
+#: lib/taamol_web/components/layouts.ex:69
+#: lib/taamol_web/live/dashboard_live/dashboard_start_live.ex:9
+#: lib/taamol_web/live/dashboard_live/dashboard_start_live.ex:24
+#, elixir-autogen, elixir-format
+msgid "Dashboard"
+msgstr "داشبورد"
+
+#: lib/taamol_web/live/admin_access_live.ex:42
+#, elixir-autogen, elixir-format
+msgid "Dashboard allowed"
+msgstr "دسترسی به داشبورد مجاز است"
+
+#: lib/taamol_web/live/admin_access_live.ex:42
+#, elixir-autogen, elixir-format
+msgid "Dashboard denied"
+msgstr "دسترسی به داشبورد مجاز نیست"
+
+#: lib/taamol_web/live/user_live/login.ex:18
+#, elixir-autogen, elixir-format
+msgid "Don't have an account?"
+msgstr "حساب ندارید؟"
+
+#: lib/taamol_web/live/user_live/login.ex:48
+#: lib/taamol_web/live/user_live/login.ex:72
+#: lib/taamol_web/live/user_live/registration.ex:28
+#: lib/taamol_web/live/user_live/settings.ex:46
+#, elixir-autogen, elixir-format
+msgid "Email"
+msgstr "ایمیل"
+
+#: lib/taamol_web/live/dashboard_live/dashboard_start_live.ex:51
+#, elixir-autogen, elixir-format
+msgid "Email addresses verified"
+msgstr "نشانی‌های ایمیل تأییدشده"
+
+#: lib/taamol_web/live/user_live/settings.ex:103
+#, elixir-autogen, elixir-format
+msgid "Email change link is invalid or it has expired."
+msgstr "پیوند تغییر ایمیل نامعتبر یا منقضی شده است."
+
+#: lib/taamol_web/live/user_live/settings.ex:100
+#, elixir-autogen, elixir-format
+msgid "Email changed successfully."
+msgstr "ایمیل با موفقیت تغییر کرد."
+
+#: lib/taamol_web/live/user_live/registration.ex:37
+#: lib/taamol_web/live/user_live/settings.ex:31
+#, elixir-autogen, elixir-format
+msgid "Full Name"
+msgstr "نام کامل"
+
+#: lib/taamol_web/controllers/page_html/home.html.heex:29
+#, elixir-autogen, elixir-format
+msgid "Go to dashboard"
+msgstr "رفتن به داشبورد"
+
+#: lib/taamol_web/live/admin_access_live.ex:77
+#, elixir-autogen, elixir-format
+msgid "Grant dashboard"
+msgstr "دادن دسترسی داشبورد"
+
+#: lib/taamol/accounts/user_notifier.ex:27
+#, elixir-autogen, elixir-format
+msgid "Hi %{email},\n\nYou can change your email by visiting the URL below:\n\n%{url}\n\nIf you didn't request this change, please ignore this."
+msgstr "سلام %{email}،\n\nبرای تغییر ایمیل خود به نشانی زیر بروید:\n\n%{url}\n\nاگر این درخواست را نداده‌اید، این ایمیل را نادیده بگیرید."
+
+#: lib/taamol/accounts/user_notifier.ex:47
+#, elixir-autogen, elixir-format
+msgid "Hi %{email},\n\nYou can confirm your account by visiting the URL below:\n\n%{url}\n\nIf you didn't create an account with us, please ignore this."
+msgstr "سلام %{email}،\n\nبرای تأیید حساب خود به نشانی زیر بروید:\n\n%{url}\n\nاگر حسابی ایجاد نکرده‌اید، این ایمیل را نادیده بگیرید."
+
+#: lib/taamol/accounts/user_notifier.ex:42
+#, elixir-autogen, elixir-format
+msgid "Hi %{email},\n\nYou can log into your account by visiting the URL below:\n\n%{url}\n\nIf you didn't request this email, please ignore this."
+msgstr "سلام %{email}،\n\nبرای ورود به حساب خود به نشانی زیر بروید:\n\n%{url}\n\nاگر این درخواست را نداده‌اید، این ایمیل را نادیده بگیرید."
+
+#: lib/taamol_web/live/user_live/login.ex:121
+#, elixir-autogen, elixir-format
+msgid "If your email is in our system, you will receive instructions for logging in shortly."
+msgstr "اگر ایمیل شما در سیستم ما باشد، به‌زودی راهنمای ورود را دریافت می‌کنید."
+
+#: lib/taamol_web/live/admin_access_live.ex:108
+#, elixir-autogen, elixir-format
+msgid "Invalid access change."
+msgstr "تغییر دسترسی نامعتبر است."
+
+#: lib/taamol_web/controllers/user_session_controller.ex:43
+#, elixir-autogen, elixir-format
+msgid "Invalid email or password"
+msgstr "ایمیل یا گذرواژه نامعتبر است"
+
+#: lib/taamol_web/live/user_live/confirmation.ex:59
+#, elixir-autogen, elixir-format
+msgid "Keep me logged in on this device"
+msgstr "مرا در این دستگاه وارد نگه دار"
+
+#: lib/taamol_web/components/layouts.ex:50
+#, elixir-autogen, elixir-format
+msgid "Language"
+msgstr "زبان"
+
+#: lib/taamol_web/components/layouts.ex:87
+#: lib/taamol_web/live/user_live/confirmation.ex:50
+#: lib/taamol_web/live/user_live/login.ex:13
+#: lib/taamol_web/live/user_live/registration.ex:18
+#, elixir-autogen, elixir-format
+msgid "Log in"
+msgstr "ورود"
+
+#: lib/taamol_web/live/user_live/login.ex:85
+#, elixir-autogen, elixir-format
+msgid "Log in and stay logged in"
+msgstr "ورود و وارد ماندن"
+
+#: lib/taamol/accounts/user_notifier.ex:41
+#, elixir-autogen, elixir-format
+msgid "Log in instructions"
+msgstr "راهنمای ورود"
+
+#: lib/taamol_web/live/user_live/login.ex:88
+#, elixir-autogen, elixir-format
+msgid "Log in only this time"
+msgstr "ورود فقط برای این بار"
+
+#: lib/taamol_web/live/user_live/login.ex:55
+#, elixir-autogen, elixir-format
+msgid "Log in with email"
+msgstr "ورود با ایمیل"
+
+#: lib/taamol_web/live/user_live/confirmation.ex:62
+#, elixir-autogen, elixir-format
+msgid "Log me in only this time"
+msgstr "ورود فقط برای این بار"
+
+#: lib/taamol_web/components/layouts.ex:83
+#, elixir-autogen, elixir-format
+msgid "Log out"
+msgstr "خروج"
+
+#: lib/taamol_web/controllers/user_session_controller.ex:86
+#, elixir-autogen, elixir-format
+msgid "Logged out successfully."
+msgstr "با موفقیت خارج شدید."
+
+#: lib/taamol_web/live/user_live/confirmation.ex:49
+#: lib/taamol_web/live/user_live/confirmation.ex:56
+#: lib/taamol_web/live/user_live/confirmation.ex:61
+#, elixir-autogen, elixir-format
+msgid "Logging in..."
+msgstr "در حال ورود..."
+
+#: lib/taamol_web/live/user_live/confirmation.ex:85
+#, elixir-autogen, elixir-format
+msgid "Magic link is invalid or it has expired."
+msgstr "پیوند ورود نامعتبر یا منقضی شده است."
+
+#: lib/taamol_web/live/admin_access_live.ex:56
+#, elixir-autogen, elixir-format
+msgid "Make admin"
+msgstr "مدیر کردن"
+
+#: lib/taamol_web/live/admin_access_live.ex:54
+#, elixir-autogen, elixir-format
+msgid "Make this user an administrator?"
+msgstr "این کاربر مدیر شود؟"
+
+#: lib/taamol_web/live/dashboard_live/dashboard_start_live.ex:32
+#, elixir-autogen, elixir-format
+msgid "Manage access"
+msgstr "مدیریت دسترسی"
+
+#: lib/taamol_web/live/user_live/settings.ex:15
+#, elixir-autogen, elixir-format
+msgid "Manage your name, email address and password settings"
+msgstr "نام، ایمیل و گذرواژه خود را مدیریت کنید"
+
+#: lib/taamol_web/controllers/user_session_controller.ex:74
+#, elixir-autogen, elixir-format
+msgid "Name could not be updated. Please check your input."
+msgstr "نام به‌روزرسانی نشد. اطلاعات واردشده را بررسی کنید."
+
+#: lib/taamol_web/controllers/user_session_controller.ex:69
+#, elixir-autogen, elixir-format
+msgid "Name updated successfully."
+msgstr "نام با موفقیت به‌روزرسانی شد."
+
+#: lib/taamol_web/live/user_live/settings.ex:75
+#, elixir-autogen, elixir-format
+msgid "New password"
+msgstr "گذرواژه جدید"
+
+#: lib/taamol_web/live/dashboard_live/dashboard_start_live.ex:75
+#, elixir-autogen, elixir-format
+msgid "Open access management"
+msgstr "باز کردن مدیریت دسترسی"
+
+#: lib/taamol_web/live/user_live/login.ex:80
+#, elixir-autogen, elixir-format
+msgid "Password"
+msgstr "گذرواژه"
+
+#: lib/taamol_web/controllers/user_session_controller.ex:59
+#, elixir-autogen, elixir-format
+msgid "Password updated successfully!"
+msgstr "گذرواژه با موفقیت به‌روزرسانی شد!"
+
+#: lib/taamol_web/live/dashboard_live/dashboard_start_live.ex:66
+#, elixir-autogen, elixir-format
+msgid "People and permissions"
+msgstr "کاربران و مجوزها"
+
+#: lib/taamol_web/live/article_live/article_list_live.ex:17
+#, elixir-autogen, elixir-format
+msgid "Publication Date"
+msgstr "تاریخ انتشار"
+
+#: lib/taamol_web/components/layouts.ex:93
+#, elixir-autogen, elixir-format
+msgid "Register"
+msgstr "ثبت‌نام"
+
+#: lib/taamol_web/live/user_live/registration.ex:14
+#, elixir-autogen, elixir-format
+msgid "Register for an account"
+msgstr "ایجاد حساب کاربری"
+
+#: lib/taamol_web/live/dashboard_live/dashboard_start_live.ex:43
+#, elixir-autogen, elixir-format
+msgid "Registered users"
+msgstr "کاربران ثبت‌نام‌شده"
+
+#: lib/taamol_web/live/admin_access_live.ex:66
+#, elixir-autogen, elixir-format
+msgid "Remove admin"
+msgstr "حذف دسترسی مدیر"
+
+#: lib/taamol_web/live/admin_access_live.ex:64
+#, elixir-autogen, elixir-format
+msgid "Remove this user's administrator access?"
+msgstr "دسترسی مدیر این کاربر حذف شود؟"
+
+#: lib/taamol_web/live/dashboard_live/dashboard_start_live.ex:68
+#, elixir-autogen, elixir-format
+msgid "Review administrator roles and control dashboard access."
+msgstr "نقش مدیران و دسترسی به داشبورد را مدیریت کنید."
+
+#: lib/taamol_web/live/admin_access_live.ex:77
+#, elixir-autogen, elixir-format
+msgid "Revoke dashboard"
+msgstr "لغو دسترسی داشبورد"
+
+#: lib/taamol_web/live/user_live/settings.ex:88
+#, elixir-autogen, elixir-format
+msgid "Save Password"
+msgstr "ذخیره گذرواژه"
+
+#: lib/taamol_web/live/user_live/settings.ex:36
+#, elixir-autogen, elixir-format
+msgid "Save name"
+msgstr "ذخیره نام"
+
+#: lib/taamol_web/live/user_live/settings.ex:35
+#: lib/taamol_web/live/user_live/settings.ex:87
+#, elixir-autogen, elixir-format
+msgid "Saving..."
+msgstr "در حال ذخیره..."
+
+#: lib/taamol_web/components/layouts.ex:76
+#, elixir-autogen, elixir-format
+msgid "Settings"
+msgstr "تنظیمات"
+
+#: lib/taamol_web/live/user_live/login.ex:22
+#, elixir-autogen, elixir-format
+msgid "Sign up"
+msgstr "ثبت‌نام"
+
+#: lib/taamol_web/components/layouts.ex:144
+#, elixir-autogen, elixir-format
+msgid "Something went wrong!"
+msgstr "مشکلی پیش آمد!"
+
+#: lib/taamol_web/controllers/user_session_controller.ex:27
+#, elixir-autogen, elixir-format
+msgid "The link is invalid or it has expired."
+msgstr "پیوند نامعتبر یا منقضی شده است."
+
+#: lib/taamol_web/live/user_live/confirmation.ex:68
+#, elixir-autogen, elixir-format
+msgid "Tip: If you prefer passwords, you can enable them in the user settings."
+msgstr "نکته: اگر گذرواژه را ترجیح می‌دهید، می‌توانید آن را در تنظیمات کاربر فعال کنید."
+
+#: lib/taamol_web/live/article_live/article_list_live.ex:15
+#, elixir-autogen, elixir-format
+msgid "Title"
+msgstr "عنوان"
+
+#: lib/taamol_web/live/user_live/login.ex:33
+#, elixir-autogen, elixir-format
+msgid "To see sent emails, visit"
+msgstr "برای دیدن ایمیل‌های ارسال‌شده، بروید به"
+
+#: lib/taamol_web/controllers/page_html/home.html.heex:64
+#, elixir-autogen, elixir-format
+msgid "Together starts here."
+msgstr "با هم بودن از اینجا آغاز می‌شود."
+
+#: lib/taamol_web/live/dashboard_live/dashboard_start_live.ex:39
+#, elixir-autogen, elixir-format
+msgid "Total accounts"
+msgstr "تعداد کل حساب‌ها"
+
+#: lib/taamol/accounts/user_notifier.ex:26
+#, elixir-autogen, elixir-format
+msgid "Update email instructions"
+msgstr "راهنمای تغییر ایمیل"
+
+#: lib/taamol_web/live/admin_access_live.ex:40
+#, elixir-autogen, elixir-format
+msgid "User"
+msgstr "کاربر"
+
+#: lib/taamol_web/controllers/user_session_controller.ex:8
+#, elixir-autogen, elixir-format
+msgid "User confirmed successfully."
+msgstr "حساب کاربر با موفقیت تأیید شد."
+
+#: lib/taamol_web/components/layouts.ex:129
+#, elixir-autogen, elixir-format
+msgid "We can't find the internet"
+msgstr "اتصال اینترنت پیدا نشد"
+
+#: lib/taamol_web/components/layouts/root.html.heex:7
+#, elixir-autogen, elixir-format
+msgid "Welcome"
+msgstr "خوش آمدید"
+
+#: lib/taamol_web/controllers/user_session_controller.ex:12
+#, elixir-autogen, elixir-format
+msgid "Welcome back!"
+msgstr "دوباره خوش آمدید!"
+
+#: lib/taamol_web/controllers/page_html/home.html.heex:7
+#, elixir-autogen, elixir-format
+msgid "Welcome to Taamol"
+msgstr "به تعامل خوش آمدید"
+
+#: lib/taamol_web/controllers/page_html/home.html.heex:13
+#, elixir-autogen, elixir-format
+msgid "Welcome to your space on Taamol. Sign in to manage your account and stay connected."
+msgstr "به فضای خود در تعامل خوش آمدید. برای مدیریت حساب و حفظ ارتباط وارد شوید."
+
+#: lib/taamol_web/live/user_live/confirmation.ex:12
+#, elixir-autogen, elixir-format
+msgid "Welcome, %{email}"
+msgstr "خوش آمدید، %{email}"
+
+#: lib/taamol_web/user_auth.ex:246
+#: lib/taamol_web/user_auth.ex:310
+#, elixir-autogen, elixir-format
+msgid "You are not authorized to access this page."
+msgstr "شما اجازه دسترسی به این صفحه را ندارید."
+
+#: lib/taamol_web/live/admin_access_live.ex:98
+#, elixir-autogen, elixir-format
+msgid "You are not authorized to manage access."
+msgstr "شما اجازه مدیریت دسترسی را ندارید."
+
+#: lib/taamol_web/live/user_live/login.ex:31
+#, elixir-autogen, elixir-format
+msgid "You are running the local mail adapter."
+msgstr "ارسال‌کننده ایمیل محلی فعال است."
+
+#: lib/taamol_web/user_auth.ex:230
+#: lib/taamol_web/user_auth.ex:293
+#, elixir-autogen, elixir-format
+msgid "You must log in to access this page."
+msgstr "برای دسترسی به این صفحه باید وارد شوید."
+
+#: lib/taamol_web/controllers/user_session_controller.ex:79
+#: lib/taamol_web/live/user_live/settings.ex:152
+#: lib/taamol_web/user_auth.ex:259
+#, elixir-autogen, elixir-format
+msgid "You must re-authenticate to access this page."
+msgstr "برای دسترسی به این صفحه باید دوباره وارد شوید."
+
+#: lib/taamol_web/live/user_live/login.ex:16
+#, elixir-autogen, elixir-format
+msgid "You need to reauthenticate to perform sensitive actions on your account."
+msgstr "برای انجام عملیات حساس حساب باید دوباره هویت خود را تأیید کنید."
+
+#: lib/taamol_web/components/core_components.ex:81
+#, elixir-autogen, elixir-format
+msgid "close"
+msgstr "بستن"
+
+#: lib/taamol_web/live/user_live/login.ex:59
+#, elixir-autogen, elixir-format
+msgid "or"
+msgstr "یا"
+
+#: lib/taamol_web/live/user_live/login.ex:33
+#, elixir-autogen, elixir-format
+msgid "the mailbox page"
+msgstr "صفحه صندوق ایمیل"

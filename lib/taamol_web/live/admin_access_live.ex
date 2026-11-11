@@ -19,12 +19,13 @@ defmodule TaamolWeb.AdminAccessLive do
       <section id="access-management" class="space-y-6">
         <div>
           <p class="text-sm font-semibold uppercase tracking-wider text-base-content/60">
-            Administration
+            {gettext("Administration")}
           </p>
-          <h1 class="mt-2 text-3xl font-semibold tracking-tight">Access management</h1>
+          <h1 class="mt-2 text-3xl font-semibold tracking-tight">{gettext("Access management")}</h1>
           <p class="mt-2 text-sm text-base-content/70">
-            Administrators can manage access. Dashboard access can be granted only to administrators.
-            Changing access signs the affected user out.
+            {gettext(
+              "Administrators can manage access. Dashboard access can be granted only to administrators. Changing access signs the affected user out."
+            )}
           </p>
         </div>
         <div id="access-users" phx-update="stream" class="space-y-3">
@@ -38,9 +39,11 @@ defmodule TaamolWeb.AdminAccessLive do
                 <h2 class="truncate font-semibold">{user.name}</h2>
                 <p class="break-all text-sm text-base-content/70">{user.email}</p>
                 <p class="mt-2 text-xs font-medium uppercase tracking-wide text-base-content/60">
-                  {if user.role == :admin, do: "Administrator", else: "User"}
+                  {if user.role == :admin, do: gettext("Administrator"), else: gettext("User")}
                   <span :if={user.role == :admin}>
-                    · Dashboard {if user.can_view_dashboard, do: "allowed", else: "denied"}
+                    · {if user.can_view_dashboard,
+                      do: gettext("Dashboard allowed"),
+                      else: gettext("Dashboard denied")}
                   </span>
                 </p>
               </div>
@@ -52,9 +55,9 @@ defmodule TaamolWeb.AdminAccessLive do
                   phx-click="update_access"
                   phx-value-id={user.id}
                   phx-value-action="promote"
-                  data-confirm="Make this user an administrator?"
+                  data-confirm={gettext("Make this user an administrator?")}
                   class="rounded-lg border border-base-300 px-3 py-2 text-sm font-medium hover:bg-base-200 transition"
-                >Make admin</button>
+                >{gettext("Make admin")}</button>
                 <button
                   :if={user.role == :admin && user.id != @current_scope.user.id}
                   id={"demote-#{user.id}"}
@@ -62,9 +65,9 @@ defmodule TaamolWeb.AdminAccessLive do
                   phx-click="update_access"
                   phx-value-id={user.id}
                   phx-value-action="demote"
-                  data-confirm="Remove this user's administrator access?"
+                  data-confirm={gettext("Remove this user's administrator access?")}
                   class="rounded-lg border border-base-300 px-3 py-2 text-sm font-medium hover:bg-base-200 transition"
-                >Remove admin</button>
+                >{gettext("Remove admin")}</button>
                 <button
                   :if={user.role == :admin}
                   id={"dashboard-#{user.id}"}
@@ -75,7 +78,9 @@ defmodule TaamolWeb.AdminAccessLive do
                     if user.can_view_dashboard, do: "revoke_dashboard", else: "grant_dashboard"
                   }
                   class="rounded-lg border border-base-300 px-3 py-2 text-sm font-medium hover:bg-base-200 transition"
-                >{if user.can_view_dashboard, do: "Revoke dashboard", else: "Grant dashboard"}</button>
+                >{if user.can_view_dashboard,
+                  do: gettext("Revoke dashboard"),
+                  else: gettext("Grant dashboard")}</button>
               </div>
             </div>
           </article>
@@ -91,21 +96,23 @@ defmodule TaamolWeb.AdminAccessLive do
     case Accounts.update_user_access(socket.assigns.current_scope, id, action) do
       {:ok, {user, tokens}} ->
         UserAuth.disconnect_sessions(tokens)
-        {:noreply, socket |> stream_insert(:users, user) |> put_flash(:info, "Access updated.")}
+
+        {:noreply,
+         socket |> stream_insert(:users, user) |> put_flash(:info, gettext("Access updated."))}
 
       {:error, :forbidden} ->
         {:noreply,
          socket
-         |> put_flash(:error, "You are not authorized to manage access.")
+         |> put_flash(:error, gettext("You are not authorized to manage access."))
          |> redirect(to: ~p"/")}
 
       {:error, _reason} ->
         {:noreply,
-         put_flash(socket, :error, "Access could not be updated. Refresh and try again.")}
+         put_flash(socket, :error, gettext("Access could not be updated. Refresh and try again."))}
     end
   end
 
   def handle_event("update_access", _params, socket) do
-    {:noreply, put_flash(socket, :error, "Invalid access change.")}
+    {:noreply, put_flash(socket, :error, gettext("Invalid access change."))}
   end
 end

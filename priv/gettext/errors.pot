@@ -7,6 +7,15 @@
 ## Run `mix gettext.extract` to bring this file up to
 ## date. Leave `msgstr`s empty as changing them here has no
 ## effect: edit them in PO (`.po`) files instead.
+msgid "must have the @ sign and no spaces"
+msgstr ""
+
+msgid "did not change"
+msgstr ""
+
+msgid "does not match password"
+msgstr ""
+
 ## From Ecto.Changeset.cast/4
 msgid "can't be blank"
 msgstr ""

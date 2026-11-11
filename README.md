@@ -44,6 +44,14 @@ Once PostgreSQL is ready:
 Now you can visit [`localhost:4000`](http://localhost:4000) from your browser.
 For an existing database, run `mix ecto.migrate` after pulling new migrations.
 
+## Languages
+
+The navigation offers English, Persian and Swedish. The choice is stored in
+the browser session and survives login and logout. Persian uses right-to-left
+layout. Article text is entered by its author and is not translated automatically.
+Translation catalogs are in `priv/gettext`; use `mix gettext.extract --merge`
+after marking new interface strings with `gettext`.
+
 ## Administrator access
 
 Register and confirm an account, run migrations, then assign the first admin from

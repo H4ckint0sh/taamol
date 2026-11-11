@@ -4,13 +4,15 @@
       <section class="grid items-center gap-12 py-16 sm:py-24 lg:grid-cols-2 lg:gap-20 lg:py-32">
         <div>
           <p class="inline-flex items-center gap-2 rounded-full border border-base-300 px-4 py-2 text-xs font-semibold uppercase tracking-[0.16em] text-base-content/65">
-            <span class="size-2 rounded-full bg-primary"></span> Welcome to Taamol
+            <span class="size-2 rounded-full bg-primary"></span> {gettext("Welcome to Taamol")}
           </p>
           <h1 class="mt-7 max-w-xl text-5xl font-semibold leading-[1.08] tracking-tight sm:text-6xl">
-            A little more <span class="text-primary">connection.</span>
+            {gettext("A little more connection.")}
           </h1>
           <p class="mt-6 max-w-lg text-lg leading-8 text-base-content/65">
-            Welcome to your space on Taamol. Sign in to manage your account and stay connected.
+            {gettext(
+              "Welcome to your space on Taamol. Sign in to manage your account and stay connected."
+            )}
           </p>
           <div class="mt-9 flex flex-wrap items-center gap-4">
             <%= if @current_scope do %>
@@ -19,28 +21,31 @@
                 href={~p"/users/settings"}
                 class="inline-flex items-center gap-2 rounded-full bg-primary px-6 py-3.5 text-sm font-semibold text-primary-content transition hover:opacity-85"
               >
-                Account settings <.icon name="hero-arrow-right" class="size-4" />
+                {gettext("Account settings")}
+                <.icon name="hero-arrow-right" class="size-4 rtl:rotate-180" />
               </.link>
               <.link
                 :if={Taamol.Accounts.allowed?(@current_scope, :view_dashboard)}
                 id="start-dashboard"
                 href={~p"/dashboard"}
                 class="text-sm font-semibold hover:text-primary transition-colors"
-              >Go to dashboard <.icon name="hero-arrow-right" class="size-4" /></.link>
+              >{gettext("Go to dashboard")}
+              <.icon name="hero-arrow-right" class="size-4 rtl:rotate-180" /></.link>
             <% else %>
               <.link
                 id="start-register"
                 href={~p"/users/register"}
                 class="inline-flex items-center gap-2 rounded-full bg-primary px-6 py-3.5 text-sm font-semibold text-primary-content transition hover:opacity-85"
               >
-                Create an account <.icon name="hero-arrow-right" class="size-4" />
+                {gettext("Create an account")}
+                <.icon name="hero-arrow-right" class="size-4 rtl:rotate-180" />
               </.link>
               <.link
                 id="start-login"
                 href={~p"/users/log-in"}
                 class="text-sm font-semibold hover:text-primary transition-colors"
               >
-                Already have an account? Log in
+                {gettext("Already have an account? Log in")}
               </.link>
             <% end %>
           </div>
@@ -59,9 +64,11 @@
               <span class="text-xs font-semibold uppercase tracking-[0.2em] text-base-content/50">Taamol</span>
             </div>
             <div>
-              <p class="text-sm font-medium text-base-content/55">A place to begin</p>
+              <p class="text-sm font-medium text-base-content/55">
+                {gettext("A place to begin")}
+              </p>
               <p class="mt-3 max-w-xs text-3xl font-semibold leading-tight tracking-tight">
-                Together starts here.
+                {gettext("Together starts here.")}
               </p>
             </div>
           </div>

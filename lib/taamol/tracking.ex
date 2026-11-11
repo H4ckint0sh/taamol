@@ -5,7 +5,7 @@ defmodule Taamol.Tracking do
 
   import Ecto.Query
 
-  alias Taamol.Accounts.{Scope, User}
+  alias Taamol.Accounts.{Scope, User, Helpers}
   alias Taamol.Repo
   alias Taamol.Tracking.{Article, ArticleLike, Comment, CommentLike}
 
@@ -57,6 +57,14 @@ defmodule Taamol.Tracking do
   end
 
   def create_article(_scope, _attrs), do: {:error, :forbidden}
+
+  def change_article(%Scope{user: %User{id: user_id}}, %Article{} = article, attrs \\ %{}) do
+    if Helpers.find_admin_with_lock(user_id) do
+      Article.changeset(article, attrs)
+    else
+      {:error, :forbidden}
+    end
+  end
 
   @doc "Likes an article once per user."
   def like_article(%Scope{user: %User{id: user_id}}, %Article{id: article_id}) do

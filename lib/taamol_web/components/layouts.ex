@@ -36,6 +36,8 @@ defmodule TaamolWeb.Layouts do
   slot :inner_block, required: true
 
   def app(assigns) do
+    assigns = assign(assigns, :locale_form, to_form(%{}))
+
     ~H"""
     <header class="relative z-10 border-b border-base-300/70 bg-base-100">
       <nav class="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-4 px-4 py-4 sm:px-6 lg:px-8">
@@ -44,6 +46,28 @@ defmodule TaamolWeb.Layouts do
           <span class="text-lg">Taamol</span>
         </.link>
         <ul class="flex flex-wrap items-center gap-x-4 gap-y-3 text-sm font-medium sm:gap-x-6">
+          <li>
+            <.form
+              for={@locale_form}
+              action={~p"/locale"}
+              method="post"
+              id="locale-switcher"
+              class="flex items-center gap-1"
+              aria-label={gettext("Language")}
+            >
+              <button
+                :for={{code, label} <- [{"en", "English"}, {"fa", "فارسی"}, {"sv", "Svenska"}]}
+                type="submit"
+                name="locale"
+                value={code}
+                lang={code}
+                aria-current={if(Gettext.get_locale(TaamolWeb.Gettext) == code, do: "true")}
+                class="rounded-md px-2 py-1 text-xs transition hover:bg-base-200 aria-[current=true]:bg-base-200 aria-[current=true]:font-bold"
+              >
+                {label}
+              </button>
+            </.form>
+          </li>
           <li>
             <.theme_toggle />
           </li>
@@ -57,31 +81,37 @@ defmodule TaamolWeb.Layouts do
                 href={~p"/dashboard"}
                 class="hover:text-primary transition-colors"
               >
-                Dashboard
+                {gettext("Dashboard")}
               </.link>
             </li>
             <li :if={Taamol.Accounts.admin?(@current_scope)}>
-              <.link href={~p"/admin/access"} class="hover:text-primary transition-colors">Access</.link>
+              <.link href={~p"/admin/access"} class="hover:text-primary transition-colors">{gettext(
+                "Access"
+              )}</.link>
             </li>
             <li>
-              <.link href={~p"/users/settings"} class="hover:text-primary transition-colors">Settings</.link>
+              <.link href={~p"/users/settings"} class="hover:text-primary transition-colors">{gettext(
+                "Settings"
+              )}</.link>
             </li>
             <li>
               <.link
                 href={~p"/users/log-out"}
                 method="delete"
                 class="hover:text-primary transition-colors"
-              >Log out</.link>
+              >{gettext("Log out")}</.link>
             </li>
           <% else %>
             <li>
-              <.link href={~p"/users/log-in"} class="hover:text-primary transition-colors">Log in</.link>
+              <.link href={~p"/users/log-in"} class="hover:text-primary transition-colors">{gettext(
+                "Log in"
+              )}</.link>
             </li>
             <li>
               <.link
                 href={~p"/users/register"}
                 class="rounded-full bg-primary px-4 py-2 text-primary-content transition hover:opacity-85"
-              >Register</.link>
+              >{gettext("Register")}</.link>
             </li>
           <% end %>
         </ul>

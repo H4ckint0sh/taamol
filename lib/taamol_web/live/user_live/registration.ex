@@ -11,13 +11,12 @@ defmodule TaamolWeb.UserLive.Registration do
       <div class="mx-auto max-w-sm">
         <div class="text-center">
           <.header>
-            Register for an account
+            {gettext("Register for an account")}
             <:subtitle>
-              Already registered?
+              {gettext("Already registered?")}
               <.link navigate={~p"/users/log-in"} class="font-semibold text-brand hover:underline">
-                Log in
+                {gettext("Log in")}
               </.link>
-              to your account now.
             </:subtitle>
           </.header>
         </div>
@@ -26,7 +25,7 @@ defmodule TaamolWeb.UserLive.Registration do
           <.input
             field={@form[:email]}
             type="email"
-            label="Email"
+            label={gettext("Email")}
             autocomplete="email"
             spellcheck="false"
             required
@@ -35,15 +34,15 @@ defmodule TaamolWeb.UserLive.Registration do
           <.input
             field={@form[:name]}
             type="text"
-            label="Full Name"
+            label={gettext("Full Name")}
             autocomplete="username"
             spellcheck="false"
             required
             phx-mounted={JS.focus()}
           />
 
-          <.button phx-disable-with="Creating account..." class="btn btn-primary w-full">
-            Create an account
+          <.button phx-disable-with={gettext("Creating account...")} class="btn btn-primary w-full">
+            {gettext("Create an account")}
           </.button>
         </.form>
       </div>
@@ -77,7 +76,9 @@ defmodule TaamolWeb.UserLive.Registration do
          socket
          |> put_flash(
            :info,
-           "An email was sent to #{user.email}, please access it to confirm your account."
+           gettext("An email was sent to %{email}, please access it to confirm your account.",
+             email: user.email
+           )
          )
          |> push_navigate(to: ~p"/users/log-in")}
 

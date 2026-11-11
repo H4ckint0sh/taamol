@@ -11,8 +11,8 @@ defmodule TaamolWeb.UserLive.Settings do
     <Layouts.app flash={@flash} current_scope={@current_scope}>
       <div class="text-center">
         <.header>
-          Account Settings
-          <:subtitle>Manage your name, email address and password settings</:subtitle>
+          {gettext("Account Settings")}
+          <:subtitle>{gettext("Manage your name, email address and password settings")}</:subtitle>
         </.header>
       </div>
 
@@ -28,12 +28,12 @@ defmodule TaamolWeb.UserLive.Settings do
         <.input
           field={@name_form[:name]}
           type="text"
-          label="Full name"
+          label={gettext("Full Name")}
           autocomplete="name"
           required
         />
-        <.button variant="primary" phx-disable-with="Saving...">
-          Save name
+        <.button variant="primary" phx-disable-with={gettext("Saving...")}>
+          {gettext("Save name")}
         </.button>
       </.form>
 
@@ -43,12 +43,12 @@ defmodule TaamolWeb.UserLive.Settings do
         <.input
           field={@email_form[:email]}
           type="email"
-          label="Email"
+          label={gettext("Email")}
           autocomplete="username"
           spellcheck="false"
           required
         />
-        <.button variant="primary" phx-disable-with="Changing...">Change Email</.button>
+        <.button variant="primary" phx-disable-with={gettext("Changing...")}>{gettext("Change Email")}</.button>
       </.form>
 
       <div class="divider" />
@@ -72,7 +72,7 @@ defmodule TaamolWeb.UserLive.Settings do
         <.input
           field={@password_form[:password]}
           type="password"
-          label="New password"
+          label={gettext("New password")}
           autocomplete="new-password"
           spellcheck="false"
           required
@@ -80,12 +80,12 @@ defmodule TaamolWeb.UserLive.Settings do
         <.input
           field={@password_form[:password_confirmation]}
           type="password"
-          label="Confirm new password"
+          label={gettext("Confirm new password")}
           autocomplete="new-password"
           spellcheck="false"
         />
-        <.button variant="primary" phx-disable-with="Saving...">
-          Save Password
+        <.button variant="primary" phx-disable-with={gettext("Saving...")}>
+          {gettext("Save Password")}
         </.button>
       </.form>
     </Layouts.app>
@@ -97,10 +97,10 @@ defmodule TaamolWeb.UserLive.Settings do
     socket =
       case Accounts.update_user_email(socket.assigns.current_scope.user, token) do
         {:ok, _user} ->
-          put_flash(socket, :info, "Email changed successfully.")
+          put_flash(socket, :info, gettext("Email changed successfully."))
 
         {:error, _} ->
-          put_flash(socket, :error, "Email change link is invalid or it has expired.")
+          put_flash(socket, :error, gettext("Email change link is invalid or it has expired."))
       end
 
     {:ok, push_navigate(socket, to: ~p"/users/settings")}
@@ -149,7 +149,7 @@ defmodule TaamolWeb.UserLive.Settings do
     else
       {:noreply,
        socket
-       |> put_flash(:error, "You must re-authenticate to access this page.")
+       |> put_flash(:error, gettext("You must re-authenticate to access this page."))
        |> redirect(to: ~p"/users/log-in")}
     end
   end
@@ -179,7 +179,7 @@ defmodule TaamolWeb.UserLive.Settings do
           &url(~p"/users/settings/confirm-email/#{&1}")
         )
 
-        info = "A link to confirm your email change has been sent to the new address."
+        info = gettext("A link to confirm your email change has been sent to the new address.")
         {:noreply, socket |> put_flash(:info, info)}
 
       changeset ->

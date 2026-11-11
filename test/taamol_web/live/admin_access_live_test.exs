@@ -16,10 +16,12 @@ defmodule TaamolWeb.AdminAccessLiveTest do
   test "requires an administrator for access management and dashboard", %{conn: conn} do
     assert redirected_to(get(conn, "/admin/access")) == ~p"/users/log-in"
     assert redirected_to(get(conn, ~p"/dashboard")) == ~p"/users/log-in"
+    assert redirected_to(get(conn, ~p"/dashboard/create/article")) == ~p"/users/log-in"
 
     conn = log_in_user(conn, user_fixture())
     assert redirected_to(get(conn, "/admin/access")) == ~p"/"
     assert redirected_to(get(conn, ~p"/dashboard")) == ~p"/"
+    assert redirected_to(get(conn, ~p"/dashboard/create/article")) == ~p"/"
     refute html_response(get(conn, ~p"/"), 200) =~ ~p"/dashboard"
   end
 
@@ -31,6 +33,8 @@ defmodule TaamolWeb.AdminAccessLiveTest do
 
     assert {:ok, dashboard, _html} = live(conn, ~p"/dashboard")
     assert has_element?(dashboard, "#admin-dashboard")
+    assert {:ok, create_article, _html} = live(conn, ~p"/dashboard/create/article")
+    assert has_element?(create_article, "#article-creation-placeholder")
     assert has_element?(dashboard, "#dashboard-users", "3")
     assert has_element?(dashboard, "#dashboard-confirmed", "2")
     assert has_element?(dashboard, "#dashboard-admins", "1")

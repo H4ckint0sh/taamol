@@ -5,11 +5,11 @@ defmodule TaamolWeb.UserSessionController do
   alias TaamolWeb.UserAuth
 
   def create(conn, %{"_action" => "confirmed"} = params) do
-    create(conn, params, "User confirmed successfully.")
+    create(conn, params, gettext("User confirmed successfully."))
   end
 
   def create(conn, params) do
-    create(conn, params, "Welcome back!")
+    create(conn, params, gettext("Welcome back!"))
   end
 
   # magic link login
@@ -24,7 +24,7 @@ defmodule TaamolWeb.UserSessionController do
 
       _ ->
         conn
-        |> put_flash(:error, "The link is invalid or it has expired.")
+        |> put_flash(:error, gettext("The link is invalid or it has expired."))
         |> redirect(to: ~p"/users/log-in")
     end
   end
@@ -40,7 +40,7 @@ defmodule TaamolWeb.UserSessionController do
     else
       # In order to prevent user enumeration attacks, don't disclose whether the email is registered.
       conn
-      |> put_flash(:error, "Invalid email or password")
+      |> put_flash(:error, gettext("Invalid email or password"))
       |> put_flash(:email, String.slice(email, 0, 160))
       |> redirect(to: ~p"/users/log-in")
     end
@@ -56,7 +56,7 @@ defmodule TaamolWeb.UserSessionController do
 
     conn
     |> put_session(:user_return_to, ~p"/users/settings")
-    |> create(params, "Password updated successfully!")
+    |> create(params, gettext("Password updated successfully!"))
   end
 
   def update_name(conn, %{"user" => user_params}) do
@@ -66,24 +66,24 @@ defmodule TaamolWeb.UserSessionController do
       case Accounts.update_user_name(scope, user_params) do
         {:ok, _user} ->
           conn
-          |> put_flash(:info, "Name updated successfully.")
+          |> put_flash(:info, gettext("Name updated successfully."))
           |> redirect(to: ~p"/users/settings")
 
         {:error, _changeset} ->
           conn
-          |> put_flash(:error, "Name could not be updated. Please check your input.")
+          |> put_flash(:error, gettext("Name could not be updated. Please check your input."))
           |> redirect(to: ~p"/users/settings")
       end
     else
       conn
-      |> put_flash(:error, "You must re-authenticate to access this page.")
+      |> put_flash(:error, gettext("You must re-authenticate to access this page."))
       |> redirect(to: ~p"/users/log-in")
     end
   end
 
   def delete(conn, _params) do
     conn
-    |> put_flash(:info, "Logged out successfully.")
+    |> put_flash(:info, gettext("Logged out successfully."))
     |> UserAuth.log_out_user()
   end
 end

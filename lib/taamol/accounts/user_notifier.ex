@@ -1,5 +1,6 @@
 defmodule Taamol.Accounts.UserNotifier do
   import Swoosh.Email
+  use Gettext, backend: TaamolWeb.Gettext
 
   alias Taamol.Mailer
   alias Taamol.Accounts.User
@@ -22,20 +23,15 @@ defmodule Taamol.Accounts.UserNotifier do
   Deliver instructions to update a user email.
   """
   def deliver_update_email_instructions(user, url) do
-    deliver(user.email, "Update email instructions", """
-
-    ==============================
-
-    Hi #{user.email},
-
-    You can change your email by visiting the URL below:
-
-    #{url}
-
-    If you didn't request this change, please ignore this.
-
-    ==============================
-    """)
+    deliver(
+      user.email,
+      gettext("Update email instructions"),
+      gettext(
+        "Hi %{email},\n\nYou can change your email by visiting the URL below:\n\n%{url}\n\nIf you didn't request this change, please ignore this.",
+        email: user.email,
+        url: url
+      )
+    )
   end
 
   @doc """
@@ -49,36 +45,26 @@ defmodule Taamol.Accounts.UserNotifier do
   end
 
   defp deliver_magic_link_instructions(user, url) do
-    deliver(user.email, "Log in instructions", """
-
-    ==============================
-
-    Hi #{user.email},
-
-    You can log into your account by visiting the URL below:
-
-    #{url}
-
-    If you didn't request this email, please ignore this.
-
-    ==============================
-    """)
+    deliver(
+      user.email,
+      gettext("Log in instructions"),
+      gettext(
+        "Hi %{email},\n\nYou can log into your account by visiting the URL below:\n\n%{url}\n\nIf you didn't request this email, please ignore this.",
+        email: user.email,
+        url: url
+      )
+    )
   end
 
   defp deliver_confirmation_instructions(user, url) do
-    deliver(user.email, "Confirmation instructions", """
-
-    ==============================
-
-    Hi #{user.email},
-
-    You can confirm your account by visiting the URL below:
-
-    #{url}
-
-    If you didn't create an account with us, please ignore this.
-
-    ==============================
-    """)
+    deliver(
+      user.email,
+      gettext("Confirmation instructions"),
+      gettext(
+        "Hi %{email},\n\nYou can confirm your account by visiting the URL below:\n\n%{url}\n\nIf you didn't create an account with us, please ignore this.",
+        email: user.email,
+        url: url
+      )
+    )
   end
 end

@@ -12,10 +12,12 @@ defmodule TaamolWeb.ArticleLive.ArticleListLive do
     ~H"""
     <Layouts.app flash={@flash} current_scope={@current_scope}>
       <.table id="articles" rows={@streams.articles} row_item={fn {_id, article} -> article end}>
-        <:col :let={article} label="Title">{article.title}</:col>
-        <:col :let={article} label="Body">{article.body}</:col>
-        <:col :let={article} label="Publication Date">{to_string(article.published)}</:col>
-        <:col :let={article} label="Created By">{article.creator.name}</:col>
+        <:col :let={article} label={gettext("Title")}><span dir="auto">{article.title}</span></:col>
+        <:col :let={article} label={gettext("Body")}><span dir="auto">{article.body}</span></:col>
+        <:col :let={article} label={gettext("Publication Date")}>{to_string(article.published)}</:col>
+        <:col :let={article} label={gettext("Created By")}>
+          <span dir="auto">{article.creator.name}</span>
+        </:col>
       </.table>
     </Layouts.app>
     """

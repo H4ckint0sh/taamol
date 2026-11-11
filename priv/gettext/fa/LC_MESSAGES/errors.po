@@ -1,0 +1,111 @@
+## "msgid"s in this file come from POT (.pot) files.
+###
+### Do not add, change, or remove "msgid"s manually here as
+### they're tied to the ones in the corresponding POT file
+### (with the same domain).
+###
+### Use "mix gettext.extract --merge" or "mix gettext.merge"
+### to merge POT files into PO files.
+msgid ""
+msgstr ""
+"Language: fa\n"
+"Plural-Forms: nplurals=2; plural=(n>1);\n"
+
+msgid "must have the @ sign and no spaces"
+msgstr "باید شامل @ و بدون فاصله باشد"
+
+msgid "did not change"
+msgstr "تغییر نکرده است"
+
+msgid "does not match password"
+msgstr "با گذرواژه مطابقت ندارد"
+
+msgid "can't be blank"
+msgstr "نمی‌تواند خالی باشد"
+
+msgid "has already been taken"
+msgstr "قبلاً استفاده شده است"
+
+msgid "is invalid"
+msgstr "نامعتبر است"
+
+msgid "must be accepted"
+msgstr "باید پذیرفته شود"
+
+msgid "has invalid format"
+msgstr "قالب نامعتبر است"
+
+msgid "has an invalid entry"
+msgstr "مقدار نامعتبر دارد"
+
+msgid "is reserved"
+msgstr "رزرو شده است"
+
+msgid "does not match confirmation"
+msgstr "با تأیید آن مطابقت ندارد"
+
+msgid "is still associated with this entry"
+msgstr "هنوز با این مورد مرتبط است"
+
+msgid "are still associated with this entry"
+msgstr "هنوز با این مورد مرتبط هستند"
+
+msgid "should have %{count} item(s)"
+msgid_plural "should have %{count} item(s)"
+msgstr[0] "باید %{count} مورد داشته باشد"
+msgstr[1] "باید %{count} مورد داشته باشد"
+
+msgid "should be %{count} character(s)"
+msgid_plural "should be %{count} character(s)"
+msgstr[0] "باید %{count} نویسه باشد"
+msgstr[1] "باید %{count} نویسه باشد"
+
+msgid "should be %{count} byte(s)"
+msgid_plural "should be %{count} byte(s)"
+msgstr[0] "باید %{count} بایت باشد"
+msgstr[1] "باید %{count} بایت باشد"
+
+msgid "should have at least %{count} item(s)"
+msgid_plural "should have at least %{count} item(s)"
+msgstr[0] "باید دست‌کم %{count} مورد داشته باشد"
+msgstr[1] "باید دست‌کم %{count} مورد داشته باشد"
+
+msgid "should be at least %{count} character(s)"
+msgid_plural "should be at least %{count} character(s)"
+msgstr[0] "باید دست‌کم %{count} نویسه باشد"
+msgstr[1] "باید دست‌کم %{count} نویسه باشد"
+
+msgid "should be at least %{count} byte(s)"
+msgid_plural "should be at least %{count} byte(s)"
+msgstr[0] "باید دست‌کم %{count} بایت باشد"
+msgstr[1] "باید دست‌کم %{count} بایت باشد"
+
+msgid "should have at most %{count} item(s)"
+msgid_plural "should have at most %{count} item(s)"
+msgstr[0] "باید حداکثر %{count} مورد داشته باشد"
+msgstr[1] "باید حداکثر %{count} مورد داشته باشد"
+
+msgid "should be at most %{count} character(s)"
+msgid_plural "should be at most %{count} character(s)"
+msgstr[0] "باید حداکثر %{count} نویسه باشد"
+msgstr[1] "باید حداکثر %{count} نویسه باشد"
+
+msgid "should be at most %{count} byte(s)"
+msgid_plural "should be at most %{count} byte(s)"
+msgstr[0] "باید حداکثر %{count} بایت باشد"
+msgstr[1] "باید حداکثر %{count} بایت باشد"
+
+msgid "must be less than %{number}"
+msgstr "باید کمتر از %{number} باشد"
+
+msgid "must be greater than %{number}"
+msgstr "باید بیشتر از %{number} باشد"
+
+msgid "must be less than or equal to %{number}"
+msgstr "باید کمتر یا مساوی %{number} باشد"
+
+msgid "must be greater than or equal to %{number}"
+msgstr "باید بیشتر یا مساوی %{number} باشد"
+
+msgid "must be equal to %{number}"
+msgstr "باید برابر با %{number} باشد"
