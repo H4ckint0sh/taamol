@@ -144,4 +144,50 @@ defmodule TaamolWeb.UserSessionControllerTest do
       assert Phoenix.Flash.get(conn.assigns.flash, :info) =~ "Logged out successfully"
     end
   end
+
+  describe "POST /users/update-name" do
+    test "requires authentication", %{conn: conn} do
+      conn = post(conn, ~p"/users/update-name", %{"user" => %{"name" => "New name"}})
+      assert redirected_to(conn) == ~p"/users/log-in"
+    end
+
+    test "requires recent authentication", %{conn: conn, user: user} do
+      conn =
+        conn
+        |> log_in_user(user,
+          token_authenticated_at: DateTime.add(DateTime.utc_now(:second), -11, :minute)
+        )
+        |> post(~p"/users/update-name", %{"user" => %{"name" => "New name"}})
+
+      assert redirected_to(conn) == ~p"/users/log-in"
+      assert Accounts.get_user!(user.id).name == user.name
+    end
+
+    test "rejects invalid names on direct requests", %{conn: conn, user: user} do
+      conn =
+        conn
+        |> log_in_user(user)
+        |> post(~p"/users/update-name", %{"user" => %{"name" => ""}})
+
+      assert redirected_to(conn) == ~p"/users/settings"
+      assert Phoenix.Flash.get(conn.assigns.flash, :error) =~ "Name could not be updated"
+      assert Accounts.get_user!(user.id).name == user.name
+    end
+
+    test "only updates the current user's name", %{conn: conn, user: user} do
+      other = user_fixture()
+
+      conn =
+        conn
+        |> log_in_user(user)
+        |> post(~p"/users/update-name", %{
+          "user" => %{"id" => other.id, "name" => "New name", "email" => "changed@example.com"}
+        })
+
+      assert redirected_to(conn) == ~p"/users/settings"
+      assert %{name: "New name", email: email} = Accounts.get_user!(user.id)
+      assert email == user.email
+      assert Accounts.get_user!(other.id).name == other.name
+    end
+  end
 end

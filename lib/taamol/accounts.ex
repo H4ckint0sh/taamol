@@ -142,6 +142,28 @@ defmodule Taamol.Accounts do
   end
 
   @doc """
+  Returns an `%Ecto.Changeset{}` for changing the user name.
+
+  ## Examples
+
+      iex> change_user_name(user)
+      %Ecto.Changeset{data: %User{}}
+
+  """
+  def change_user_name(user, attrs \\ %{}) do
+    User.name_changeset(user, attrs)
+  end
+
+  @doc """
+  Updates the current user's name.
+  """
+  def update_user_name(%Taamol.Accounts.Scope{user: user}, attrs) do
+    user
+    |> User.name_changeset(attrs)
+    |> Repo.update()
+  end
+
+  @doc """
   Returns an `%Ecto.Changeset{}` for changing the user password.
 
   See `Taamol.Accounts.User.password_changeset/3` for a list of supported options.

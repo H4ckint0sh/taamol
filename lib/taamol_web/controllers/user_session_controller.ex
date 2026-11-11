@@ -59,6 +59,28 @@ defmodule TaamolWeb.UserSessionController do
     |> create(params, "Password updated successfully!")
   end
 
+  def update_name(conn, %{"user" => user_params}) do
+    scope = conn.assigns.current_scope
+
+    if Accounts.sudo_mode?(scope.user, -10) do
+      case Accounts.update_user_name(scope, user_params) do
+        {:ok, _user} ->
+          conn
+          |> put_flash(:info, "Name updated successfully.")
+          |> redirect(to: ~p"/users/settings")
+
+        {:error, _changeset} ->
+          conn
+          |> put_flash(:error, "Name could not be updated. Please check your input.")
+          |> redirect(to: ~p"/users/settings")
+      end
+    else
+      conn
+      |> put_flash(:error, "You must re-authenticate to access this page.")
+      |> redirect(to: ~p"/users/log-in")
+    end
+  end
+
   def delete(conn, _params) do
     conn
     |> put_flash(:info, "Logged out successfully.")

@@ -37,6 +37,42 @@ defmodule TaamolWeb.UserLive.SettingsTest do
     end
   end
 
+  describe "update name form" do
+    setup %{conn: conn} do
+      user = user_fixture()
+      %{conn: log_in_user(conn, user), user: user}
+    end
+
+    test "updates the name while keeping the session", %{conn: conn, user: user} do
+      other = user_fixture()
+      {:ok, lv, _html} = live(conn, ~p"/users/settings")
+      name_form = form(lv, "#name_form", user: %{name: other.name})
+
+      render_submit(name_form)
+      assert has_element?(lv, "#name_form[phx-trigger-action]")
+      refute has_element?(lv, "#password_form[phx-trigger-action]")
+
+      updated_conn = follow_trigger_action(name_form, conn)
+      assert redirected_to(updated_conn) == ~p"/users/settings"
+      assert get_session(updated_conn, :user_token) == get_session(conn, :user_token)
+      assert Phoenix.Flash.get(updated_conn.assigns.flash, :info) == "Name updated successfully."
+      assert Accounts.get_user!(user.id).name == other.name
+    end
+
+    test "validates the name on change and submit", %{conn: conn, user: user} do
+      {:ok, lv, _html} = live(conn, ~p"/users/settings")
+      long_name = String.duplicate("a", 101)
+
+      lv |> element("#name_form") |> render_change(user: %{name: long_name})
+      assert has_element?(lv, "#name_form p", "should be at most 100 character(s)")
+
+      lv |> form("#name_form", user: %{name: ""}) |> render_submit()
+      assert has_element?(lv, "#name_form p", "can't be blank")
+      refute has_element?(lv, "#name_form[phx-trigger-action]")
+      assert Accounts.get_user!(user.id).name == user.name
+    end
+  end
+
   describe "update email form" do
     setup %{conn: conn} do
       user = user_fixture()

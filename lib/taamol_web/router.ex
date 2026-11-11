@@ -57,6 +57,7 @@ defmodule TaamolWeb.Router do
     end
 
     post "/users/update-password", UserSessionController, :update_password
+    post "/users/update-name", UserSessionController, :update_name
   end
 
   scope "/", TaamolWeb do

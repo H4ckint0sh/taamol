@@ -28,8 +28,7 @@ defmodule Taamol.Accounts.User do
     user
     |> cast(attrs, [:email, :name])
     |> validate_email(opts)
-    |> validate_required([:name])
-    |> validate_length(:name, max: 100)
+    |> validate_name()
   end
 
   @doc """
@@ -51,6 +50,15 @@ defmodule Taamol.Accounts.User do
     end
   end
 
+  @doc """
+  A user changeset for changing the name.
+  """
+  def name_changeset(user, attrs) do
+    user
+    |> cast(attrs, [:name])
+    |> validate_name()
+  end
+
   defp validate_email(changeset, opts) do
     changeset =
       changeset
@@ -67,6 +75,12 @@ defmodule Taamol.Accounts.User do
     else
       changeset
     end
+  end
+
+  defp validate_name(changeset) do
+    changeset
+    |> validate_required([:name])
+    |> validate_length(:name, max: 100)
   end
 
   defp validate_email_changed(changeset) do
