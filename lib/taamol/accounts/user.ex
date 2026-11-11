@@ -7,6 +7,8 @@ defmodule Taamol.Accounts.User do
   schema "users" do
     field :email, :string
     field :name, :string
+    field :role, Ecto.Enum, values: [:user, :admin], default: :user
+    field :can_view_dashboard, :boolean, default: false
     field :password, :string, virtual: true, redact: true
     field :hashed_password, :string, redact: true
     field :confirmed_at, :utc_datetime

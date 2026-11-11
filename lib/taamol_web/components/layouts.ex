@@ -37,44 +37,55 @@ defmodule TaamolWeb.Layouts do
 
   def app(assigns) do
     ~H"""
-    <header class="navbar relative z-10 px-4 sm:px-6 lg:px-8">
-      <div class="flex-1">
-        <a href="/" class="flex-1 flex w-fit items-center gap-2">
-          <img src={~p"/images/logo.svg"} width="36" />
-          <span class="text-sm font-semibold">v{Application.spec(:phoenix, :vsn)}</span>
-        </a>
-      </div>
-      <div class="flex-none">
-        <ul class="flex px-1 space-x-4 items-center">
-          <li>
-            <a href="https://phoenixframework.org/" class="btn btn-ghost">Website</a>
-          </li>
-          <li>
-            <a href="https://github.com/phoenixframework/phoenix" class="btn btn-ghost">GitHub</a>
-          </li>
+    <header class="relative z-10 border-b border-base-300/70 bg-base-100">
+      <nav class="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-4 px-4 py-4 sm:px-6 lg:px-8">
+        <.link href={~p"/"} class="inline-flex items-center gap-3 font-semibold tracking-tight">
+          <span class="grid size-9 place-items-center rounded-xl bg-primary text-lg font-bold text-primary-content">T</span>
+          <span class="text-lg">Taamol</span>
+        </.link>
+        <ul class="flex flex-wrap items-center gap-x-4 gap-y-3 text-sm font-medium sm:gap-x-6">
           <li>
             <.theme_toggle />
           </li>
           <%= if @current_scope do %>
-            <li>
+            <li class="hidden text-base-content/60 sm:block">
               {@current_scope.user.name}
             </li>
-            <li>
-              <.link href={~p"/users/settings"}>Settings</.link>
+            <li :if={Taamol.Accounts.allowed?(@current_scope, :view_dashboard)}>
+              <.link
+                id="dashboard-link"
+                href={~p"/dashboard"}
+                class="hover:text-primary transition-colors"
+              >
+                Dashboard
+              </.link>
+            </li>
+            <li :if={Taamol.Accounts.admin?(@current_scope)}>
+              <.link href={~p"/admin/access"} class="hover:text-primary transition-colors">Access</.link>
             </li>
             <li>
-              <.link href={~p"/users/log-out"} method="delete">Log out</.link>
+              <.link href={~p"/users/settings"} class="hover:text-primary transition-colors">Settings</.link>
+            </li>
+            <li>
+              <.link
+                href={~p"/users/log-out"}
+                method="delete"
+                class="hover:text-primary transition-colors"
+              >Log out</.link>
             </li>
           <% else %>
             <li>
-              <.link href={~p"/users/register"}>Register</.link>
+              <.link href={~p"/users/log-in"} class="hover:text-primary transition-colors">Log in</.link>
             </li>
             <li>
-              <.link href={~p"/users/log-in"}>Log in</.link>
+              <.link
+                href={~p"/users/register"}
+                class="rounded-full bg-primary px-4 py-2 text-primary-content transition hover:opacity-85"
+              >Register</.link>
             </li>
           <% end %>
         </ul>
-      </div>
+      </nav>
     </header>
 
     <main class={if(@wide, do: nil, else: "px-4 py-20 sm:px-6 lg:px-8")}>

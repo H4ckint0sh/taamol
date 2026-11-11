@@ -6,7 +6,123 @@ defmodule Taamol.Accounts do
   import Ecto.Query, warn: false
   alias Taamol.Repo
 
-  alias Taamol.Accounts.{User, UserToken, UserNotifier}
+  alias Taamol.Accounts.{Scope, User, UserToken, UserNotifier}
+
+  @doc "Returns whether the scope belongs to an administrator."
+  def admin?(%Scope{user: %User{role: :admin}}), do: true
+  def admin?(_), do: false
+
+  @doc "Checks a named permission for the current scope."
+  def allowed?(%Scope{user: %User{role: :admin, can_view_dashboard: true}}, :view_dashboard),
+    do: true
+
+  def allowed?(_, _), do: false
+
+  @doc "Returns account totals for an administrator with dashboard access."
+  def dashboard_stats(%Scope{user: %User{id: id}}) do
+    user = Repo.get(User, id)
+
+    if allowed?(Scope.for_user(user), :view_dashboard) do
+      {:ok,
+       Repo.one(
+         from u in User,
+           select: %{
+             users: count(u.id),
+             confirmed: filter(count(u.id), not is_nil(u.confirmed_at)),
+             admins: filter(count(u.id), u.role == :admin)
+           }
+       )}
+    else
+      {:error, :forbidden}
+    end
+  end
+
+  @doc "Creates the first administrator from an existing confirmed user."
+  def bootstrap_admin(email) when is_binary(email) do
+    Repo.transact(fn ->
+      lock_access_changes()
+
+      cond do
+        Repo.exists?(from u in User, where: u.role == :admin) ->
+          {:error, :admin_already_exists}
+
+        user = Repo.get_by(User, email: email) ->
+          if user.confirmed_at do
+            user
+            |> Ecto.Changeset.change(role: :admin, can_view_dashboard: true)
+            |> Repo.update()
+          else
+            {:error, :user_unconfirmed}
+          end
+
+        true ->
+          {:error, :user_not_found}
+      end
+    end)
+  end
+
+  @doc "Lists users for administrators."
+  def list_users(%Scope{user: %User{id: id}}) do
+    if Repo.exists?(from u in User, where: u.id == ^id and u.role == :admin) do
+      {:ok, Repo.all(from u in User, order_by: [asc: u.email])}
+    else
+      {:error, :forbidden}
+    end
+  end
+
+  @doc "Updates an account's administrator role or dashboard permission."
+  def update_user_access(%Scope{user: %User{id: actor_id}}, user_id, action)
+      when action in ["promote", "demote", "grant_dashboard", "revoke_dashboard"] do
+    with {:ok, user_id} <- Ecto.UUID.cast(user_id) do
+      Repo.transact(fn ->
+        lock_access_changes()
+        actor = Repo.get(User, actor_id)
+        target = Repo.get(User, user_id)
+
+        cond do
+          not admin?(Scope.for_user(actor)) ->
+            {:error, :forbidden}
+
+          is_nil(target) ->
+            {:error, :not_found}
+
+          action == "demote" and actor_id == user_id ->
+            {:error, :cannot_demote_self}
+
+          action in ["grant_dashboard", "revoke_dashboard"] and target.role != :admin ->
+            {:error, :not_admin}
+
+          true ->
+            changes =
+              case action do
+                "promote" -> [role: :admin, can_view_dashboard: true]
+                "demote" -> [role: :user, can_view_dashboard: false]
+                "grant_dashboard" -> [can_view_dashboard: true]
+                "revoke_dashboard" -> [can_view_dashboard: false]
+              end
+
+            with {:ok, updated} <- target |> Ecto.Changeset.change(changes) |> Repo.update() do
+              tokens =
+                Repo.all(
+                  from t in UserToken, where: t.user_id == ^user_id and t.context == "session"
+                )
+
+              Repo.delete_all(
+                from t in UserToken, where: t.user_id == ^user_id and t.context == "session"
+              )
+
+              {:ok, {updated, tokens}}
+            end
+        end
+      end)
+    else
+      :error -> {:error, :not_found}
+    end
+  end
+
+  defp lock_access_changes do
+    Ecto.Adapters.SQL.query!(Repo, "LOCK TABLE users IN SHARE ROW EXCLUSIVE MODE", [])
+  end
 
   ## Database getters
 

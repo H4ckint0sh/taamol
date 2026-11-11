@@ -231,6 +231,20 @@ defmodule TaamolWeb.UserAuth do
     end
   end
 
+  def on_mount(permission, _params, session, socket)
+      when permission in [:require_admin, :require_dashboard_access] do
+    socket = mount_current_scope(socket, session)
+
+    if authorized?(socket.assigns.current_scope, permission) do
+      {:cont, socket}
+    else
+      {:halt,
+       socket
+       |> Phoenix.LiveView.put_flash(:error, "You are not authorized to access this page.")
+       |> Phoenix.LiveView.redirect(to: ~p"/")}
+    end
+  end
+
   def on_mount(:require_sudo_mode, _params, session, socket) do
     socket = mount_current_scope(socket, session)
 
@@ -279,6 +293,27 @@ defmodule TaamolWeb.UserAuth do
       |> halt()
     end
   end
+
+  def require_admin(conn, _opts), do: require_permission(conn, :require_admin)
+
+  def require_dashboard_access(conn, _opts),
+    do: require_permission(conn, :require_dashboard_access)
+
+  defp require_permission(conn, permission) do
+    if authorized?(conn.assigns.current_scope, permission) do
+      conn
+    else
+      conn
+      |> put_flash(:error, "You are not authorized to access this page.")
+      |> redirect(to: ~p"/")
+      |> halt()
+    end
+  end
+
+  defp authorized?(scope, :require_admin), do: Accounts.admin?(scope)
+
+  defp authorized?(scope, :require_dashboard_access),
+    do: Accounts.allowed?(scope, :view_dashboard)
 
   defp maybe_store_return_to(%{method: "GET"} = conn) do
     put_session(conn, :user_return_to, current_path(conn))
