@@ -17,6 +17,20 @@ defmodule TaamolWeb.Router do
     plug :accepts, ["json"]
   end
 
+  pipeline :local_mailbox do
+    plug :require_local_mailbox
+  end
+
+  defp require_local_mailbox(%{remote_ip: ip, host: host} = conn, _opts) do
+    local_ip? = match?({127, _, _, _}, ip) or ip == {0, 0, 0, 0, 0, 0, 0, 1}
+
+    if local_ip? and host in ["localhost", "127.0.0.1", "::1"] do
+      conn
+    else
+      conn |> send_resp(:forbidden, "Local access only") |> halt()
+    end
+  end
+
   scope "/", TaamolWeb do
     pipe_through :browser
 
@@ -31,7 +45,7 @@ defmodule TaamolWeb.Router do
   # Enable the mailbox preview in development.
   if Application.compile_env(:taamol, :dev_routes) do
     scope "/dev" do
-      pipe_through [:browser, :require_authenticated_user, :require_admin]
+      pipe_through [:browser, :local_mailbox]
 
       forward "/mailbox", Plug.Swoosh.MailboxPreview
     end
@@ -77,6 +91,7 @@ defmodule TaamolWeb.Router do
       live "/users/register", UserLive.Registration, :new
       live "/users/log-in", UserLive.Login, :new
       live "/users/log-in/:token", UserLive.Confirmation, :new
+      live "/articles", ArticleLive.ArticleListLive, :new
     end
 
     post "/users/log-in", UserSessionController, :create

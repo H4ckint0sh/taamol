@@ -5,24 +5,24 @@ defmodule Taamol.Tracking.CommentsTest do
 
   alias Taamol.Accounts.Scope
   alias Taamol.Tracking
-  alias Taamol.Tracking.{Comment, CommentLike, News}
+  alias Taamol.Tracking.{Comment, CommentLike, Article}
 
   setup do
     creator = user_fixture()
     scope = Scope.for_user(creator)
 
-    news =
-      %News{creator_id: creator.id}
-      |> News.changeset(%{title: "News"})
+    article =
+      %Article{creator_id: creator.id}
+      |> Article.changeset(%{title: "Article"})
       |> Repo.insert!()
 
-    {:ok, comment} = Tracking.create_comment(scope, news, %{body: "First comment"})
-    %{scope: scope, news: news, comment: comment}
+    {:ok, comment} = Tracking.create_comment(scope, article, %{body: "First comment"})
+    %{scope: scope, article: article, comment: comment}
   end
 
-  test "creates nested replies using the parent news and current user", %{
+  test "creates nested replies using the parent article and current user", %{
     scope: scope,
-    news: news,
+    article: article,
     comment: comment
   } do
     other_scope = user_scope_fixture()
@@ -30,17 +30,17 @@ defmodule Taamol.Tracking.CommentsTest do
     assert {:ok, reply} =
              Tracking.reply_to_comment(other_scope, comment, %{
                body: "Reply",
-               news_id: Ecto.UUID.generate(),
+               article_id: Ecto.UUID.generate(),
                creator_id: scope.user.id,
                parent_id: Ecto.UUID.generate()
              })
 
-    assert reply.news_id == news.id
+    assert reply.article_id == article.id
     assert reply.parent_id == comment.id
     assert reply.creator_id == other_scope.user.id
     assert {:ok, nested} = Tracking.reply_to_comment(scope, reply, %{body: "Nested"})
     assert nested.parent_id == reply.id
-    assert [%Comment{id: top_id}] = Tracking.list_comments(scope, news)
+    assert [%Comment{id: top_id}] = Tracking.list_comments(scope, article)
     assert top_id == comment.id
     assert [%Comment{id: id, creator: creator}] = Tracking.list_replies(scope, comment)
     assert id == reply.id
@@ -51,17 +51,21 @@ defmodule Taamol.Tracking.CommentsTest do
     refute Repo.get(Comment, nested.id)
   end
 
-  test "rejects a reply associated with a different news item", %{
+  test "rejects a reply associated with a different article item", %{
     scope: scope,
     comment: comment
   } do
-    other_news =
-      %News{creator_id: scope.user.id}
-      |> News.changeset(%{title: "Other"})
+    other_article =
+      %Article{creator_id: scope.user.id}
+      |> Article.changeset(%{title: "Other"})
       |> Repo.insert!()
 
     assert {:error, changeset} =
-             %Comment{parent_id: comment.id, news_id: other_news.id, creator_id: scope.user.id}
+             %Comment{
+               parent_id: comment.id,
+               article_id: other_article.id,
+               creator_id: scope.user.id
+             }
              |> Comment.changeset(%{body: "Reply"})
              |> Repo.insert()
 

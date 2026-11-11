@@ -1,24 +1,24 @@
-defmodule Taamol.Tracking.News do
+defmodule Taamol.Tracking.Article do
   use Ecto.Schema
   import Ecto.Changeset
 
   @primary_key {:id, :binary_id, autogenerate: true}
   @foreign_key_type :binary_id
-  schema "news" do
+  schema "articles" do
     field :title, :string
     field :body, :string
     field :published, :date
     field :author, :string
     belongs_to :creator, Taamol.Accounts.User
     has_many :comments, Taamol.Tracking.Comment
-    has_many :likes, Taamol.Tracking.NewsLike
+    has_many :likes, Taamol.Tracking.ArticleLike
 
     timestamps(type: :utc_datetime)
   end
 
   @doc false
-  def changeset(news, attrs) do
-    news
+  def changeset(article, attrs) do
+    article
     |> cast(attrs, [:title, :body, :published, :author])
     |> validate_required([:title, :creator_id])
     |> validate_length(:title, max: 100)

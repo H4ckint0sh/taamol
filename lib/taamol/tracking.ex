@@ -1,20 +1,43 @@
 defmodule Taamol.Tracking do
   @moduledoc """
-  Operations for news, comments, replies, and likes.
+  Operations for articles, comments, replies, and likes.
   """
 
   import Ecto.Query
 
   alias Taamol.Accounts.{Scope, User}
   alias Taamol.Repo
-  alias Taamol.Tracking.{Comment, CommentLike, News, NewsLike}
+  alias Taamol.Tracking.{Article, ArticleLike, Comment, CommentLike}
 
   @doc """
-  Creates a news item for the current administrator.
+  Lists published articles.
+  """
+  def list_public_articles(opts \\ []) do
+    today = Date.utc_today()
+
+    Repo.all(
+      from n in Article,
+        where: not is_nil(n.published) and n.published <= ^today,
+        order_by: [desc: n.published, desc: n.inserted_at, desc: n.id],
+        preload: [:creator],
+        limit: ^Keyword.get(opts, :limit, 10),
+        offset: ^Keyword.get(opts, :offset, 0)
+    )
+  end
+
+  @doc """
+  Gets a single article.
+  """
+  def get_article_by_id!(id) do
+    Repo.get!(Article, id)
+  end
+
+  @doc """
+  Creates an article for the current administrator.
 
   Returns `{:error, :forbidden}` if the user is not an administrator.
   """
-  def create_news(%Scope{user: %User{id: user_id}}, attrs) do
+  def create_article(%Scope{user: %User{id: user_id}}, attrs) do
     Repo.transact(fn ->
       admin =
         Repo.one(
@@ -24,8 +47,8 @@ defmodule Taamol.Tracking do
         )
 
       if admin do
-        %News{creator_id: admin.id}
-        |> News.changeset(attrs)
+        %Article{creator_id: admin.id}
+        |> Article.changeset(attrs)
         |> Repo.insert()
       else
         {:error, :forbidden}
@@ -33,58 +56,62 @@ defmodule Taamol.Tracking do
     end)
   end
 
-  def create_news(_scope, _attrs), do: {:error, :forbidden}
+  def create_article(_scope, _attrs), do: {:error, :forbidden}
 
-  @doc "Likes a news item once per user."
-  def like_news(%Scope{user: %User{id: user_id}}, %News{id: news_id}) do
-    %NewsLike{news_id: news_id, user_id: user_id}
-    |> NewsLike.changeset()
+  @doc "Likes an article once per user."
+  def like_article(%Scope{user: %User{id: user_id}}, %Article{id: article_id}) do
+    %ArticleLike{article_id: article_id, user_id: user_id}
+    |> ArticleLike.changeset()
     |> Repo.insert()
   end
 
-  @doc "Removes the current user's news like, if present."
-  def unlike_news(%Scope{user: %User{id: user_id}}, %News{id: news_id}) do
+  @doc "Removes the current user's article like, if present."
+  def unlike_article(%Scope{user: %User{id: user_id}}, %Article{id: article_id}) do
     {count, _} =
-      Repo.delete_all(from l in NewsLike, where: l.news_id == ^news_id and l.user_id == ^user_id)
+      Repo.delete_all(
+        from l in ArticleLike, where: l.article_id == ^article_id and l.user_id == ^user_id
+      )
 
     {:ok, count}
   end
 
-  @doc "Counts the user-attributed likes on a news item."
-  def count_news_likes(%Scope{user: %User{}}, %News{id: news_id}) do
-    Repo.aggregate(from(l in NewsLike, where: l.news_id == ^news_id), :count, :id)
+  @doc "Counts the user-attributed likes on an article."
+  def count_article_likes(%Scope{user: %User{}}, %Article{id: article_id}) do
+    Repo.aggregate(from(l in ArticleLike, where: l.article_id == ^article_id), :count, :id)
   end
 
-  @doc "Checks whether the current user liked a news item."
-  def liked_news?(%Scope{user: %User{id: user_id}}, %News{id: news_id}) do
-    Repo.exists?(from l in NewsLike, where: l.news_id == ^news_id and l.user_id == ^user_id)
+  @doc "Checks whether the current user liked an article."
+  def liked_article?(%Scope{user: %User{id: user_id}}, %Article{id: article_id}) do
+    Repo.exists?(
+      from l in ArticleLike, where: l.article_id == ^article_id and l.user_id == ^user_id
+    )
   end
 
-  @doc "Creates a comment on a news item for the current user."
-  def create_comment(%Scope{user: %User{id: user_id}}, %News{id: news_id}, attrs) do
-    %Comment{news_id: news_id, creator_id: user_id}
+  @doc "Creates a comment on an article for the current user."
+  def create_comment(%Scope{user: %User{id: user_id}}, %Article{id: article_id}, attrs) do
+    %Comment{article_id: article_id, creator_id: user_id}
     |> Comment.changeset(attrs)
     |> Repo.insert()
   end
 
-  @doc "Lists the top-level comments on a news item with their creators."
-  def list_comments(%Scope{user: %User{}}, %News{id: news_id}) do
+  @doc "Lists the top-level comments on an article with their creators."
+  def list_comments(%Scope{user: %User{}}, %Article{id: article_id}) do
     Repo.all(
       from c in Comment,
-        where: c.news_id == ^news_id and is_nil(c.parent_id),
+        where: c.article_id == ^article_id and is_nil(c.parent_id),
         order_by: [asc: c.inserted_at, asc: c.id],
         preload: [:creator]
     )
   end
 
-  @doc "Creates a reply on the same news item as its parent."
+  @doc "Creates a reply on the same article as its parent."
   def reply_to_comment(%Scope{user: %User{id: user_id}}, %Comment{id: parent_id}, attrs) do
     case Repo.get(Comment, parent_id) do
       nil ->
         {:error, :not_found}
 
       parent ->
-        %Comment{news_id: parent.news_id, parent_id: parent.id, creator_id: user_id}
+        %Comment{article_id: parent.article_id, parent_id: parent.id, creator_id: user_id}
         |> Comment.changeset(attrs)
         |> Repo.insert()
     end

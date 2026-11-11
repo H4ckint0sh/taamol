@@ -29,8 +29,8 @@ container name if different:
 docker exec -it taamol-postgres psql -U postgres -d taamol_dev
 ```
 
-In `psql`, run `\dt` to list tables, `\d news` to inspect a table, or
-`SELECT * FROM news;` to see its rows. SQL statements need a semicolon. If the
+In `psql`, run `\dt` to list tables, `\d articles` to inspect a table, or
+`SELECT * FROM articles;` to see its rows. SQL statements need a semicolon. If the
 prompt shows `taamol_dev-#`, use `\r` to clear the unfinished command. Use `\q`
 to exit.
 
@@ -47,7 +47,9 @@ For an existing database, run `mix ecto.migrate` after pulling new migrations.
 ## Administrator access
 
 Register and confirm an account, run migrations, then assign the first admin from
-the server terminal:
+the server terminal. In development, email is not sent to real addresses: open
+[`localhost:4000/dev/mailbox`](http://localhost:4000/dev/mailbox) to find and
+follow the confirmation link.
 
 ```sh
 mix ecto.migrate
@@ -61,16 +63,20 @@ affected user out, including other active sessions. An administrator cannot
 remove their own admin role.
 
 The application dashboard at `/dashboard` requires both the admin role and
-dashboard permission. The development mailbox preview requires the admin role.
+dashboard permission. The development-only mailbox preview is accessible without
+login from localhost and contains sensitive login links; do not expose it through
+a proxy or to other users. To deliver real emails, configure a production Swoosh
+adapter and its credentials.
 
-## News comments
+## Article comments
 
-After running `mix ecto.migrate`, administrators can create news through the
+After running `mix ecto.migrate`, administrators can create articles through the
 `Taamol.Tracking` context. It can also create comments and nested replies and
-manage one like per user on news and comments. Its operations take the
-authenticated user scope; news, comments and likes always use that user as their
-creator. Deleting a comment also deletes its replies and likes. These operations
-do not yet have a web interface.
+manage one like per user on articles and comments. Its operations take the
+authenticated user scope; articles, comments and likes always use that user as their
+creator. Deleting a comment also deletes its replies and likes. Published
+articles can be viewed at `/articles`; creation and other operations do not yet
+have a web interface.
 
 If the earlier separate news migrations were already applied to a database,
 their migration history and any existing data must be reconciled before using

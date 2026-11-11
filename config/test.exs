@@ -1,5 +1,7 @@
 import Config
 
+config :taamol, dev_routes: true
+
 # Only in tests, remove the complexity from the password hashing algorithm
 config :argon2_elixir, t_cost: 1, m_cost: 8
 
