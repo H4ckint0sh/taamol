@@ -1,11 +1,48 @@
 # Taamol
 
-To start your Phoenix server:
+## Local database
+
+The development app expects PostgreSQL at `localhost:5432` with user
+`postgres`, password `postgres`, and database `taamol_dev` (see
+`config/dev.exs`). Start PostgreSQL before running `mix setup`.
+
+If PostgreSQL is not already running, you can start it with Docker:
+
+```sh
+docker run -d --name taamol-postgres \
+  -e POSTGRES_PASSWORD=postgres \
+  -p 127.0.0.1:5432:5432 \
+  -v taamol-postgres-data:/var/lib/postgresql/data \
+  postgres:17
+```
+
+Wait until `docker exec taamol-postgres pg_isready -U postgres` reports that it
+is accepting connections. On later starts, use `docker start taamol-postgres`;
+the named volume keeps the database data. If a PostgreSQL container is already
+using port 5432, use it instead of starting another one, provided its credentials
+match `config/dev.exs`. Use `docker ps` to find its name.
+
+To inspect the database after setup, replace `taamol-postgres` with your
+container name if different:
+
+```sh
+docker exec -it taamol-postgres psql -U postgres -d taamol_dev
+```
+
+In `psql`, run `\dt` to list tables, `\d news` to inspect a table, or
+`SELECT * FROM news;` to see its rows. SQL statements need a semicolon. If the
+prompt shows `taamol_dev-#`, use `\r` to clear the unfinished command. Use `\q`
+to exit.
+
+## Starting the application
+
+Once PostgreSQL is ready:
 
 * Run `mix setup` to install and setup dependencies
 * Start Phoenix endpoint with `mix phx.server` or inside IEx with `iex -S mix phx.server`
 
 Now you can visit [`localhost:4000`](http://localhost:4000) from your browser.
+For an existing database, run `mix ecto.migrate` after pulling new migrations.
 
 ## Administrator access
 
