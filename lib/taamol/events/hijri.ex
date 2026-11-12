@@ -8,9 +8,8 @@ defmodule Taamol.Events.Hijri do
   (tabular) Islamic calendar, which can be off by a day or two.
 
   Moon sighting can put local dates a day earlier or later than Umm al-Qura.
-  Shift every Hijri date with:
-
-      config :taamol, :hijri_adjustment_days, 1   # Hijri dates fall a day later
+  Administrators can shift every Hijri date by up to ±2 days in the site
+  settings (`Taamol.Settings`, `:hijri_adjustment_days`).
   """
 
   @type hijri :: {year :: integer(), month :: 1..12, day :: 1..30}
@@ -144,7 +143,8 @@ defmodule Taamol.Events.Hijri do
   defp in_table?(date),
     do: Date.compare(date, @table_start) != :lt and Date.compare(date, @table_end) == :lt
 
-  defp adjustment, do: Application.get_env(:taamol, :hijri_adjustment_days, 0)
+  # set by administrators in the dashboard (site settings)
+  defp adjustment, do: Taamol.Settings.get(:hijri_adjustment_days)
 
   # --- arithmetic (tabular) Islamic calendar, civil epoch ---------------------
 

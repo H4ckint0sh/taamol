@@ -50,7 +50,7 @@ defmodule TaamolWeb.CalendarLiveTest do
       admin = user_fixture() |> make_admin()
       conn = log_in_user(conn, admin)
 
-      {:ok, view, _html} = live(conn, ~p"/admin/events/new?date=2026-12-01")
+      {:ok, view, _html} = live(conn, ~p"/dashboard/events/new?date=2026-12-01")
 
       {:ok, _calendar, html} =
         view
@@ -76,7 +76,7 @@ defmodule TaamolWeb.CalendarLiveTest do
         })
 
       conn = log_in_user(conn, admin)
-      {:ok, view, _html} = live(conn, ~p"/admin/events/#{event.id}/edit")
+      {:ok, view, _html} = live(conn, ~p"/dashboard/events/#{event.id}/edit")
 
       view |> element("#delete-event") |> render_click()
       assert Events.list_events_between(~D[2026-12-02], ~D[2026-12-02]) == []
@@ -84,7 +84,7 @@ defmodule TaamolWeb.CalendarLiveTest do
 
     test "regular users cannot open the form", %{conn: conn} do
       conn = log_in_user(conn, user_fixture())
-      assert {:error, {:redirect, _}} = live(conn, ~p"/admin/events/new")
+      assert {:error, {:redirect, _}} = live(conn, ~p"/dashboard/events/new")
     end
   end
 end

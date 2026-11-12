@@ -55,10 +55,8 @@ defmodule TaamolWeb.HomeLive do
   def render(assigns) do
     ~H"""
     <Layouts.app flash={@flash} current_scope={@current_scope} wide active={:home}>
-      <div id="home" class="mx-auto max-w-7xl px-4 pt-5 sm:px-6 lg:px-8 lg:pb-16 lg:pt-8">
-        <div class="grid gap-8 lg:grid-cols-[12.5rem_minmax(0,1fr)] xl:grid-cols-[12.5rem_minmax(0,1fr)_18rem]">
-          <.categories_sidebar current_scope={@current_scope} />
-
+      <div id="home" class="mx-auto max-w-7xl px-4 pt-5 sm:px-6 lg:px-8 lg:pt-8">
+        <div class="grid gap-8 xl:grid-cols-[minmax(0,1fr)_18rem]">
           <div class="min-w-0 space-y-10">
             <div
               :if={is_nil(@lead)}

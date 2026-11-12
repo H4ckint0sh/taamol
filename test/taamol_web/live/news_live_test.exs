@@ -14,6 +14,8 @@ defmodule TaamolWeb.NewsLiveTest do
       {:ok, view, _html} = live(conn, ~p"/")
       assert has_element?(view, "#home-empty")
       assert has_element?(view, "#bottom-nav")
+      assert has_element?(view, "#site-footer a[href='/categories/world']")
+      refute has_element?(view, "#sidebar-categories")
     end
 
     test "shows the lead story, latest list and feed", %{conn: conn, creator: creator} do

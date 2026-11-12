@@ -59,33 +59,27 @@ defmodule TaamolWeb.Router do
   ## Authentication routes
 
   scope "/", TaamolWeb do
-    pipe_through [:browser, :require_authenticated_user, :require_dashboard_access]
-
-    live_session :dashboard,
-      on_mount: [{TaamolWeb.Locale, :default}, {TaamolWeb.UserAuth, :require_dashboard_access}] do
-      live "/dashboard", DashboardLive.DashboardStartLive, :index
-      live "/dashboard/create/article", DashboardLive.DashboardCreateArticleLive, :index
-    end
-  end
-
-  scope "/admin", TaamolWeb do
-    pipe_through [:browser, :require_authenticated_user, :require_admin]
-
-    live_session :admin,
-      on_mount: [{TaamolWeb.Locale, :default}, {TaamolWeb.UserAuth, :require_admin}] do
-      live "/access", AdminAccessLive, :index
-      live "/events/new", EventLive.Form, :new
-      live "/events/:id/edit", EventLive.Form, :edit
-    end
-  end
-
-  scope "/", TaamolWeb do
     pipe_through [:browser, :require_authenticated_user]
 
     live_session :require_authenticated_user,
       on_mount: [{TaamolWeb.Locale, :default}, {TaamolWeb.UserAuth, :require_authenticated}] do
       live "/users/settings", UserLive.Settings, :edit
       live "/users/settings/confirm-email/:token", UserLive.Settings, :confirm_email
+
+      # Dashboard: every logged-in user gets their overview and account
+      # settings. The other pages are for administrators: each of those
+      # LiveViews also runs `on_mount {UserAuth, :require_admin}` itself.
+      live "/dashboard", DashboardLive.Overview, :index
+      live "/dashboard/news", DashboardLive.Articles, :index
+      live "/dashboard/news/new", DashboardLive.ArticleForm, :new
+      live "/dashboard/news/:id/edit", DashboardLive.ArticleForm, :edit
+      live "/dashboard/users", DashboardLive.Users, :index
+      live "/dashboard/users/new", DashboardLive.UserForm, :new
+      live "/dashboard/users/:id/edit", DashboardLive.UserForm, :edit
+      live "/dashboard/events", DashboardLive.Events, :index
+      live "/dashboard/events/new", DashboardLive.EventForm, :new
+      live "/dashboard/events/:id/edit", DashboardLive.EventForm, :edit
+      live "/dashboard/settings", DashboardLive.SiteSettings, :edit
     end
 
     post "/users/update-password", UserSessionController, :update_password

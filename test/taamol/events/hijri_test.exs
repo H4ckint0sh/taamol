@@ -1,5 +1,6 @@
 defmodule Taamol.Events.HijriTest do
-  use ExUnit.Case, async: true
+  # DataCase: the Hijri adjustment is read from the site settings
+  use Taamol.DataCase, async: true
 
   alias Taamol.Events.{Hijri, Holidays}
 

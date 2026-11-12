@@ -33,7 +33,7 @@ defmodule TaamolWeb.ArticleLive.Show do
   def render(assigns) do
     ~H"""
     <Layouts.app flash={@flash} current_scope={@current_scope} wide active={@article.category}>
-      <div class="mx-auto max-w-7xl px-4 pt-4 sm:px-6 lg:px-8 lg:pb-16 lg:pt-8">
+      <div class="mx-auto max-w-7xl px-4 pt-4 sm:px-6 lg:px-8 lg:pt-8">
         <div class="grid gap-10 xl:grid-cols-[minmax(0,1fr)_18rem]">
           <article id={"article-#{@article.id}"} class="mx-auto w-full max-w-3xl min-w-0">
             <div class="flex items-center justify-between gap-4">
@@ -117,11 +117,8 @@ defmodule TaamolWeb.ArticleLive.Show do
               {@article.summary}
             </p>
 
-            <div
-              id="article-body"
-              class="mt-6 space-y-5 text-[1.05rem] leading-8 text-base-content/85"
-            >
-              <p :for={paragraph <- paragraphs(@article.body)} dir="auto">{paragraph}</p>
+            <div id="article-body" dir="auto" class="markdown-body mt-6 text-[1.05rem]">
+              {raw(Taamol.Markdown.to_html(@article.body))}
             </div>
 
             <section id="related" class="mt-12 border-t border-base-300 pt-8">

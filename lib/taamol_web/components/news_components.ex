@@ -106,16 +106,6 @@ defmodule TaamolWeb.NewsComponents do
     |> String.reverse()
   end
 
-  @doc "Splits an article body into paragraphs on blank lines."
-  def paragraphs(nil), do: []
-
-  def paragraphs(body) do
-    body
-    |> String.split(~r/\R{2,}/, trim: true)
-    |> Enum.map(&String.trim/1)
-    |> Enum.reject(&(&1 == ""))
-  end
-
   # ---------------------------------------------------------------------------
   # Components
   # ---------------------------------------------------------------------------
@@ -384,51 +374,6 @@ defmodule TaamolWeb.NewsComponents do
       <h2 class="text-sm font-semibold">{@title}</h2>
       {render_slot(@inner_block)}
     </section>
-    """
-  end
-
-  attr :active, :atom, default: nil
-  attr :current_scope, :map, default: nil
-
-  @doc "The left-hand column on desktop: category links and a join card."
-  def categories_sidebar(assigns) do
-    ~H"""
-    <aside class="hidden lg:block">
-      <div class="sticky top-28 space-y-4">
-        <.side_card id="sidebar-categories" title={gettext("Categories")}>
-          <ul class="mt-2 space-y-0.5">
-            <li :for={category <- categories()}>
-              <.link
-                navigate={~p"/categories/#{category}"}
-                aria-current={if(@active == category, do: "page")}
-                class="flex items-center gap-3 rounded-lg px-2 py-1.5 text-sm text-base-content/75 transition hover:bg-base-200 hover:text-base-content aria-[current=page]:bg-primary/10 aria-[current=page]:font-semibold aria-[current=page]:text-primary"
-              >
-                <.icon name={category_icon(category)} class="size-4 shrink-0" />
-                {category_name(category)}
-              </.link>
-            </li>
-          </ul>
-        </.side_card>
-
-        <.side_card
-          :if={is_nil(@current_scope)}
-          id="sidebar-join"
-          title={gettext("Join the community")}
-        >
-          <p class="mt-1 text-xs leading-relaxed text-base-content/60">
-            {gettext(
-              "Create an account to comment, like articles and take part in community activities."
-            )}
-          </p>
-          <.link
-            navigate={~p"/users/register"}
-            class="mt-4 block rounded-xl bg-primary px-4 py-2.5 text-center text-sm font-semibold text-primary-content transition hover:opacity-85"
-          >
-            {gettext("Register")}
-          </.link>
-        </.side_card>
-      </div>
-    </aside>
     """
   end
 end

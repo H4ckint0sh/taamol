@@ -32,7 +32,6 @@ defmodule TaamolWeb.MenuLive do
 
           <ul class="divide-y divide-base-300/70 rounded-2xl border border-base-300 bg-base-100">
             <.menu_item
-              :if={Taamol.Accounts.allowed?(@current_scope, :view_dashboard)}
               id="menu-dashboard"
               to={~p"/dashboard"}
               icon="hero-chart-bar-square"
@@ -40,12 +39,12 @@ defmodule TaamolWeb.MenuLive do
               {gettext("Dashboard")}
             </.menu_item>
             <.menu_item
-              :if={Taamol.Accounts.admin?(@current_scope)}
-              id="menu-access"
-              to={~p"/admin/access"}
-              icon="hero-shield-check"
+              :if={Taamol.Accounts.can?(@current_scope, :manage_users)}
+              id="menu-users"
+              to={~p"/dashboard/users"}
+              icon="hero-users"
             >
-              {gettext("Access")}
+              {gettext("Users")}
             </.menu_item>
             <.menu_item id="menu-settings" to={~p"/users/settings"} icon="hero-cog-6-tooth">
               {gettext("Settings")}

@@ -35,3 +35,5 @@ taamol-*.tar
 npm-debug.log
 /assets/node_modules/
 
+# Images uploaded through the dashboard
+/priv/static/uploads/

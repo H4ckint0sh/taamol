@@ -88,6 +88,35 @@ defmodule Taamol.Events do
     )
   end
 
+  @doc """
+  Stored events for the dashboard table. `:when` is `:upcoming` (default,
+  soonest first) or `:past` (latest first). Returns `%{entries:, total:}`.
+  """
+  def list_events_page(opts \\ []) do
+    now = NaiveDateTime.utc_now()
+
+    query =
+      case Keyword.get(opts, :when, :upcoming) do
+        :past ->
+          from e in Event,
+            where: coalesce(e.ends_at, e.starts_at) < ^now,
+            order_by: [desc: e.starts_at]
+
+        _ ->
+          from e in Event,
+            where: coalesce(e.ends_at, e.starts_at) >= ^now,
+            order_by: [asc: e.starts_at]
+      end
+
+    entries =
+      query
+      |> limit(^Keyword.get(opts, :limit, 20))
+      |> offset(^Keyword.get(opts, :offset, 0))
+      |> Repo.all()
+
+    %{entries: entries, total: Repo.aggregate(exclude(query, :order_by), :count)}
+  end
+
   @doc "Gets an event. Raises if it doesn't exist."
   def get_event!(id), do: Repo.get!(Event, id)
 

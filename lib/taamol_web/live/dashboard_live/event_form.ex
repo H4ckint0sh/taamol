@@ -1,7 +1,7 @@
-defmodule TaamolWeb.EventLive.Form do
+defmodule TaamolWeb.DashboardLive.EventForm do
   @moduledoc """
   Admin form to add, edit and delete calendar events
-  (`/admin/events/new?date=2026-11-20`, `/admin/events/:id/edit`).
+  (`/dashboard/events/new?date=2026-11-20`, `/dashboard/events/:id/edit`).
   """
   use TaamolWeb, :live_view
 
@@ -9,6 +9,8 @@ defmodule TaamolWeb.EventLive.Form do
 
   alias Taamol.Events
   alias Taamol.Events.Event
+
+  on_mount {TaamolWeb.UserAuth, :require_admin}
 
   @impl true
   def mount(params, _session, socket) do
@@ -93,61 +95,73 @@ defmodule TaamolWeb.EventLive.Form do
   @impl true
   def render(assigns) do
     ~H"""
-    <Layouts.app flash={@flash} current_scope={@current_scope} active={:calendar}>
-      <.link
-        navigate={~p"/calendar"}
-        class="inline-flex items-center gap-1.5 text-sm text-base-content/60 transition-colors hover:text-primary"
-      >
-        <.icon name="hero-arrow-left" class="size-4 rtl:rotate-180" />
-        {gettext("Calendar")}
-      </.link>
+    <Layouts.dashboard
+      flash={@flash}
+      current_scope={@current_scope}
+      active={:events}
+      title={@page_title}
+    >
+      <div class="max-w-2xl">
+        <.link
+          navigate={~p"/dashboard/events"}
+          class="mb-4 inline-flex items-center gap-1.5 text-sm text-base-content/60 transition-colors hover:text-primary"
+        >
+          <.icon name="hero-arrow-left" class="size-4 rtl:rotate-180" />
+          {gettext("Calendar events")}
+        </.link>
 
-      <h1 class="text-2xl font-bold tracking-tight">{@page_title}</h1>
+        <Layouts.dashboard_heading title={@page_title} />
 
-      <.form
-        for={@form}
-        id="event-form"
-        phx-change="validate"
-        phx-submit="save"
-        class="space-y-1 rounded-2xl border border-base-300 bg-base-100 p-5"
-      >
-        <.input field={@form[:title]} type="text" label={gettext("Title")} required />
-        <.input
-          field={@form[:kind]}
-          type="select"
-          label={gettext("Type")}
-          options={Enum.map(Event.kinds(), &{kind_name(&1), &1})}
-        />
-        <.input field={@form[:all_day]} type="checkbox" label={gettext("All day")} />
-        <div class="grid gap-x-4 sm:grid-cols-2">
-          <.input field={@form[:starts_at]} type="datetime-local" label={gettext("Starts")} required />
-          <.input field={@form[:ends_at]} type="datetime-local" label={gettext("Ends (optional)")} />
-        </div>
-        <.input field={@form[:location]} type="text" label={gettext("Location")} />
-        <.input field={@form[:description]} type="textarea" label={gettext("Description")} rows="5" />
+        <.form
+          for={@form}
+          id="event-form"
+          phx-change="validate"
+          phx-submit="save"
+          class="space-y-1 rounded-2xl border border-base-300 bg-base-100 p-5"
+        >
+          <.input field={@form[:title]} type="text" label={gettext("Title")} required />
+          <.input
+            field={@form[:kind]}
+            type="select"
+            label={gettext("Type")}
+            options={Enum.map(Event.kinds(), &{kind_name(&1), &1})}
+          />
+          <.input field={@form[:all_day]} type="checkbox" label={gettext("All day")} />
+          <div class="grid gap-x-4 sm:grid-cols-2">
+            <.input
+              field={@form[:starts_at]}
+              type="datetime-local"
+              label={gettext("Starts")}
+              required
+            />
+            <.input field={@form[:ends_at]} type="datetime-local" label={gettext("Ends (optional)")} />
+          </div>
+          <.input field={@form[:location]} type="text" label={gettext("Location")} />
+          <.input field={@form[:description]} type="textarea" label={gettext("Description")} rows="5" />
 
-        <div class="flex items-center justify-between gap-3 pt-3">
-          <button
-            :if={@live_action == :edit}
-            type="button"
-            id="delete-event"
-            phx-click="delete"
-            data-confirm={gettext("Delete this event?")}
-            class="rounded-xl px-4 py-2.5 text-sm font-semibold text-error transition hover:bg-error/10"
-          >
-            {gettext("Delete")}
-          </button>
-          <button
-            type="submit"
-            id="save-event"
-            phx-disable-with={gettext("Saving…")}
-            class="ms-auto rounded-xl bg-primary px-6 py-2.5 text-sm font-semibold text-primary-content transition hover:opacity-85"
-          >
-            {gettext("Save event")}
-          </button>
-        </div>
-      </.form>
-    </Layouts.app>
+          <div class="flex items-center justify-between gap-3 pt-3">
+            <button
+              :if={@live_action == :edit}
+              type="button"
+              id="delete-event"
+              phx-click="delete"
+              data-confirm={gettext("Delete this event?")}
+              class="rounded-xl px-4 py-2.5 text-sm font-semibold text-error transition hover:bg-error/10"
+            >
+              {gettext("Delete")}
+            </button>
+            <button
+              type="submit"
+              id="save-event"
+              phx-disable-with={gettext("Saving…")}
+              class="ms-auto rounded-xl bg-primary px-6 py-2.5 text-sm font-semibold text-primary-content transition hover:opacity-85"
+            >
+              {gettext("Save event")}
+            </button>
+          </div>
+        </.form>
+      </div>
+    </Layouts.dashboard>
     """
   end
 end

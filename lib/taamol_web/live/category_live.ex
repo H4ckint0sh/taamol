@@ -62,7 +62,7 @@ defmodule TaamolWeb.CategoryLive do
   def render(%{live_action: :index} = assigns) do
     ~H"""
     <Layouts.app flash={@flash} current_scope={@current_scope} wide active={:categories}>
-      <div id="categories" class="mx-auto max-w-7xl px-4 pt-6 sm:px-6 lg:px-8 lg:pb-16 lg:pt-10">
+      <div id="categories" class="mx-auto max-w-7xl px-4 pt-6 sm:px-6 lg:px-8 lg:pt-10">
         <h1 class="text-2xl font-bold tracking-tight sm:text-3xl">{gettext("Categories")}</h1>
         <p class="mt-1 text-sm text-base-content/60">
           {gettext("Browse the news by topic.")}
@@ -101,11 +101,9 @@ defmodule TaamolWeb.CategoryLive do
     <Layouts.app flash={@flash} current_scope={@current_scope} wide active={@category}>
       <div
         id={"category-page-#{@category}"}
-        class="mx-auto max-w-7xl px-4 pt-5 sm:px-6 lg:px-8 lg:pb-16 lg:pt-8"
+        class="mx-auto max-w-7xl px-4 pt-5 sm:px-6 lg:px-8 lg:pt-8"
       >
-        <div class="grid gap-8 lg:grid-cols-[12.5rem_minmax(0,1fr)] xl:grid-cols-[12.5rem_minmax(0,1fr)_18rem]">
-          <.categories_sidebar active={@category} current_scope={@current_scope} />
-
+        <div class="grid gap-8 xl:grid-cols-[minmax(0,1fr)_18rem]">
           <div class="min-w-0">
             <h1 class="flex items-center gap-3 text-2xl font-bold tracking-tight sm:text-3xl">
               <span class="grid size-10 place-items-center rounded-xl bg-primary/10 text-primary">

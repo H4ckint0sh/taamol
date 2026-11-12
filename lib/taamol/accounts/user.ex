@@ -53,6 +53,17 @@ defmodule Taamol.Accounts.User do
   end
 
   @doc """
+  A changeset used by administrators to create or edit an account's name
+  and email (the role is changed separately, see `Taamol.Accounts.update_user_access/3`).
+  """
+  def admin_changeset(user, attrs, opts \\ []) do
+    user
+    |> cast(attrs, [:name, :email])
+    |> validate_email(opts)
+    |> validate_name()
+  end
+
+  @doc """
   A user changeset for changing the name.
   """
   def name_changeset(user, attrs) do

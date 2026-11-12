@@ -18,6 +18,195 @@ defmodule Taamol.Accounts do
 
   def allowed?(_, _), do: false
 
+  @doc """
+  What the current scope may see and do in the dashboard.
+
+    * `:use_dashboard` - any logged-in user (own overview and settings)
+    * `:view_statistics` - administrators with dashboard access
+    * `:manage_news`, `:manage_users`, `:manage_events`, `:manage_settings` -
+      administrators
+  """
+  def can?(%Scope{user: %User{}}, :use_dashboard), do: true
+  def can?(scope, :view_statistics), do: allowed?(scope, :view_dashboard)
+
+  def can?(scope, action)
+      when action in [:manage_news, :manage_users, :manage_events, :manage_settings],
+      do: admin?(scope)
+
+  def can?(_scope, _action), do: false
+
+  @doc """
+  Lists users for administrators, newest first.
+
+  Options: `:search` (name or email), `:role` (`:user`/`:admin`),
+  `:limit` (default 20), `:offset`. Returns `{:ok, %{entries: [...], total: n}}`.
+  """
+  def list_users_page(scope, opts \\ []) do
+    if fresh_admin?(scope) do
+      query =
+        from(u in User)
+        |> filter_users_search(Keyword.get(opts, :search))
+        |> filter_users_role(Keyword.get(opts, :role))
+
+      entries =
+        query
+        |> order_by([u], desc: u.inserted_at, desc: u.id)
+        |> limit(^Keyword.get(opts, :limit, 20))
+        |> offset(^Keyword.get(opts, :offset, 0))
+        |> Repo.all()
+
+      {:ok, %{entries: entries, total: Repo.aggregate(query, :count)}}
+    else
+      {:error, :forbidden}
+    end
+  end
+
+  defp filter_users_search(query, search) when is_binary(search) and search != "" do
+    pattern = "%" <> String.replace(search, ~r/[\\%_]/, "\\\\\\0") <> "%"
+    where(query, [u], ilike(u.name, ^pattern) or ilike(u.email, ^pattern))
+  end
+
+  defp filter_users_search(query, _), do: query
+
+  defp filter_users_role(query, role) when role in [:user, :admin],
+    do: where(query, [u], u.role == ^role)
+
+  defp filter_users_role(query, _), do: query
+
+  @doc "Gets a user for administrators."
+  def get_user_for_admin(scope, id) do
+    with true <- fresh_admin?(scope),
+         {:ok, uuid} <- Ecto.UUID.cast(id),
+         %User{} = user <- Repo.get(User, uuid) do
+      {:ok, user}
+    else
+      false -> {:error, :forbidden}
+      _ -> {:error, :not_found}
+    end
+  end
+
+  @doc "A changeset for the admin user form."
+  def change_user_as_admin(%User{} = user, attrs \\ %{}) do
+    User.admin_changeset(user, attrs, validate_unique: false)
+  end
+
+  @doc """
+  Creates an account as an administrator. The new user signs in with a
+  magic link (see `deliver_login_instructions/2`).
+  """
+  def create_user_as_admin(scope, attrs) do
+    if fresh_admin?(scope) do
+      %User{} |> User.admin_changeset(attrs) |> Repo.insert()
+    else
+      {:error, :forbidden}
+    end
+  end
+
+  @doc "Updates an account's name and email as an administrator."
+  def update_user_as_admin(scope, %User{} = user, attrs) do
+    if fresh_admin?(scope) do
+      user |> User.admin_changeset(attrs) |> Repo.update()
+    else
+      {:error, :forbidden}
+    end
+  end
+
+  @doc """
+  Deletes an account as an administrator. You can't delete yourself, and
+  accounts that wrote articles or comments are kept (`{:error, :has_content}`).
+  Returns `{:ok, {user, session_tokens}}`; disconnect the sessions afterwards.
+  """
+  def delete_user_as_admin(%Scope{user: %User{id: actor_id}} = scope, user_id) do
+    Repo.transact(fn ->
+      lock_access_changes()
+
+      with true <- fresh_admin?(scope),
+           {:ok, uuid} <- Ecto.UUID.cast(user_id),
+           false <- uuid == actor_id,
+           %User{} = user <- Repo.get(User, uuid) do
+        tokens =
+          Repo.all(from t in UserToken, where: t.user_id == ^uuid and t.context == "session")
+
+        user
+        |> Ecto.Changeset.change()
+        |> Ecto.Changeset.foreign_key_constraint(:id,
+          name: :articles_creator_id_fkey,
+          message: "has articles"
+        )
+        |> Ecto.Changeset.foreign_key_constraint(:id,
+          name: :comments_creator_id_fkey,
+          message: "has comments"
+        )
+        |> Repo.delete()
+        |> case do
+          {:ok, user} -> {:ok, {user, tokens}}
+          {:error, _changeset} -> {:error, :has_content}
+        end
+      else
+        true -> {:error, :cannot_delete_self}
+        :error -> {:error, :not_found}
+        nil -> {:error, :not_found}
+        false -> {:error, :forbidden}
+      end
+    end)
+  end
+
+  def delete_user_as_admin(_scope, _user_id), do: {:error, :forbidden}
+
+  @doc """
+  User totals for the statistics dashboard: totals, new accounts in the last
+  7 days and sign-ups per week for the last `weeks` weeks (oldest first).
+  """
+  def user_statistics(scope, weeks \\ 8) do
+    if can?(scope, :view_statistics) do
+      now = DateTime.utc_now()
+      week_ago = DateTime.add(now, -7 * 86_400)
+      since = DateTime.add(now, -weeks * 7 * 86_400)
+
+      totals =
+        Repo.one(
+          from u in User,
+            select: %{
+              total: count(u.id),
+              confirmed: filter(count(u.id), not is_nil(u.confirmed_at)),
+              admins: filter(count(u.id), u.role == :admin),
+              new_this_week: filter(count(u.id), u.inserted_at >= ^week_ago)
+            }
+        )
+
+      signups =
+        Repo.all(
+          from u in User,
+            where: u.inserted_at >= ^since,
+            select: u.inserted_at
+        )
+
+      per_week =
+        for i <- (weeks - 1)..0//-1 do
+          from = DateTime.add(now, -(i + 1) * 7 * 86_400)
+          to = DateTime.add(now, -i * 7 * 86_400)
+
+          count =
+            Enum.count(
+              signups,
+              &(DateTime.compare(&1, from) != :lt and DateTime.compare(&1, to) == :lt)
+            )
+
+          %{week_start: DateTime.to_date(from), count: count}
+        end
+
+      {:ok, Map.put(totals, :per_week, per_week)}
+    else
+      {:error, :forbidden}
+    end
+  end
+
+  # re-reads the role so a demoted admin's old session can't keep acting
+  defp fresh_admin?(%Scope{user: %User{id: id}}),
+    do: Repo.exists?(from u in User, where: u.id == ^id and u.role == :admin)
+
+  defp fresh_admin?(_), do: false
+
   @doc "Returns account totals for an administrator with dashboard access."
   def dashboard_stats(%Scope{user: %User{id: id}}) do
     user = Repo.get(User, id)

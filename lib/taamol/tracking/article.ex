@@ -54,7 +54,9 @@ defmodule Taamol.Tracking.Article do
     |> validate_length(:title, max: 100)
     |> validate_length(:summary, max: 300)
     |> validate_length(:cover_image_url, max: 2048)
-    |> validate_format(:cover_image_url, ~r{^https?://[^\s]+$}, message: "must be an http(s) URL")
+    |> validate_format(:cover_image_url, ~r{^(https?://|/uploads/)[^\s]+$},
+      message: "must be an http(s) URL or an uploaded image"
+    )
     |> foreign_key_constraint(:creator_id)
   end
 end

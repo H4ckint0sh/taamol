@@ -101,7 +101,7 @@ defmodule TaamolWeb.CalendarLive do
   def render(assigns) do
     ~H"""
     <Layouts.app flash={@flash} current_scope={@current_scope} wide active={:calendar}>
-      <div id="calendar" class="mx-auto max-w-7xl px-4 pt-5 sm:px-6 lg:px-8 lg:pb-16 lg:pt-8">
+      <div id="calendar" class="mx-auto max-w-7xl px-4 pt-5 sm:px-6 lg:px-8 lg:pt-8">
         <div class="flex flex-wrap items-end justify-between gap-4">
           <div>
             <h1 id="calendar-title" class="text-2xl font-bold tracking-tight sm:text-3xl">
@@ -142,7 +142,7 @@ defmodule TaamolWeb.CalendarLive do
             <.link
               :if={@admin?}
               id="calendar-add-event"
-              navigate={~p"/admin/events/new?#{[date: Date.to_iso8601(@selected)]}"}
+              navigate={~p"/dashboard/events/new?#{[date: Date.to_iso8601(@selected)]}"}
               class="inline-flex items-center gap-1.5 rounded-xl bg-primary px-3 py-2 text-sm font-semibold text-primary-content transition hover:opacity-85"
             >
               <.icon name="hero-plus" class="size-4" />
@@ -215,7 +215,7 @@ defmodule TaamolWeb.CalendarLive do
                     <.link
                       :if={@admin? && entry.source == :event}
                       id={"edit-#{entry.id}"}
-                      navigate={~p"/admin/events/#{entry.event.id}/edit"}
+                      navigate={~p"/dashboard/events/#{entry.event.id}/edit"}
                       class="text-xs font-medium text-primary hover:underline"
                     >
                       {gettext("Edit")}

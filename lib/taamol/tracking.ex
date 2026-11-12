@@ -5,6 +5,7 @@ defmodule Taamol.Tracking do
 
   import Ecto.Query
 
+  alias Taamol.Accounts
   alias Taamol.Accounts.{Scope, User, Helpers}
   alias Taamol.Repo
   alias Taamol.Tracking.{Article, ArticleLike, Comment, CommentLike}
@@ -114,6 +115,151 @@ defmodule Taamol.Tracking do
       id -> where(query, [a], a.id != ^id)
     end
   end
+
+  @doc """
+  Lists all articles (drafts included) for administrators, newest first.
+
+  Options: `:search` (title), `:status` (`:published`, `:scheduled`, `:draft`),
+  `:category`, `:limit` (default 20), `:offset`.
+  Returns `{:ok, %{entries: [...], total: n}}`.
+  """
+  def list_articles_page(scope, opts \\ []) do
+    if Accounts.can?(scope, :manage_news) and fresh_admin?(scope) do
+      now = DateTime.utc_now()
+
+      query =
+        from(a in Article)
+        |> filter_status(Keyword.get(opts, :status), now)
+        |> filter_category(Keyword.get(opts, :category))
+        |> filter_title(Keyword.get(opts, :search))
+
+      entries =
+        query
+        |> order_by([a], desc: a.updated_at, desc: a.id)
+        |> limit(^Keyword.get(opts, :limit, 20))
+        |> offset(^Keyword.get(opts, :offset, 0))
+        |> preload(:creator)
+        |> Repo.all()
+
+      {:ok, %{entries: entries, total: Repo.aggregate(query, :count)}}
+    else
+      {:error, :forbidden}
+    end
+  end
+
+  defp filter_status(query, :published, now),
+    do: where(query, [a], not is_nil(a.published) and a.published <= ^now)
+
+  defp filter_status(query, :scheduled, now), do: where(query, [a], a.published > ^now)
+  defp filter_status(query, :draft, _now), do: where(query, [a], is_nil(a.published))
+  defp filter_status(query, _, _now), do: query
+
+  defp filter_category(query, nil), do: query
+  defp filter_category(query, category), do: where(query, [a], a.category == ^category)
+
+  defp filter_title(query, search) when is_binary(search) and search != "" do
+    pattern = "%" <> String.replace(search, ~r/[\\%_]/, "\\\\\\0") <> "%"
+    where(query, [a], ilike(a.title, ^pattern))
+  end
+
+  defp filter_title(query, _), do: query
+
+  @doc "An article's status: `:published`, `:scheduled` or `:draft`."
+  def article_status(%Article{published: nil}), do: :draft
+
+  def article_status(%Article{published: published}) do
+    if DateTime.compare(published, DateTime.utc_now()) == :gt, do: :scheduled, else: :published
+  end
+
+  @doc "Gets any article (drafts included) for administrators."
+  def get_article_for_admin(scope, id) do
+    with true <- fresh_admin?(scope),
+         {:ok, uuid} <- Ecto.UUID.cast(id),
+         %Article{} = article <- Repo.get(Article, uuid) do
+      {:ok, article}
+    else
+      false -> {:error, :forbidden}
+      _ -> {:error, :not_found}
+    end
+  end
+
+  @doc "Updates an article. Administrators only."
+  def update_article(%Scope{user: %User{id: user_id}}, %Article{} = article, attrs) do
+    Repo.transact(fn ->
+      if Helpers.find_admin_with_lock(user_id) do
+        article |> Article.changeset(attrs) |> Repo.update()
+      else
+        {:error, :forbidden}
+      end
+    end)
+  end
+
+  def update_article(_scope, _article, _attrs), do: {:error, :forbidden}
+
+  @doc "Deletes an article (and its comments and likes). Administrators only."
+  def delete_article(%Scope{user: %User{id: user_id}}, %Article{} = article) do
+    Repo.transact(fn ->
+      if Helpers.find_admin_with_lock(user_id),
+        do: Repo.delete(article),
+        else: {:error, :forbidden}
+    end)
+  end
+
+  def delete_article(_scope, _article), do: {:error, :forbidden}
+
+  @doc """
+  Article numbers for the statistics dashboard: counts by status, views,
+  views per category and the most read articles.
+  """
+  def article_statistics(scope) do
+    if Accounts.can?(scope, :view_statistics) do
+      now = DateTime.utc_now()
+      week_ago = DateTime.add(now, -7 * 86_400)
+
+      totals =
+        Repo.one(
+          from a in Article,
+            select: %{
+              total: count(a.id),
+              published: filter(count(a.id), not is_nil(a.published) and a.published <= ^now),
+              scheduled: filter(count(a.id), a.published > ^now),
+              drafts: filter(count(a.id), is_nil(a.published)),
+              published_this_week:
+                filter(count(a.id), a.published >= ^week_ago and a.published <= ^now),
+              views: coalesce(sum(a.view_count), 0)
+            }
+        )
+
+      views_by_category =
+        Repo.all(
+          from a in Article,
+            where: not is_nil(a.published) and a.published <= ^now,
+            group_by: a.category,
+            select: {a.category, coalesce(sum(a.view_count), 0)}
+        )
+        |> Enum.sort_by(&elem(&1, 1), :desc)
+
+      {:ok,
+       totals
+       |> Map.put(:views_by_category, views_by_category)
+       |> Map.put(:top, list_most_read_articles(limit: 5))}
+    else
+      {:error, :forbidden}
+    end
+  end
+
+  @doc "How many articles the user liked and comments they wrote."
+  def user_activity(%Scope{user: %User{id: user_id}}) do
+    %{
+      likes: Repo.aggregate(from(l in ArticleLike, where: l.user_id == ^user_id), :count),
+      comments: Repo.aggregate(from(c in Comment, where: c.creator_id == ^user_id), :count)
+    }
+  end
+
+  defp fresh_admin?(%Scope{user: %User{id: id}}),
+    do: Repo.exists?(from u in User, where: u.id == ^id and u.role == :admin)
+
+  defp fresh_admin?(_), do: false
 
   @doc """
   Gets a single article.

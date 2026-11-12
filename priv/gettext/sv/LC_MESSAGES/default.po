@@ -11,77 +11,39 @@ msgstr ""
 "Language: sv\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: lib/taamol_web/live/user_live/settings.ex:182
+#: lib/taamol_web/live/user_live/settings.ex:191
 #, elixir-autogen, elixir-format
 msgid "A link to confirm your email change has been sent to the new address."
 msgstr "En länk för att bekräfta din nya e-postadress har skickats."
 
-#: lib/taamol_web/live/dashboard_live/dashboard_start_live.ex:28
-#, elixir-autogen, elixir-format
-msgid "A quick overview of your Taamol community."
-msgstr "En snabb överblick över din Taamol-gemenskap."
-
-#: lib/taamol_web/components/layouts.ex:335
-#: lib/taamol_web/live/menu_live.ex:48
-#, elixir-autogen, elixir-format
-msgid "Access"
-msgstr "Åtkomst"
-
-#: lib/taamol_web/live/admin_access_live.ex:111
-#, elixir-autogen, elixir-format
-msgid "Access could not be updated. Refresh and try again."
-msgstr "Åtkomsten kunde inte uppdateras. Ladda om och försök igen."
-
-#: lib/taamol_web/live/admin_access_live.ex:24
-#, elixir-autogen, elixir-format
-msgid "Access management"
-msgstr "Åtkomsthantering"
-
-#: lib/taamol_web/live/admin_access_live.ex:101
+#: lib/taamol_web/live/dashboard_live/users.ex:76
 #, elixir-autogen, elixir-format
 msgid "Access updated."
 msgstr "Åtkomsten har uppdaterats."
 
-#: lib/taamol_web/live/user_live/settings.ex:14
+#: lib/taamol_web/live/user_live/settings.ex:20
 #, elixir-autogen, elixir-format
 msgid "Account Settings"
 msgstr "Kontoinställningar"
 
-#: lib/taamol_web/live/dashboard_live/dashboard_start_live.ex:40
-#, elixir-autogen, elixir-format
-msgid "Account overview"
-msgstr "Kontoöversikt"
-
-#: lib/taamol_web/live/dashboard_live/dashboard_start_live.ex:63
-#, elixir-autogen, elixir-format
-msgid "Accounts with admin access"
-msgstr "Konton med administratörsåtkomst"
-
 #: lib/taamol_web/components/core_components.ex:375
+#: lib/taamol_web/live/dashboard_live/articles.ex:185
+#: lib/taamol_web/live/dashboard_live/events.ex:125
+#: lib/taamol_web/live/dashboard_live/users.ex:185
+#: lib/taamol_web/live/dashboard_live/users.ex:268
 #, elixir-autogen, elixir-format
 msgid "Actions"
 msgstr "Åtgärder"
 
-#: lib/taamol_web/live/admin_access_live.ex:22
-#: lib/taamol_web/live/dashboard_live/dashboard_start_live.ex:22
-#, elixir-autogen, elixir-format
-msgid "Administration"
-msgstr "Administration"
-
-#: lib/taamol_web/live/admin_access_live.ex:42
+#: lib/taamol_web/live/dashboard_live/users.ex:212
 #, elixir-autogen, elixir-format
 msgid "Administrator"
 msgstr "Administratör"
 
-#: lib/taamol_web/live/dashboard_live/dashboard_start_live.ex:59
+#: lib/taamol_web/live/dashboard_live/users.ex:165
 #, elixir-autogen, elixir-format
 msgid "Administrators"
 msgstr "Administratörer"
-
-#: lib/taamol_web/live/admin_access_live.ex:26
-#, elixir-autogen, elixir-format
-msgid "Administrators can manage access. Dashboard access can be granted only to administrators. Changing access signs the affected user out."
-msgstr "Administratörer kan hantera åtkomst. Endast administratörer kan få åtkomst till kontrollpanelen. Ändringar loggar ut den berörda användaren."
 
 #: lib/taamol_web/live/user_live/registration.ex:16
 #, elixir-autogen, elixir-format
@@ -93,13 +55,8 @@ msgstr "Redan registrerad?"
 msgid "An email was sent to %{email}, please access it to confirm your account."
 msgstr "Ett e-postmeddelande har skickats till %{email}. Öppna det för att bekräfta ditt konto."
 
-#: lib/taamol_web/live/dashboard_live/dashboard_create_article_live.ex:10
-#, elixir-autogen, elixir-format
-msgid "Article creation is not available yet."
-msgstr "Det går inte att skapa artiklar ännu."
-
-#: lib/taamol_web/components/layouts.ex:440
-#: lib/taamol_web/components/layouts.ex:455
+#: lib/taamol_web/components/layouts.ex:730
+#: lib/taamol_web/components/layouts.ex:745
 #, elixir-autogen, elixir-format
 msgid "Attempting to reconnect"
 msgstr "Försöker återansluta"
@@ -109,12 +66,12 @@ msgstr "Försöker återansluta"
 msgid "Body"
 msgstr "Innehåll"
 
-#: lib/taamol_web/live/user_live/settings.ex:51
+#: lib/taamol_web/live/user_live/settings.ex:57
 #, elixir-autogen, elixir-format
 msgid "Change Email"
 msgstr "Ändra e-postadress"
 
-#: lib/taamol_web/live/user_live/settings.ex:51
+#: lib/taamol_web/live/user_live/settings.ex:57
 #, elixir-autogen, elixir-format
 msgid "Changing..."
 msgstr "Ändrar..."
@@ -129,7 +86,7 @@ msgstr "Bekräfta och logga in endast denna gång"
 msgid "Confirm and stay logged in"
 msgstr "Bekräfta och förbli inloggad"
 
-#: lib/taamol_web/live/user_live/settings.ex:83
+#: lib/taamol_web/live/user_live/settings.ex:91
 #, elixir-autogen, elixir-format
 msgid "Confirm new password"
 msgstr "Bekräfta nytt lösenord"
@@ -138,11 +95,6 @@ msgstr "Bekräfta nytt lösenord"
 #, elixir-autogen, elixir-format
 msgid "Confirmation instructions"
 msgstr "Bekräftelseinstruktioner"
-
-#: lib/taamol_web/live/dashboard_live/dashboard_start_live.ex:51
-#, elixir-autogen, elixir-format
-msgid "Confirmed accounts"
-msgstr "Bekräftade konton"
 
 #: lib/taamol_web/live/user_live/confirmation.ex:28
 #: lib/taamol_web/live/user_live/confirmation.ex:34
@@ -155,11 +107,6 @@ msgstr "Bekräftar..."
 msgid "Create an account"
 msgstr "Skapa ett konto"
 
-#: lib/taamol_web/live/dashboard_live/dashboard_create_article_live.ex:9
-#, elixir-autogen, elixir-format
-msgid "Create article"
-msgstr "Skapa artikel"
-
 #: lib/taamol_web/live/article_live/article_list_live.ex:18
 #, elixir-autogen, elixir-format
 msgid "Created By"
@@ -170,62 +117,46 @@ msgstr "Skapad av"
 msgid "Creating account..."
 msgstr "Skapar konto..."
 
-#: lib/taamol_web/components/layouts.ex:327
-#: lib/taamol_web/live/dashboard_live/dashboard_start_live.ex:9
-#: lib/taamol_web/live/dashboard_live/dashboard_start_live.ex:25
-#: lib/taamol_web/live/menu_live.ex:40
+#: lib/taamol_web/components/layouts.ex:269
+#: lib/taamol_web/components/layouts.ex:273
+#: lib/taamol_web/components/layouts.ex:321
+#: lib/taamol_web/components/layouts.ex:450
+#: lib/taamol_web/components/layouts.ex:617
+#: lib/taamol_web/live/dashboard_live/overview.ex:19
+#: lib/taamol_web/live/menu_live.ex:39
 #, elixir-autogen, elixir-format
 msgid "Dashboard"
 msgstr "Kontrollpanel"
-
-#: lib/taamol_web/live/admin_access_live.ex:45
-#, elixir-autogen, elixir-format
-msgid "Dashboard allowed"
-msgstr "Åtkomst till kontrollpanelen tillåten"
-
-#: lib/taamol_web/live/admin_access_live.ex:46
-#, elixir-autogen, elixir-format
-msgid "Dashboard denied"
-msgstr "Åtkomst till kontrollpanelen nekad"
 
 #: lib/taamol_web/live/user_live/login.ex:18
 #, elixir-autogen, elixir-format
 msgid "Don't have an account?"
 msgstr "Har du inget konto?"
 
+#: lib/taamol_web/live/dashboard_live/user_form.ex:111
 #: lib/taamol_web/live/user_live/login.ex:49
 #: lib/taamol_web/live/user_live/login.ex:75
 #: lib/taamol_web/live/user_live/registration.ex:28
-#: lib/taamol_web/live/user_live/settings.ex:46
+#: lib/taamol_web/live/user_live/settings.ex:52
 #, elixir-autogen, elixir-format
 msgid "Email"
 msgstr "E-post"
 
-#: lib/taamol_web/live/dashboard_live/dashboard_start_live.ex:55
-#, elixir-autogen, elixir-format
-msgid "Email addresses verified"
-msgstr "Verifierade e-postadresser"
-
-#: lib/taamol_web/live/user_live/settings.ex:103
+#: lib/taamol_web/live/user_live/settings.ex:112
 #, elixir-autogen, elixir-format
 msgid "Email change link is invalid or it has expired."
 msgstr "Länken för e-poständring är ogiltig eller har gått ut."
 
-#: lib/taamol_web/live/user_live/settings.ex:100
+#: lib/taamol_web/live/user_live/settings.ex:109
 #, elixir-autogen, elixir-format
 msgid "Email changed successfully."
 msgstr "E-postadressen har ändrats."
 
 #: lib/taamol_web/live/user_live/registration.ex:37
-#: lib/taamol_web/live/user_live/settings.ex:31
+#: lib/taamol_web/live/user_live/settings.ex:37
 #, elixir-autogen, elixir-format
 msgid "Full Name"
 msgstr "Fullständigt namn"
-
-#: lib/taamol_web/live/admin_access_live.ex:83
-#, elixir-autogen, elixir-format
-msgid "Grant dashboard"
-msgstr "Ge åtkomst till kontrollpanelen"
 
 #: lib/taamol/accounts/user_notifier.ex:29
 #, elixir-autogen, elixir-format
@@ -247,11 +178,6 @@ msgstr "Hej %{email},\n\nBesök länken nedan för att logga in på ditt konto:\
 msgid "If your email is in our system, you will receive instructions for logging in shortly."
 msgstr "Om din e-postadress finns i vårt system får du snart inloggningsinstruktioner."
 
-#: lib/taamol_web/live/admin_access_live.ex:116
-#, elixir-autogen, elixir-format
-msgid "Invalid access change."
-msgstr "Ogiltig åtkomständring."
-
 #: lib/taamol_web/controllers/user_session_controller.ex:43
 #, elixir-autogen, elixir-format
 msgid "Invalid email or password"
@@ -262,16 +188,17 @@ msgstr "Ogiltig e-postadress eller lösenord"
 msgid "Keep me logged in on this device"
 msgstr "Håll mig inloggad på denna enhet"
 
-#: lib/taamol_web/components/layouts.ex:499
-#: lib/taamol_web/components/layouts.ex:508
-#: lib/taamol_web/components/layouts.ex:512
-#: lib/taamol_web/live/menu_live.ex:102
+#: lib/taamol_web/components/layouts.ex:789
+#: lib/taamol_web/components/layouts.ex:798
+#: lib/taamol_web/components/layouts.ex:802
+#: lib/taamol_web/live/menu_live.ex:101
 #, elixir-autogen, elixir-format
 msgid "Language"
 msgstr "Språk"
 
 #: lib/taamol_web/components/layouts.ex:124
-#: lib/taamol_web/live/menu_live.ex:68
+#: lib/taamol_web/components/layouts.ex:464
+#: lib/taamol_web/live/menu_live.ex:67
 #: lib/taamol_web/live/user_live/confirmation.ex:53
 #: lib/taamol_web/live/user_live/login.ex:13
 #: lib/taamol_web/live/user_live/registration.ex:18
@@ -304,8 +231,9 @@ msgstr "Logga in med e-post"
 msgid "Log me in only this time"
 msgstr "Logga in endast denna gång"
 
-#: lib/taamol_web/components/layouts.ex:351
-#: lib/taamol_web/live/menu_live.ex:130
+#: lib/taamol_web/components/layouts.ex:460
+#: lib/taamol_web/components/layouts.ex:641
+#: lib/taamol_web/live/menu_live.ex:129
 #, elixir-autogen, elixir-format
 msgid "Log out"
 msgstr "Logga ut"
@@ -327,22 +255,17 @@ msgstr "Loggar in..."
 msgid "Magic link is invalid or it has expired."
 msgstr "Inloggningslänken är ogiltig eller har gått ut."
 
-#: lib/taamol_web/live/admin_access_live.ex:60
+#: lib/taamol_web/live/dashboard_live/users.ex:290
 #, elixir-autogen, elixir-format
 msgid "Make admin"
 msgstr "Gör till administratör"
 
-#: lib/taamol_web/live/admin_access_live.ex:58
+#: lib/taamol_web/live/dashboard_live/users.ex:288
 #, elixir-autogen, elixir-format
 msgid "Make this user an administrator?"
 msgstr "Göra denna användare till administratör?"
 
-#: lib/taamol_web/live/dashboard_live/dashboard_start_live.ex:36
-#, elixir-autogen, elixir-format
-msgid "Manage access"
-msgstr "Hantera åtkomst"
-
-#: lib/taamol_web/live/user_live/settings.ex:15
+#: lib/taamol_web/live/user_live/settings.ex:21
 #, elixir-autogen, elixir-format
 msgid "Manage your name, email address and password settings"
 msgstr "Hantera ditt namn, din e-postadress och ditt lösenord"
@@ -357,15 +280,10 @@ msgstr "Namnet kunde inte uppdateras. Kontrollera dina uppgifter."
 msgid "Name updated successfully."
 msgstr "Namnet har uppdaterats."
 
-#: lib/taamol_web/live/user_live/settings.ex:75
+#: lib/taamol_web/live/user_live/settings.ex:83
 #, elixir-autogen, elixir-format
 msgid "New password"
 msgstr "Nytt lösenord"
-
-#: lib/taamol_web/live/dashboard_live/dashboard_start_live.ex:79
-#, elixir-autogen, elixir-format
-msgid "Open access management"
-msgstr "Öppna åtkomsthantering"
 
 #: lib/taamol_web/live/user_live/login.ex:83
 #, elixir-autogen, elixir-format
@@ -377,19 +295,14 @@ msgstr "Lösenord"
 msgid "Password updated successfully!"
 msgstr "Lösenordet har uppdaterats!"
 
-#: lib/taamol_web/live/dashboard_live/dashboard_start_live.ex:70
-#, elixir-autogen, elixir-format
-msgid "People and permissions"
-msgstr "Personer och behörigheter"
-
 #: lib/taamol_web/live/article_live/article_list_live.ex:17
 #, elixir-autogen, elixir-format
 msgid "Publication Date"
 msgstr "Publiceringsdatum"
 
 #: lib/taamol_web/components/layouts.ex:130
-#: lib/taamol_web/components/news_components.ex:424
-#: lib/taamol_web/live/menu_live.ex:75
+#: lib/taamol_web/components/layouts.ex:466
+#: lib/taamol_web/live/menu_live.ex:74
 #, elixir-autogen, elixir-format
 msgid "Register"
 msgstr "Registrera dig"
@@ -399,49 +312,35 @@ msgstr "Registrera dig"
 msgid "Register for an account"
 msgstr "Registrera ett konto"
 
-#: lib/taamol_web/live/dashboard_live/dashboard_start_live.ex:47
-#, elixir-autogen, elixir-format
-msgid "Registered users"
-msgstr "Registrerade användare"
-
-#: lib/taamol_web/live/admin_access_live.ex:70
+#: lib/taamol_web/live/dashboard_live/users.ex:300
 #, elixir-autogen, elixir-format
 msgid "Remove admin"
 msgstr "Ta bort administratörsbehörighet"
 
-#: lib/taamol_web/live/admin_access_live.ex:68
+#: lib/taamol_web/live/dashboard_live/users.ex:298
 #, elixir-autogen, elixir-format
 msgid "Remove this user's administrator access?"
 msgstr "Ta bort användarens administratörsbehörighet?"
 
-#: lib/taamol_web/live/dashboard_live/dashboard_start_live.ex:72
-#, elixir-autogen, elixir-format
-msgid "Review administrator roles and control dashboard access."
-msgstr "Granska administratörsroller och hantera åtkomst till kontrollpanelen."
-
-#: lib/taamol_web/live/admin_access_live.ex:82
-#, elixir-autogen, elixir-format
-msgid "Revoke dashboard"
-msgstr "Återkalla åtkomst till kontrollpanelen"
-
-#: lib/taamol_web/live/user_live/settings.ex:88
+#: lib/taamol_web/live/user_live/settings.ex:96
 #, elixir-autogen, elixir-format
 msgid "Save Password"
 msgstr "Spara lösenord"
 
-#: lib/taamol_web/live/user_live/settings.ex:36
+#: lib/taamol_web/live/user_live/settings.ex:42
 #, elixir-autogen, elixir-format
 msgid "Save name"
 msgstr "Spara namn"
 
-#: lib/taamol_web/live/user_live/settings.ex:35
-#: lib/taamol_web/live/user_live/settings.ex:87
+#: lib/taamol_web/live/user_live/settings.ex:41
+#: lib/taamol_web/live/user_live/settings.ex:95
 #, elixir-autogen, elixir-format
 msgid "Saving..."
 msgstr "Sparar..."
 
-#: lib/taamol_web/components/layouts.ex:342
-#: lib/taamol_web/live/menu_live.ex:51
+#: lib/taamol_web/components/layouts.ex:242
+#: lib/taamol_web/components/layouts.ex:632
+#: lib/taamol_web/live/menu_live.ex:50
 #, elixir-autogen, elixir-format
 msgid "Settings"
 msgstr "Inställningar"
@@ -451,7 +350,7 @@ msgstr "Inställningar"
 msgid "Sign up"
 msgstr "Registrera dig"
 
-#: lib/taamol_web/components/layouts.ex:447
+#: lib/taamol_web/components/layouts.ex:737
 #, elixir-autogen, elixir-format
 msgid "Something went wrong!"
 msgstr "Något gick fel!"
@@ -467,7 +366,9 @@ msgid "Tip: If you prefer passwords, you can enable them in the user settings."
 msgstr "Tips: Om du föredrar lösenord kan du aktivera det i användarinställningarna."
 
 #: lib/taamol_web/live/article_live/article_list_live.ex:15
-#: lib/taamol_web/live/event_live/form.ex:111
+#: lib/taamol_web/live/dashboard_live/article_form.ex:184
+#: lib/taamol_web/live/dashboard_live/event_form.ex:122
+#: lib/taamol_web/live/dashboard_live/overview.ex:140
 #, elixir-autogen, elixir-format
 msgid "Title"
 msgstr "Titel"
@@ -477,17 +378,13 @@ msgstr "Titel"
 msgid "To see sent emails, visit"
 msgstr "För att se skickade e-postmeddelanden, besök"
 
-#: lib/taamol_web/live/dashboard_live/dashboard_start_live.ex:43
-#, elixir-autogen, elixir-format
-msgid "Total accounts"
-msgstr "Totalt antal konton"
-
 #: lib/taamol/accounts/user_notifier.ex:28
 #, elixir-autogen, elixir-format
 msgid "Update email instructions"
 msgstr "Instruktioner för att ändra e-postadress"
 
-#: lib/taamol_web/live/admin_access_live.ex:42
+#: lib/taamol_web/live/dashboard_live/users.ex:177
+#: lib/taamol_web/live/dashboard_live/users.ex:212
 #, elixir-autogen, elixir-format
 msgid "User"
 msgstr "Användare"
@@ -497,7 +394,7 @@ msgstr "Användare"
 msgid "User confirmed successfully."
 msgstr "Användaren har bekräftats."
 
-#: lib/taamol_web/components/layouts.ex:432
+#: lib/taamol_web/components/layouts.ex:722
 #, elixir-autogen, elixir-format
 msgid "We can't find the internet"
 msgstr "Vi hittar ingen internetanslutning"
@@ -523,11 +420,6 @@ msgstr "Välkommen, %{email}"
 msgid "You are not authorized to access this page."
 msgstr "Du har inte behörighet att öppna den här sidan."
 
-#: lib/taamol_web/live/admin_access_live.ex:106
-#, elixir-autogen, elixir-format
-msgid "You are not authorized to manage access."
-msgstr "Du har inte behörighet att hantera åtkomst."
-
 #: lib/taamol_web/live/user_live/login.ex:31
 #, elixir-autogen, elixir-format
 msgid "You are running the local mail adapter."
@@ -540,7 +432,7 @@ msgid "You must log in to access this page."
 msgstr "Du måste logga in för att öppna den här sidan."
 
 #: lib/taamol_web/controllers/user_session_controller.ex:79
-#: lib/taamol_web/live/user_live/settings.ex:152
+#: lib/taamol_web/live/user_live/settings.ex:161
 #: lib/taamol_web/user_auth.ex:250
 #, elixir-autogen, elixir-format
 msgid "You must re-authenticate to access this page."
@@ -566,103 +458,105 @@ msgstr "eller"
 msgid "the mailbox page"
 msgstr "brevlådan"
 
-#: lib/taamol_web/components/layouts.ex:771
+#: lib/taamol_web/components/layouts.ex:1061
 #, elixir-autogen, elixir-format
 msgid "Allow location access in your browser to see prayer times for where you are."
 msgstr "Tillåt platsåtkomst i webbläsaren för att se bönetider där du befinner dig."
 
-#: lib/taamol_web/components/layouts.ex:569
+#: lib/taamol_web/components/layouts.ex:859
 #, elixir-autogen, elixir-format
 msgid "Asr"
 msgstr "Asr"
 
-#: lib/taamol_web/components/layouts.ex:568
+#: lib/taamol_web/components/layouts.ex:858
 #, elixir-autogen, elixir-format
 msgid "Dhuhr"
 msgstr "Dhuhr"
 
-#: lib/taamol_web/components/layouts.ex:566
+#: lib/taamol_web/components/layouts.ex:856
 #, elixir-autogen, elixir-format
 msgid "Fajr"
 msgstr "Fajr"
 
-#: lib/taamol_web/components/layouts.ex:571
+#: lib/taamol_web/components/layouts.ex:861
 #, elixir-autogen, elixir-format
 msgid "Isha"
 msgstr "Isha"
 
-#: lib/taamol_web/components/layouts.ex:570
+#: lib/taamol_web/components/layouts.ex:860
 #, elixir-autogen, elixir-format
 msgid "Maghrib"
 msgstr "Maghrib"
 
-#: lib/taamol_web/components/layouts.ex:589
-#: lib/taamol_web/components/news_components.ex:357
+#: lib/taamol_web/components/layouts.ex:879
+#: lib/taamol_web/components/news_components.ex:350
+#: lib/taamol_web/live/dashboard_live/site_settings.ex:85
 #, elixir-autogen, elixir-format
 msgid "Prayer times"
 msgstr "Bönetider"
 
-#: lib/taamol_web/components/layouts.ex:774
+#: lib/taamol_web/components/layouts.ex:1064
 #, elixir-autogen, elixir-format
 msgid "Prayer times could not be loaded. Click to try again."
 msgstr "Bönetiderna kunde inte laddas. Klicka för att försöka igen."
 
-#: lib/taamol_web/components/layouts.ex:567
+#: lib/taamol_web/components/layouts.ex:857
 #, elixir-autogen, elixir-format
 msgid "Sunrise"
 msgstr "Soluppgång"
 
-#: lib/taamol_web/components/layouts.ex:639
+#: lib/taamol_web/components/layouts.ex:929
 #, elixir-autogen, elixir-format
 msgid "Day %{day} of %{total}"
 msgstr "Dag %{day} av %{total}"
 
-#: lib/taamol_web/components/layouts.ex:655
+#: lib/taamol_web/components/layouts.ex:945
 #, elixir-autogen, elixir-format
 msgid "Iftar"
 msgstr "Iftar"
 
-#: lib/taamol_web/components/layouts.ex:635
+#: lib/taamol_web/components/layouts.ex:925
 #, elixir-autogen, elixir-format
 msgid "Ramadan Mubarak"
 msgstr "Ramadan Mubarak"
 
-#: lib/taamol_web/components/layouts.ex:651
+#: lib/taamol_web/components/layouts.ex:941
 #, elixir-autogen, elixir-format
 msgid "Suhoor"
 msgstr "Suhoor"
 
-#: lib/taamol_web/components/layouts.ex:663
+#: lib/taamol_web/components/layouts.ex:953
 #, elixir-autogen, elixir-format
 msgid "Until iftar"
 msgstr "Tills iftar"
 
-#: lib/taamol_web/components/layouts.ex:662
+#: lib/taamol_web/components/layouts.ex:952
 #, elixir-autogen, elixir-format
 msgid "Until suhoor ends"
 msgstr "Tills suhoor slutar"
 
-#: lib/taamol_web/components/layouts.ex:739
+#: lib/taamol_web/components/layouts.ex:1029
 #, elixir-autogen, elixir-format
 msgid "until %{prayer}"
 msgstr "till %{prayer}"
 
-#: lib/taamol_web/components/layouts.ex:473
+#: lib/taamol_web/components/layouts.ex:763
 #, elixir-autogen, elixir-format
 msgid "English"
 msgstr "Engelska"
 
-#: lib/taamol_web/components/layouts.ex:474
+#: lib/taamol_web/components/layouts.ex:764
 #, elixir-autogen, elixir-format
 msgid "Persian"
 msgstr "Persiska"
 
-#: lib/taamol_web/components/layouts.ex:475
+#: lib/taamol_web/components/layouts.ex:765
 #, elixir-autogen, elixir-format
 msgid "Swedish"
 msgstr "Svenska"
 
 #: lib/taamol_web/live/category_live.ex:84
+#: lib/taamol_web/live/dashboard_live/articles.ex:105
 #, elixir-autogen, elixir-format
 msgid "%{count} article"
 msgid_plural "%{count} articles"
@@ -683,7 +577,7 @@ msgid_plural "%{count} min ago"
 msgstr[0] "%{count} min sedan"
 msgstr[1] "%{count} min sedan"
 
-#: lib/taamol_web/components/news_components.ex:310
+#: lib/taamol_web/components/news_components.ex:300
 #, elixir-autogen, elixir-format
 msgid "All"
 msgstr "Alla"
@@ -708,8 +602,7 @@ msgstr "Bläddra bland nyheterna efter ämne."
 msgid "Community"
 msgstr "Gemenskap"
 
-#: lib/taamol_web/components/news_components.ex:416
-#: lib/taamol_web/live/menu_live.ex:58
+#: lib/taamol_web/live/menu_live.ex:57
 #, elixir-autogen, elixir-format
 msgid "Create an account to comment, like articles and take part in community activities."
 msgstr "Skapa ett konto för att kommentera, gilla artiklar och delta i gemenskapens aktiviteter."
@@ -719,7 +612,7 @@ msgstr "Skapa ett konto för att kommentera, gilla artiklar och delta i gemenska
 msgid "Culture"
 msgstr "Kultur"
 
-#: lib/taamol_web/components/layouts.ex:395
+#: lib/taamol_web/components/layouts.ex:685
 #, elixir-autogen, elixir-format
 msgid "Dark mode"
 msgstr "Mörkt läge"
@@ -746,7 +639,7 @@ msgstr "Hälsa"
 
 #: lib/taamol_web/components/layouts.ex:67
 #: lib/taamol_web/components/layouts.ex:144
-#: lib/taamol_web/components/layouts.ex:172
+#: lib/taamol_web/components/layouts.ex:174
 #: lib/taamol_web/live/home_live.ex:20
 #, elixir-autogen, elixir-format
 msgid "Home"
@@ -757,8 +650,8 @@ msgstr "Hem"
 msgid "January"
 msgstr "januari"
 
-#: lib/taamol_web/components/news_components.ex:413
-#: lib/taamol_web/live/menu_live.ex:56
+#: lib/taamol_web/components/layouts.ex:397
+#: lib/taamol_web/live/menu_live.ex:55
 #, elixir-autogen, elixir-format
 msgid "Join the community"
 msgstr "Gå med i gemenskapen"
@@ -778,12 +671,13 @@ msgstr "juni"
 msgid "Just now"
 msgstr "Just nu"
 
-#: lib/taamol_web/live/home_live.ex:97
+#: lib/taamol_web/components/layouts.ex:430
+#: lib/taamol_web/live/home_live.ex:96
 #, elixir-autogen, elixir-format
 msgid "Latest news"
 msgstr "Senaste nytt"
 
-#: lib/taamol_web/components/layouts.ex:404
+#: lib/taamol_web/components/layouts.ex:694
 #, elixir-autogen, elixir-format
 msgid "Light mode"
 msgstr "Ljust läge"
@@ -793,13 +687,13 @@ msgstr "Ljust läge"
 msgid "Link copied"
 msgstr "Länken kopierad"
 
-#: lib/taamol_web/live/category_live.ex:150
-#: lib/taamol_web/live/home_live.ex:185
+#: lib/taamol_web/live/category_live.ex:149
+#: lib/taamol_web/live/home_live.ex:184
 #, elixir-autogen, elixir-format
 msgid "Loading…"
 msgstr "Laddar…"
 
-#: lib/taamol_web/components/layouts.ex:166
+#: lib/taamol_web/components/layouts.ex:168
 #, elixir-autogen, elixir-format
 msgid "Main"
 msgstr "Huvudmeny"
@@ -819,28 +713,34 @@ msgstr "maj"
 msgid "More"
 msgstr "Mer"
 
-#: lib/taamol_web/live/article_live/show.ex:149
-#: lib/taamol_web/live/home_live.ex:113
+#: lib/taamol_web/live/article_live/show.ex:146
+#: lib/taamol_web/live/home_live.ex:112
 #, elixir-autogen, elixir-format
 msgid "Most read"
 msgstr "Mest läst"
 
-#: lib/taamol_web/live/home_live.ex:156
+#: lib/taamol_web/components/layouts.ex:232
+#: lib/taamol_web/live/dashboard_live/article_form.ex:168
+#: lib/taamol_web/live/dashboard_live/articles.ex:22
+#: lib/taamol_web/live/dashboard_live/articles.ex:101
+#: lib/taamol_web/live/dashboard_live/articles.ex:104
+#: lib/taamol_web/live/home_live.ex:155
 #, elixir-autogen, elixir-format
 msgid "News"
 msgstr "Nyheter"
 
 #: lib/taamol_web/components/layouts.ex:60
+#: lib/taamol_web/components/layouts.ex:384
 #, elixir-autogen, elixir-format
 msgid "News for our community"
 msgstr "Nyheter för vår gemenskap"
 
-#: lib/taamol_web/live/home_live.ex:69
+#: lib/taamol_web/live/home_live.ex:68
 #, elixir-autogen, elixir-format
 msgid "No news yet"
 msgstr "Inga nyheter än"
 
-#: lib/taamol_web/live/home_live.ex:124
+#: lib/taamol_web/live/home_live.ex:123
 #, elixir-autogen, elixir-format
 msgid "No other articles yet."
 msgstr "Inga andra artiklar än."
@@ -855,18 +755,18 @@ msgstr "november"
 msgid "October"
 msgstr "oktober"
 
-#: lib/taamol_web/live/menu_live.ex:83
+#: lib/taamol_web/live/menu_live.ex:82
 #, elixir-autogen, elixir-format
 msgid "Preferences"
 msgstr "Inställningar"
 
-#: lib/taamol_web/components/layouts.ex:195
+#: lib/taamol_web/components/layouts.ex:197
 #: lib/taamol_web/live/menu_live.ex:12
 #, elixir-autogen, elixir-format
 msgid "Profile"
 msgstr "Profil"
 
-#: lib/taamol_web/live/home_live.ex:71
+#: lib/taamol_web/live/home_live.ex:70
 #, elixir-autogen, elixir-format
 msgid "Published articles will appear here."
 msgstr "Publicerade artiklar visas här."
@@ -886,8 +786,8 @@ msgstr "september"
 msgid "Share"
 msgstr "Dela"
 
-#: lib/taamol_web/live/category_live.ex:153
-#: lib/taamol_web/live/home_live.ex:188
+#: lib/taamol_web/live/category_live.ex:152
+#: lib/taamol_web/live/home_live.ex:187
 #, elixir-autogen, elixir-format
 msgid "Show more"
 msgstr "Visa fler"
@@ -907,12 +807,14 @@ msgstr "Sport"
 msgid "Sweden"
 msgstr "Sverige"
 
-#: lib/taamol_web/live/menu_live.ex:89
+#: lib/taamol_web/live/menu_live.ex:88
 #, elixir-autogen, elixir-format
 msgid "Theme"
 msgstr "Tema"
 
-#: lib/taamol_web/components/news_components.ex:199
+#: lib/taamol_web/components/news_components.ex:189
+#: lib/taamol_web/live/dashboard_live/article_form.ex:415
+#: lib/taamol_web/live/dashboard_live/articles.ex:216
 #, elixir-autogen, elixir-format
 msgid "Top story"
 msgstr "Huvudnyhet"
@@ -934,42 +836,43 @@ msgstr "Ungdom"
 
 #: lib/taamol_web/components/layouts.ex:64
 #: lib/taamol_web/components/layouts.ex:139
-#: lib/taamol_web/components/layouts.ex:181
-#: lib/taamol_web/components/news_components.ex:395
+#: lib/taamol_web/components/layouts.ex:183
+#: lib/taamol_web/components/layouts.ex:407
 #: lib/taamol_web/live/category_live.ex:25
 #: lib/taamol_web/live/category_live.ex:66
 #, elixir-autogen, elixir-format
 msgid "Categories"
 msgstr "Kategorier"
 
-#: lib/taamol_web/live/article_live/show.ex:129
+#: lib/taamol_web/live/article_live/show.ex:126
 #, elixir-autogen, elixir-format
 msgid "More from %{category}"
 msgstr "Mer från %{category}"
 
-#: lib/taamol_web/live/category_live.ex:124
-#: lib/taamol_web/live/home_live.ex:170
+#: lib/taamol_web/live/category_live.ex:123
+#: lib/taamol_web/live/home_live.ex:169
 #, elixir-autogen, elixir-format
 msgid "No articles in this category yet."
 msgstr "Inga artiklar i den här kategorin än."
 
-#: lib/taamol_web/live/article_live/show.ex:137
+#: lib/taamol_web/live/article_live/show.ex:134
 #, elixir-autogen, elixir-format
 msgid "No other articles in this category yet."
 msgstr "Inga andra artiklar i den här kategorin än."
 
-#: lib/taamol_web/live/calendar_live.ex:333
+#: lib/taamol_web/live/calendar_live.ex:341
 #, elixir-autogen, elixir-format
 msgid "+%{count} more"
 msgstr "+%{count} till"
 
 #: lib/taamol_web/live/calendar_live.ex:149
-#: lib/taamol_web/live/event_live/form.ex:28
+#: lib/taamol_web/live/dashboard_live/event_form.ex:30
+#: lib/taamol_web/live/dashboard_live/events.ex:100
 #, elixir-autogen, elixir-format
 msgid "Add event"
 msgstr "Lägg till händelse"
 
-#: lib/taamol_web/live/event_live/form.ex:118
+#: lib/taamol_web/live/dashboard_live/event_form.ex:129
 #, elixir-autogen, elixir-format
 msgid "All day"
 msgstr "Heldag"
@@ -1071,9 +974,10 @@ msgstr "Profetens och imam Ja'far al-Sadiqs födelse"
 
 #: lib/taamol_web/components/calendar_components.ex:173
 #: lib/taamol_web/components/layouts.ex:71
-#: lib/taamol_web/components/layouts.ex:190
+#: lib/taamol_web/components/layouts.ex:192
+#: lib/taamol_web/components/layouts.ex:433
 #: lib/taamol_web/live/calendar_live.ex:18
-#: lib/taamol_web/live/event_live/form.ex:99
+#: lib/taamol_web/live/dashboard_live/site_settings.ex:64
 #, elixir-autogen, elixir-format
 msgid "Calendar"
 msgstr "Kalender"
@@ -1103,12 +1007,17 @@ msgstr "Khadijas bortgång"
 msgid "Death of Lady Zaynab"
 msgstr "Zaynabs bortgång"
 
-#: lib/taamol_web/live/event_live/form.ex:135
+#: lib/taamol_web/live/dashboard_live/article_form.ex:403
+#: lib/taamol_web/live/dashboard_live/articles.ex:257
+#: lib/taamol_web/live/dashboard_live/event_form.ex:151
+#: lib/taamol_web/live/dashboard_live/events.ex:170
+#: lib/taamol_web/live/dashboard_live/users.ex:323
 #, elixir-autogen, elixir-format
 msgid "Delete"
 msgstr "Ta bort"
 
-#: lib/taamol_web/live/event_live/form.ex:132
+#: lib/taamol_web/live/dashboard_live/event_form.ex:148
+#: lib/taamol_web/live/dashboard_live/events.ex:169
 #, elixir-autogen, elixir-format
 msgid "Delete this event?"
 msgstr "Ta bort den här händelsen?"
@@ -1118,7 +1027,7 @@ msgstr "Ta bort den här händelsen?"
 msgid "Demise of the Prophet and martyrdom of Imam Hasan"
 msgstr "Profetens bortgång och imam Hasans martyrskap"
 
-#: lib/taamol_web/live/event_live/form.ex:124
+#: lib/taamol_web/live/dashboard_live/event_form.ex:140
 #, elixir-autogen, elixir-format
 msgid "Description"
 msgstr "Beskrivning"
@@ -1133,12 +1042,15 @@ msgstr "Dhu al-Hijjah"
 msgid "Dhu al-Qadah"
 msgstr "Dhu al-Qadah"
 
-#: lib/taamol_web/live/calendar_live.ex:213
+#: lib/taamol_web/live/calendar_live.ex:221
+#: lib/taamol_web/live/dashboard_live/articles.ex:246
+#: lib/taamol_web/live/dashboard_live/events.ex:159
+#: lib/taamol_web/live/dashboard_live/users.ex:280
 #, elixir-autogen, elixir-format
 msgid "Edit"
 msgstr "Redigera"
 
-#: lib/taamol_web/live/event_live/form.ex:36
+#: lib/taamol_web/live/dashboard_live/event_form.ex:38
 #, elixir-autogen, elixir-format
 msgid "Edit event"
 msgstr "Redigera händelse"
@@ -1163,17 +1075,18 @@ msgstr "Eid al-Ghadir"
 msgid "Eid al-Mubahala"
 msgstr "Eid al-Mubahala"
 
-#: lib/taamol_web/live/event_live/form.ex:121
+#: lib/taamol_web/live/dashboard_live/event_form.ex:137
 #, elixir-autogen, elixir-format
 msgid "Ends (optional)"
 msgstr "Slutar (valfritt)"
 
-#: lib/taamol_web/live/event_live/form.ex:77
+#: lib/taamol_web/live/dashboard_live/event_form.ex:82
+#: lib/taamol_web/live/dashboard_live/events.ex:55
 #, elixir-autogen, elixir-format
 msgid "Event deleted."
 msgstr "Händelsen togs bort."
 
-#: lib/taamol_web/live/event_live/form.ex:61
+#: lib/taamol_web/live/dashboard_live/event_form.ex:63
 #, elixir-autogen, elixir-format
 msgid "Event saved."
 msgstr "Händelsen sparades."
@@ -1208,7 +1121,7 @@ msgstr "Jumada al-Thani"
 msgid "Jumada al-Ula"
 msgstr "Jumada al-Ula"
 
-#: lib/taamol_web/live/event_live/form.ex:123
+#: lib/taamol_web/live/dashboard_live/event_form.ex:139
 #, elixir-autogen, elixir-format
 msgid "Location"
 msgstr "Plats"
@@ -1308,12 +1221,12 @@ msgstr "Qadr-natten (23:e)"
 msgid "Nothing coming up."
 msgstr "Inget på gång."
 
-#: lib/taamol_web/live/calendar_live.ex:191
+#: lib/taamol_web/live/calendar_live.ex:199
 #, elixir-autogen, elixir-format
 msgid "Nothing on this day."
 msgstr "Inget den här dagen."
 
-#: lib/taamol_web/live/calendar_live.ex:249
+#: lib/taamol_web/live/calendar_live.ex:257
 #, elixir-autogen, elixir-format
 msgid "Nothing this month."
 msgstr "Inget den här månaden."
@@ -1358,12 +1271,15 @@ msgstr "Safar"
 msgid "Sat"
 msgstr "lör"
 
-#: lib/taamol_web/live/event_live/form.ex:143
+#: lib/taamol_web/live/dashboard_live/event_form.ex:159
 #, elixir-autogen, elixir-format
 msgid "Save event"
 msgstr "Spara händelse"
 
-#: lib/taamol_web/live/event_live/form.ex:140
+#: lib/taamol_web/live/dashboard_live/article_form.ex:383
+#: lib/taamol_web/live/dashboard_live/event_form.ex:156
+#: lib/taamol_web/live/dashboard_live/site_settings.ex:101
+#: lib/taamol_web/live/dashboard_live/user_form.ex:116
 #, elixir-autogen, elixir-format
 msgid "Saving…"
 msgstr "Sparar…"
@@ -1378,7 +1294,7 @@ msgstr "Shaban"
 msgid "Shawwal"
 msgstr "Shawwal"
 
-#: lib/taamol_web/live/event_live/form.ex:120
+#: lib/taamol_web/live/dashboard_live/event_form.ex:134
 #, elixir-autogen, elixir-format
 msgid "Starts"
 msgstr "Börjar"
@@ -1398,12 +1314,13 @@ msgstr "Taamol-evenemang"
 msgid "Tasu'a"
 msgstr "Tasu'a"
 
-#: lib/taamol_web/live/event_live/form.ex:81
+#: lib/taamol_web/live/dashboard_live/event_form.ex:86
+#: lib/taamol_web/live/dashboard_live/events.ex:58
 #, elixir-autogen, elixir-format
 msgid "The event could not be deleted."
 msgstr "Händelsen kunde inte tas bort."
 
-#: lib/taamol_web/live/calendar_live.ex:247
+#: lib/taamol_web/live/calendar_live.ex:255
 #, elixir-autogen, elixir-format
 msgid "This month"
 msgstr "Den här månaden"
@@ -1414,7 +1331,7 @@ msgid "Thu"
 msgstr "tors"
 
 #: lib/taamol_web/live/calendar_live.ex:122
-#: lib/taamol_web/live/calendar_live.ex:183
+#: lib/taamol_web/live/calendar_live.ex:189
 #, elixir-autogen, elixir-format
 msgid "Today"
 msgstr "Idag"
@@ -1424,12 +1341,14 @@ msgstr "Idag"
 msgid "Tue"
 msgstr "tis"
 
-#: lib/taamol_web/live/event_live/form.ex:115
+#: lib/taamol_web/live/dashboard_live/event_form.ex:126
+#: lib/taamol_web/live/dashboard_live/events.ex:123
 #, elixir-autogen, elixir-format
 msgid "Type"
 msgstr "Typ"
 
 #: lib/taamol_web/components/calendar_components.ex:167
+#: lib/taamol_web/live/dashboard_live/events.ex:108
 #, elixir-autogen, elixir-format
 msgid "Upcoming"
 msgstr "Kommande"
@@ -1439,7 +1358,721 @@ msgstr "Kommande"
 msgid "Wed"
 msgstr "ons"
 
-#: lib/taamol_web/live/event_live/form.ex:68
+#: lib/taamol_web/live/dashboard_live/event_form.ex:72
 #, elixir-autogen, elixir-format
 msgid "You are not allowed to do that."
 msgstr "Du har inte behörighet att göra det."
+
+#: lib/taamol_web/live/dashboard_live/users.ex:124
+#, elixir-autogen, elixir-format
+msgid "%{count} account"
+msgid_plural "%{count} accounts"
+msgstr[0] "%{count} konto"
+msgstr[1] "%{count} konton"
+
+#: lib/taamol_web/live/dashboard_live/overview.ex:79
+#, elixir-autogen, elixir-format
+msgid "%{count} drafts"
+msgstr "%{count} utkast"
+
+#: lib/taamol_web/live/dashboard_live/overview.ex:86
+#, elixir-autogen, elixir-format
+msgid "%{count} new articles this week"
+msgstr "%{count} nya artiklar denna vecka"
+
+#: lib/taamol_web/live/dashboard_live/overview.ex:72
+#, elixir-autogen, elixir-format
+msgid "+%{count} this week"
+msgstr "+%{count} denna vecka"
+
+#: lib/taamol_web/live/dashboard_live/site_settings.ex:76
+#, elixir-autogen, elixir-format
+msgid "1 day earlier"
+msgstr "1 dag tidigare"
+
+#: lib/taamol_web/live/dashboard_live/site_settings.ex:78
+#, elixir-autogen, elixir-format
+msgid "1 day later"
+msgstr "1 dag senare"
+
+#: lib/taamol_web/live/dashboard_live/site_settings.ex:75
+#, elixir-autogen, elixir-format
+msgid "2 days earlier"
+msgstr "2 dagar tidigare"
+
+#: lib/taamol_web/live/dashboard_live/site_settings.ex:79
+#, elixir-autogen, elixir-format
+msgid "2 days later"
+msgstr "2 dagar senare"
+
+#: lib/taamol_web/live/dashboard_live/article_form.ex:185
+#, elixir-autogen, elixir-format
+msgid "A clear, short headline"
+msgstr "En tydlig, kort rubrik"
+
+#: lib/taamol_web/live/dashboard_live/users.ex:82
+#, elixir-autogen, elixir-format
+msgid "Access could not be updated."
+msgstr "Åtkomsten kunde inte uppdateras."
+
+#: lib/taamol_web/components/layouts.ex:246
+#: lib/taamol_web/components/layouts.ex:452
+#: lib/taamol_web/live/dashboard_live/overview.ex:181
+#: lib/taamol_web/live/user_live/settings.ex:15
+#, elixir-autogen, elixir-format
+msgid "Account settings"
+msgstr "Kontoinställningar"
+
+#: lib/taamol_web/components/layouts.ex:436
+#: lib/taamol_web/live/dashboard_live/articles.ex:158
+#, elixir-autogen, elixir-format
+msgid "All categories"
+msgstr "Alla kategorier"
+
+#: lib/taamol_web/live/dashboard_live/overview.ex:133
+#, elixir-autogen, elixir-format
+msgid "All news"
+msgstr "Alla nyheter"
+
+#: lib/taamol_web/live/dashboard_live/users.ex:163
+#, elixir-autogen, elixir-format
+msgid "All roles"
+msgstr "Alla roller"
+
+#: lib/taamol_web/live/dashboard_live/articles.ex:144
+#, elixir-autogen, elixir-format
+msgid "All statuses"
+msgstr "Alla statusar"
+
+#: lib/taamol_web/live/dashboard_live/articles.ex:174
+#, elixir-autogen, elixir-format
+msgid "Article"
+msgstr "Artikel"
+
+#: lib/taamol_web/live/dashboard_live/article_form.ex:98
+#, elixir-autogen, elixir-format
+msgid "Article created."
+msgstr "Artikeln skapades."
+
+#: lib/taamol_web/live/dashboard_live/article_form.ex:122
+#: lib/taamol_web/live/dashboard_live/articles.ex:88
+#, elixir-autogen, elixir-format
+msgid "Article deleted."
+msgstr "Artikeln togs bort."
+
+#: lib/taamol_web/live/dashboard_live/article_form.ex:41
+#, elixir-autogen, elixir-format
+msgid "Article not found."
+msgstr "Artikeln hittades inte."
+
+#: lib/taamol_web/live/dashboard_live/article_form.ex:107
+#, elixir-autogen, elixir-format
+msgid "Article saved."
+msgstr "Artikeln sparades."
+
+#: lib/taamol_web/live/dashboard_live/overview.ex:85
+#, elixir-autogen, elixir-format
+msgid "Article views"
+msgstr "Artikelvisningar"
+
+#: lib/taamol_web/live/dashboard_live/article_form.ex:419
+#, elixir-autogen, elixir-format
+msgid "Author (optional)"
+msgstr "Författare (valfritt)"
+
+#: lib/taamol_web/components/layouts.ex:300
+#, elixir-autogen, elixir-format
+msgid "Back to the site"
+msgstr "Tillbaka till webbplatsen"
+
+#: lib/taamol_web/live/dashboard_live/article_form.ex:205
+#, elixir-autogen, elixir-format
+msgid "Bold"
+msgstr "Fetstil"
+
+#: lib/taamol_web/components/layouts.ex:316
+#, elixir-autogen, elixir-format
+msgid "Breadcrumb"
+msgstr "Brödsmulor"
+
+#: lib/taamol_web/live/dashboard_live/site_settings.ex:92
+#, elixir-autogen, elixir-format
+msgid "Calculation method"
+msgstr "Beräkningsmetod"
+
+#: lib/taamol_web/components/layouts.ex:234
+#: lib/taamol_web/live/dashboard_live/event_form.ex:110
+#: lib/taamol_web/live/dashboard_live/events.ex:19
+#: lib/taamol_web/live/dashboard_live/events.ex:82
+#: lib/taamol_web/live/dashboard_live/events.ex:85
+#, elixir-autogen, elixir-format
+msgid "Calendar events"
+msgstr "Kalenderhändelser"
+
+#: lib/taamol_web/live/dashboard_live/article_form.ex:412
+#: lib/taamol_web/live/dashboard_live/articles.ex:176
+#: lib/taamol_web/live/dashboard_live/overview.ex:141
+#, elixir-autogen, elixir-format
+msgid "Category"
+msgstr "Kategori"
+
+#: lib/taamol_web/live/dashboard_live/article_form.ex:152
+#, elixir-autogen, elixir-format
+msgid "Choose one image at a time."
+msgstr "Välj en bild i taget."
+
+#: lib/taamol_web/live/dashboard_live/article_form.ex:214
+#, elixir-autogen, elixir-format
+msgid "Code"
+msgstr "Kod"
+
+#: lib/taamol_web/live/dashboard_live/overview.ex:92
+#, elixir-autogen, elixir-format
+msgid "Coming up"
+msgstr "På gång"
+
+#: lib/taamol_web/live/dashboard_live/overview.ex:173
+#, elixir-autogen, elixir-format
+msgid "Comments"
+msgstr "Kommentarer"
+
+#: lib/taamol_web/live/dashboard_live/users.ex:226
+#, elixir-autogen, elixir-format
+msgid "Confirmed"
+msgstr "Bekräftad"
+
+#: lib/taamol_web/components/layouts.ex:230
+#, elixir-autogen, elixir-format
+msgid "Content"
+msgstr "Innehåll"
+
+#: lib/taamol_web/live/dashboard_live/article_form.ex:425
+#, elixir-autogen, elixir-format
+msgid "Cover image"
+msgstr "Omslagsbild"
+
+#: lib/taamol_web/live/dashboard_live/user_form.ex:119
+#, elixir-autogen, elixir-format
+msgid "Create user"
+msgstr "Skapa användare"
+
+#: lib/taamol_web/live/dashboard_live/users.ex:320
+#, elixir-autogen, elixir-format
+msgid "Delete this account? This can't be undone."
+msgstr "Ta bort kontot? Det går inte att ångra."
+
+#: lib/taamol_web/live/dashboard_live/article_form.ex:400
+#: lib/taamol_web/live/dashboard_live/articles.ex:256
+#, elixir-autogen, elixir-format
+msgid "Delete this article and its comments?"
+msgstr "Ta bort artikeln och dess kommentarer?"
+
+#: lib/taamol_web/components/dashboard_components.ex:165
+#: lib/taamol_web/live/dashboard_live/article_form.ex:370
+#, elixir-autogen, elixir-format
+msgid "Draft"
+msgstr "Utkast"
+
+#: lib/taamol_web/live/dashboard_live/article_form.ex:470
+#, elixir-autogen, elixir-format
+msgid "Drop an image here or click to choose"
+msgstr "Släpp en bild här eller klicka för att välja"
+
+#: lib/taamol_web/live/dashboard_live/article_form.ex:53
+#, elixir-autogen, elixir-format
+msgid "Edit article"
+msgstr "Redigera artikel"
+
+#: lib/taamol_web/live/dashboard_live/user_form.ex:24
+#, elixir-autogen, elixir-format
+msgid "Edit user"
+msgstr "Redigera användare"
+
+#: lib/taamol_web/live/dashboard_live/events.ex:120
+#, elixir-autogen, elixir-format
+msgid "Event"
+msgstr "Händelse"
+
+#: lib/taamol_web/components/layouts.ex:226
+#, elixir-autogen, elixir-format
+msgid "General"
+msgstr "Allmänt"
+
+#: lib/taamol_web/live/dashboard_live/article_form.ex:207
+#, elixir-autogen, elixir-format
+msgid "Heading"
+msgstr "Rubrik"
+
+#: lib/taamol_web/live/dashboard_live/overview.ex:51
+#, elixir-autogen, elixir-format
+msgid "Here is what is happening in the community."
+msgstr "Det här händer i gemenskapen."
+
+#: lib/taamol_web/live/dashboard_live/users.ex:310
+#, elixir-autogen, elixir-format
+msgid "Hide statistics"
+msgstr "Dölj statistik"
+
+#: lib/taamol_web/live/dashboard_live/site_settings.ex:73
+#, elixir-autogen, elixir-format
+msgid "Hijri date adjustment"
+msgstr "Justering av hijri-datum"
+
+#: lib/taamol_web/live/dashboard_live/site_settings.ex:66
+#, elixir-autogen, elixir-format
+msgid "Hijri dates follow the Umm al-Qura calendar. If the new moon is sighted a day earlier or later where the community lives, shift all Hijri dates and holidays here."
+msgstr "Hijri-datum följer Umm al-Qura-kalendern. Om nymånen siktas en dag tidigare eller senare där gemenskapen bor kan du flytta alla hijri-datum och högtider här."
+
+#: lib/taamol_web/live/dashboard_live/overview.ex:93
+#, elixir-autogen, elixir-format
+msgid "Holidays and events in the next 30 days"
+msgstr "Högtider och händelser de kommande 30 dagarna"
+
+#: lib/taamol_web/live/dashboard_live/events.ex:86
+#, elixir-autogen, elixir-format
+msgid "Holidays are added automatically. Add Taamol community events here."
+msgstr "Högtider läggs till automatiskt. Lägg till Taamols evenemang här."
+
+#: lib/taamol_web/live/dashboard_live/article_form.ex:218
+#, elixir-autogen, elixir-format
+msgid "Insert image"
+msgstr "Infoga bild"
+
+#: lib/taamol_web/live/dashboard_live/users.ex:232
+#, elixir-autogen, elixir-format
+msgid "Invited"
+msgstr "Inbjuden"
+
+#: lib/taamol_web/live/dashboard_live/article_form.ex:206
+#, elixir-autogen, elixir-format
+msgid "Italic"
+msgstr "Kursiv"
+
+#: lib/taamol_web/live/dashboard_live/article_form.ex:471
+#, elixir-autogen, elixir-format
+msgid "JPG, PNG, WebP or GIF, up to 8 MB"
+msgstr "JPG, PNG, WebP eller GIF, högst 8 MB"
+
+#: lib/taamol_web/live/dashboard_live/users.ex:183
+#, elixir-autogen, elixir-format
+msgid "Joined"
+msgstr "Gick med"
+
+#: lib/taamol_web/live/dashboard_live/overview.ex:169
+#, elixir-autogen, elixir-format
+msgid "Liked articles"
+msgstr "Gillade artiklar"
+
+#: lib/taamol_web/live/dashboard_live/article_form.ex:210
+#, elixir-autogen, elixir-format
+msgid "Link"
+msgstr "Länk"
+
+#: lib/taamol_web/live/dashboard_live/article_form.ex:212
+#, elixir-autogen, elixir-format
+msgid "List"
+msgstr "Lista"
+
+#: lib/taamol_web/live/dashboard_live/article_form.ex:341
+#, elixir-autogen, elixir-format
+msgid "Markdown help"
+msgstr "Hjälp med Markdown"
+
+#: lib/taamol_web/components/layouts.ex:310
+#, elixir-autogen, elixir-format
+msgid "Menu"
+msgstr "Meny"
+
+#: lib/taamol_web/live/dashboard_live/overview.ex:126
+#, elixir-autogen, elixir-format
+msgid "Most read articles"
+msgstr "Mest lästa artiklar"
+
+#: lib/taamol_web/live/dashboard_live/user_form.ex:110
+#, elixir-autogen, elixir-format
+msgid "Name"
+msgstr "Namn"
+
+#: lib/taamol_web/live/dashboard_live/overview.ex:98
+#, elixir-autogen, elixir-format
+msgid "New accounts per week"
+msgstr "Nya konton per vecka"
+
+#: lib/taamol_web/live/dashboard_live/article_form.ex:52
+#: lib/taamol_web/live/dashboard_live/articles.ex:113
+#: lib/taamol_web/live/dashboard_live/overview.ex:60
+#, elixir-autogen, elixir-format
+msgid "New article"
+msgstr "Ny artikel"
+
+#: lib/taamol_web/live/dashboard_live/user_form.ex:23
+#: lib/taamol_web/live/dashboard_live/users.ex:132
+#, elixir-autogen, elixir-format
+msgid "New user"
+msgstr "Ny användare"
+
+#: lib/taamol_web/components/dashboard_components.ex:209
+#, elixir-autogen, elixir-format
+msgid "Next"
+msgstr "Nästa"
+
+#: lib/taamol_web/live/dashboard_live/site_settings.ex:77
+#, elixir-autogen, elixir-format
+msgid "No adjustment"
+msgstr "Ingen justering"
+
+#: lib/taamol_web/live/dashboard_live/articles.ex:191
+#, elixir-autogen, elixir-format
+msgid "No articles found."
+msgstr "Inga artiklar hittades."
+
+#: lib/taamol_web/live/dashboard_live/events.ex:131
+#, elixir-autogen, elixir-format
+msgid "No events."
+msgstr "Inga händelser."
+
+#: lib/taamol_web/live/dashboard_live/overview.ex:113
+#, elixir-autogen, elixir-format
+msgid "No published articles yet."
+msgstr "Inga publicerade artiklar än."
+
+#: lib/taamol_web/live/dashboard_live/users.ex:191
+#, elixir-autogen, elixir-format
+msgid "No users found."
+msgstr "Inga användare hittades."
+
+#: lib/taamol_web/live/dashboard_live/article_form.ex:282
+#, elixir-autogen, elixir-format
+msgid "Nothing to preview yet."
+msgstr "Inget att förhandsgranska än."
+
+#: lib/taamol_web/live/dashboard_live/article_form.ex:213
+#, elixir-autogen, elixir-format
+msgid "Numbered list"
+msgstr "Numrerad lista"
+
+#: lib/taamol_web/live/dashboard_live/article_form.ex:193
+#, elixir-autogen, elixir-format
+msgid "One or two sentences shown under the headline"
+msgstr "En eller två meningar som visas under rubriken"
+
+#: lib/taamol_web/live/dashboard_live/events.ex:93
+#, elixir-autogen, elixir-format
+msgid "Open calendar"
+msgstr "Öppna kalendern"
+
+#: lib/taamol_web/components/layouts.ex:228
+#: lib/taamol_web/live/dashboard_live/overview.ex:47
+#, elixir-autogen, elixir-format
+msgid "Overview"
+msgstr "Översikt"
+
+#: lib/taamol_web/components/dashboard_components.ex:188
+#, elixir-autogen, elixir-format
+msgid "Pages"
+msgstr "Sidor"
+
+#: lib/taamol_web/live/dashboard_live/events.ex:108
+#, elixir-autogen, elixir-format
+msgid "Past"
+msgstr "Tidigare"
+
+#: lib/taamol_web/components/layouts.ex:237
+#, elixir-autogen, elixir-format
+msgid "People"
+msgstr "Personer"
+
+#: lib/taamol_web/live/dashboard_live/article_form.ex:246
+#: lib/taamol_web/live/dashboard_live/article_form.ex:278
+#, elixir-autogen, elixir-format
+msgid "Preview"
+msgstr "Förhandsgranska"
+
+#: lib/taamol_web/components/dashboard_components.ex:194
+#, elixir-autogen, elixir-format
+msgid "Previous"
+msgstr "Föregående"
+
+#: lib/taamol_web/components/dashboard_components.ex:163
+#: lib/taamol_web/live/dashboard_live/article_form.ex:372
+#, elixir-autogen, elixir-format
+msgid "Published"
+msgstr "Publicerad"
+
+#: lib/taamol_web/live/dashboard_live/overview.ex:78
+#, elixir-autogen, elixir-format
+msgid "Published articles"
+msgstr "Publicerade artiklar"
+
+#: lib/taamol_web/live/dashboard_live/article_form.ex:376
+#, elixir-autogen, elixir-format
+msgid "Published on %{date}"
+msgstr "Publicerad %{date}"
+
+#: lib/taamol_web/live/dashboard_live/article_form.ex:363
+#, elixir-autogen, elixir-format
+msgid "Publishing"
+msgstr "Publicering"
+
+#: lib/taamol_web/live/dashboard_live/article_form.ex:211
+#, elixir-autogen, elixir-format
+msgid "Quote"
+msgstr "Citat"
+
+#: lib/taamol_web/live/dashboard_live/article_form.ex:438
+#: lib/taamol_web/live/dashboard_live/article_form.ex:457
+#, elixir-autogen, elixir-format
+msgid "Remove"
+msgstr "Ta bort"
+
+#: lib/taamol_web/live/dashboard_live/users.ex:178
+#, elixir-autogen, elixir-format
+msgid "Role"
+msgstr "Roll"
+
+#: lib/taamol_web/live/dashboard_live/user_form.ex:98
+#, elixir-autogen, elixir-format
+msgid "Roles and statistics access are changed from the user list."
+msgstr "Roller och tillgång till statistik ändras från användarlistan."
+
+#: lib/taamol_web/live/dashboard_live/article_form.ex:386
+#: lib/taamol_web/live/dashboard_live/user_form.ex:119
+#, elixir-autogen, elixir-format
+msgid "Save"
+msgstr "Spara"
+
+#: lib/taamol_web/live/dashboard_live/site_settings.ex:104
+#, elixir-autogen, elixir-format
+msgid "Save settings"
+msgstr "Spara inställningar"
+
+#: lib/taamol_web/components/dashboard_components.ex:164
+#, elixir-autogen, elixir-format
+msgid "Scheduled"
+msgstr "Schemalagd"
+
+#: lib/taamol_web/live/dashboard_live/users.ex:155
+#, elixir-autogen, elixir-format
+msgid "Search name or email"
+msgstr "Sök namn eller e-post"
+
+#: lib/taamol_web/live/dashboard_live/articles.ex:136
+#, elixir-autogen, elixir-format
+msgid "Search titles"
+msgstr "Sök rubriker"
+
+#: lib/taamol_web/live/dashboard_live/site_settings.ex:31
+#, elixir-autogen, elixir-format
+msgid "Settings saved."
+msgstr "Inställningarna sparades."
+
+#: lib/taamol_web/live/dashboard_live/users.ex:311
+#, elixir-autogen, elixir-format
+msgid "Show statistics"
+msgstr "Visa statistik"
+
+#: lib/taamol_web/components/dashboard_components.ex:186
+#, elixir-autogen, elixir-format
+msgid "Showing %{from} to %{to} of %{total}"
+msgstr "Visar %{from} till %{to} av %{total}"
+
+#: lib/taamol_web/components/layouts.ex:244
+#: lib/taamol_web/live/dashboard_live/site_settings.ex:16
+#: lib/taamol_web/live/dashboard_live/site_settings.ex:48
+#: lib/taamol_web/live/dashboard_live/site_settings.ex:52
+#, elixir-autogen, elixir-format
+msgid "Site settings"
+msgstr "Webbplatsinställningar"
+
+#: lib/taamol_web/live/dashboard_live/users.ex:218
+#, elixir-autogen, elixir-format
+msgid "Statistics"
+msgstr "Statistik"
+
+#: lib/taamol_web/live/dashboard_live/article_form.ex:364
+#: lib/taamol_web/live/dashboard_live/articles.ex:178
+#: lib/taamol_web/live/dashboard_live/users.ex:180
+#, elixir-autogen, elixir-format
+msgid "Status"
+msgstr "Status"
+
+#: lib/taamol_web/live/dashboard_live/article_form.ex:208
+#, elixir-autogen, elixir-format
+msgid "Subheading"
+msgstr "Underrubrik"
+
+#: lib/taamol_web/live/dashboard_live/article_form.ex:192
+#, elixir-autogen, elixir-format
+msgid "Summary"
+msgstr "Sammanfattning"
+
+#: lib/taamol_web/live/dashboard_live/article_form.ex:126
+#: lib/taamol_web/live/dashboard_live/articles.ex:90
+#, elixir-autogen, elixir-format
+msgid "The article could not be deleted."
+msgstr "Artikeln kunde inte tas bort."
+
+#: lib/taamol_web/live/dashboard_live/site_settings.ex:87
+#, elixir-autogen, elixir-format
+msgid "The calculation method used for the prayer times shown on the site."
+msgstr "Beräkningsmetoden för bönetiderna som visas på webbplatsen."
+
+#: lib/taamol_web/live/dashboard_live/article_form.ex:153
+#, elixir-autogen, elixir-format
+msgid "The image could not be uploaded."
+msgstr "Bilden kunde inte laddas upp."
+
+#: lib/taamol_web/live/dashboard_live/article_form.ex:150
+#, elixir-autogen, elixir-format
+msgid "The image is too large (max 8 MB)."
+msgstr "Bilden är för stor (högst 8 MB)."
+
+#: lib/taamol_web/live/dashboard_live/user_form.ex:97
+#, elixir-autogen, elixir-format
+msgid "The new user signs in with a link sent to their email."
+msgstr "Den nya användaren loggar in med en länk som skickas till e-posten."
+
+#: lib/taamol_web/live/dashboard_live/users.ex:109
+#, elixir-autogen, elixir-format
+msgid "The user could not be deleted."
+msgstr "Användaren kunde inte tas bort."
+
+#: lib/taamol_web/live/dashboard_live/site_settings.ex:53
+#, elixir-autogen, elixir-format
+msgid "These settings apply to the whole site."
+msgstr "Inställningarna gäller hela webbplatsen."
+
+#: lib/taamol_web/live/dashboard_live/users.ex:105
+#, elixir-autogen, elixir-format
+msgid "This user has written articles or comments and can't be deleted."
+msgstr "Användaren har skrivit artiklar eller kommentarer och kan inte tas bort."
+
+#: lib/taamol_web/live/dashboard_live/articles.ex:183
+#, elixir-autogen, elixir-format
+msgid "Updated"
+msgstr "Uppdaterad"
+
+#: lib/taamol_web/live/dashboard_live/article_form.ex:228
+#, elixir-autogen, elixir-format
+msgid "Uploading… %{progress}%"
+msgstr "Laddar upp… %{progress} %"
+
+#: lib/taamol_web/live/dashboard_live/article_form.ex:151
+#, elixir-autogen, elixir-format
+msgid "Use a JPG, PNG, WebP or GIF image."
+msgstr "Använd en JPG-, PNG-, WebP- eller GIF-bild."
+
+#: lib/taamol_web/live/dashboard_live/user_form.ex:57
+#, elixir-autogen, elixir-format
+msgid "User created. A sign-in link was sent to %{email}."
+msgstr "Användaren skapades. En inloggningslänk skickades till %{email}."
+
+#: lib/taamol_web/live/dashboard_live/users.ex:95
+#, elixir-autogen, elixir-format
+msgid "User deleted."
+msgstr "Användaren togs bort."
+
+#: lib/taamol_web/live/dashboard_live/user_form.ex:32
+#, elixir-autogen, elixir-format
+msgid "User not found."
+msgstr "Användaren hittades inte."
+
+#: lib/taamol_web/live/dashboard_live/user_form.ex:62
+#, elixir-autogen, elixir-format
+msgid "User updated."
+msgstr "Användaren uppdaterades."
+
+#: lib/taamol_web/components/layouts.ex:239
+#: lib/taamol_web/components/layouts.ex:625
+#: lib/taamol_web/live/dashboard_live/overview.ex:71
+#: lib/taamol_web/live/dashboard_live/user_form.ex:91
+#: lib/taamol_web/live/dashboard_live/users.ex:19
+#: lib/taamol_web/live/dashboard_live/users.ex:120
+#: lib/taamol_web/live/dashboard_live/users.ex:123
+#: lib/taamol_web/live/dashboard_live/users.ex:168
+#: lib/taamol_web/live/menu_live.ex:47
+#, elixir-autogen, elixir-format
+msgid "Users"
+msgstr "Användare"
+
+#: lib/taamol_web/live/dashboard_live/article_form.ex:394
+#: lib/taamol_web/live/dashboard_live/articles.ex:238
+#, elixir-autogen, elixir-format
+msgid "View"
+msgstr "Visa"
+
+#: lib/taamol_web/live/dashboard_live/articles.ex:180
+#: lib/taamol_web/live/dashboard_live/overview.ex:142
+#, elixir-autogen, elixir-format
+msgid "Views"
+msgstr "Visningar"
+
+#: lib/taamol_web/live/dashboard_live/overview.ex:111
+#, elixir-autogen, elixir-format
+msgid "Views by category"
+msgstr "Visningar per kategori"
+
+#: lib/taamol_web/live/dashboard_live/overview.ex:50
+#, elixir-autogen, elixir-format
+msgid "Welcome, %{name}"
+msgstr "Välkommen, %{name}"
+
+#: lib/taamol_web/live/dashboard_live/events.ex:121
+#, elixir-autogen, elixir-format
+msgid "When"
+msgstr "När"
+
+#: lib/taamol_web/live/dashboard_live/article_form.ex:238
+#, elixir-autogen, elixir-format
+msgid "Write"
+msgstr "Skriv"
+
+#: lib/taamol_web/live/dashboard_live/article_form.ex:272
+#, elixir-autogen, elixir-format
+msgid "Write the article in Markdown…"
+msgstr "Skriv artikeln i Markdown…"
+
+#: lib/taamol_web/live/dashboard_live/users.ex:98
+#, elixir-autogen, elixir-format
+msgid "You can't delete your own account here."
+msgstr "Du kan inte ta bort ditt eget konto här."
+
+#: lib/taamol_web/live/dashboard_live/users.ex:79
+#, elixir-autogen, elixir-format
+msgid "You can't remove your own admin access."
+msgstr "Du kan inte ta bort din egen administratörsbehörighet."
+
+#: lib/taamol_web/live/dashboard_live/overview.ex:166
+#, elixir-autogen, elixir-format
+msgid "Your activity"
+msgstr "Din aktivitet"
+
+#: lib/taamol_web/live/dashboard_live/overview.ex:101
+#, elixir-autogen, elixir-format
+msgid "new accounts"
+msgstr "nya konton"
+
+#: lib/taamol_web/components/layouts.ex:446
+#, elixir-autogen, elixir-format
+msgid "Account"
+msgstr "Konto"
+
+#: lib/taamol_web/components/layouts.ex:426
+#, elixir-autogen, elixir-format
+msgid "Explore"
+msgstr "Utforska"
+
+#: lib/taamol_web/components/layouts.ex:477
+#, elixir-autogen, elixir-format
+msgid "Made with care for our community"
+msgstr "Gjord med omtanke för vår gemenskap"
+
+#: lib/taamol_web/components/layouts.ex:388
+#, elixir-autogen, elixir-format
+msgid "News, the Shia calendar, prayer times and community activities, in one place."
+msgstr "Nyheter, den shiitiska kalendern, bönetider och gemenskapens aktiviteter på ett ställe."
+
+#: lib/taamol_web/components/layouts.ex:474
+#, elixir-autogen, elixir-format
+msgid "© %{year} Taamol. All rights reserved."
+msgstr "© %{year} Taamol. Alla rättigheter förbehållna."

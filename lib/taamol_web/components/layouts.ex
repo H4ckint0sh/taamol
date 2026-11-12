@@ -153,13 +153,15 @@ defmodule TaamolWeb.Layouts do
     </header>
 
     <main class={[
-      "pb-24 lg:pb-0",
-      if(@wide, do: nil, else: "px-4 pt-10 sm:px-6 sm:pt-16 lg:px-8 lg:pb-20")
+      "pb-12 lg:pb-16",
+      if(@wide, do: nil, else: "px-4 pt-10 sm:px-6 sm:pt-16 lg:px-8")
     ]}>
       <div class={if(@wide, do: nil, else: "mx-auto max-w-2xl space-y-4")}>
         {render_slot(@inner_block)}
       </div>
     </main>
+
+    <.site_footer current_scope={@current_scope} categories={@categories} />
 
     <nav
       id="bottom-nav"
@@ -199,6 +201,295 @@ defmodule TaamolWeb.Layouts do
     </nav>
 
     <.flash_group flash={@flash} />
+    """
+  end
+
+  @doc """
+  The dashboard shell: a sidebar with the sections the user may use, a top
+  bar with breadcrumbs, theme, language and account menu, and the page.
+
+      <Layouts.dashboard flash={@flash} current_scope={@current_scope} active={:news} title="News">
+        ...
+      </Layouts.dashboard>
+  """
+  attr :flash, :map, required: true
+  attr :current_scope, :map, required: true
+  attr :active, :atom, default: nil, doc: "the current sidebar item"
+  attr :title, :string, required: true, doc: "shown in the breadcrumb"
+  slot :inner_block, required: true
+
+  def dashboard(assigns) do
+    scope = assigns.current_scope
+
+    groups =
+      [
+        {gettext("General"),
+         [
+           {:overview, gettext("Overview"), "hero-squares-2x2", ~p"/dashboard", true}
+         ]},
+        {gettext("Content"),
+         [
+           {:news, gettext("News"), "hero-newspaper", ~p"/dashboard/news",
+            Taamol.Accounts.can?(scope, :manage_news)},
+           {:events, gettext("Calendar events"), "hero-calendar-days", ~p"/dashboard/events",
+            Taamol.Accounts.can?(scope, :manage_events)}
+         ]},
+        {gettext("People"),
+         [
+           {:users, gettext("Users"), "hero-users", ~p"/dashboard/users",
+            Taamol.Accounts.can?(scope, :manage_users)}
+         ]},
+        {gettext("Settings"),
+         [
+           {:site_settings, gettext("Site settings"), "hero-adjustments-horizontal",
+            ~p"/dashboard/settings", Taamol.Accounts.can?(scope, :manage_settings)},
+           {:account, gettext("Account settings"), "hero-user-circle", ~p"/users/settings", true}
+         ]}
+      ]
+      |> Enum.map(fn {label, items} -> {label, Enum.filter(items, &elem(&1, 4))} end)
+      |> Enum.reject(fn {_label, items} -> items == [] end)
+
+    assigns = assign(assigns, :groups, groups)
+
+    ~H"""
+    <div id="dashboard-shell" class="group/shell min-h-screen bg-base-200/40">
+      <%!-- mobile backdrop --%>
+      <div
+        class="fixed inset-0 z-40 hidden bg-black/40 group-[.sidebar-open]/shell:block lg:!hidden"
+        phx-click={JS.remove_class("sidebar-open", to: "#dashboard-shell")}
+      />
+
+      <aside
+        id="dashboard-sidebar"
+        class="fixed inset-y-0 start-0 z-50 flex w-64 flex-col border-e border-base-300 bg-base-100 transition-transform duration-200 max-lg:-translate-x-full max-lg:rtl:translate-x-full group-[.sidebar-open]/shell:translate-x-0"
+      >
+        <div class="flex h-16 items-center gap-3 px-5">
+          <.link navigate={~p"/"} class="leading-none">
+            <span class="block text-xl font-black tracking-tight text-primary">Taamol</span>
+            <span class="text-[11px] text-base-content/55">{gettext("Dashboard")}</span>
+          </.link>
+        </div>
+
+        <nav aria-label={gettext("Dashboard")} class="flex-1 overflow-y-auto px-3 pb-6">
+          <div :for={{label, items} <- @groups} class="mt-4 first:mt-1">
+            <p class="px-3 pb-1.5 text-[11px] font-semibold uppercase tracking-wider text-base-content/45">
+              {label}
+            </p>
+            <ul class="space-y-0.5">
+              <li :for={{key, name, icon, path, _allowed} <- items}>
+                <.link
+                  navigate={path}
+                  id={"dashboard-nav-#{key}"}
+                  aria-current={if(@active == key, do: "page")}
+                  class="flex items-center gap-3 rounded-xl px-3 py-2 text-sm text-base-content/75 transition hover:bg-base-200 hover:text-base-content aria-[current=page]:bg-primary/10 aria-[current=page]:font-semibold aria-[current=page]:text-primary"
+                >
+                  <.icon name={icon} class="size-5 shrink-0" />
+                  {name}
+                </.link>
+              </li>
+            </ul>
+          </div>
+        </nav>
+
+        <div class="border-t border-base-300 p-3">
+          <.link
+            navigate={~p"/"}
+            class="flex items-center gap-3 rounded-xl px-3 py-2 text-sm text-base-content/70 transition hover:bg-base-200"
+          >
+            <.icon name="hero-arrow-left" class="size-5 rtl:rotate-180" />
+            {gettext("Back to the site")}
+          </.link>
+        </div>
+      </aside>
+
+      <div class="lg:ps-64">
+        <header class="sticky top-0 z-30 flex h-16 items-center gap-3 border-b border-base-300 bg-base-100/90 px-4 backdrop-blur-md sm:px-6">
+          <button
+            type="button"
+            id="dashboard-sidebar-toggle"
+            aria-label={gettext("Menu")}
+            phx-click={JS.toggle_class("sidebar-open", to: "#dashboard-shell")}
+            class="grid size-9 place-items-center rounded-lg transition hover:bg-base-200 lg:hidden"
+          >
+            <.icon name="hero-bars-3" class="size-5" />
+          </button>
+          <nav aria-label={gettext("Breadcrumb")} class="flex min-w-0 items-center gap-2 text-sm">
+            <.link
+              navigate={~p"/dashboard"}
+              class="text-base-content/55 transition-colors hover:text-base-content"
+            >
+              {gettext("Dashboard")}
+            </.link>
+            <.icon
+              name="hero-chevron-right-micro"
+              class="size-4 shrink-0 text-base-content/35 rtl:rotate-180"
+            />
+            <span class="truncate font-medium">{@title}</span>
+          </nav>
+          <div class="ms-auto flex items-center gap-2">
+            <.theme_button />
+            <div class="hidden sm:block"><.locale_switcher id="dashboard-locale" /></div>
+            <.user_menu current_scope={@current_scope} />
+          </div>
+        </header>
+
+        <main class="mx-auto max-w-7xl p-4 sm:p-6 lg:p-8">
+          {render_slot(@inner_block)}
+        </main>
+      </div>
+
+      <.flash_group flash={@flash} />
+    </div>
+    """
+  end
+
+  attr :title, :string, required: true
+  attr :subtitle, :string, default: nil
+  slot :actions
+
+  @doc "Page heading with optional action buttons, used inside the dashboard."
+  def dashboard_heading(assigns) do
+    ~H"""
+    <div class="mb-6 flex flex-wrap items-end justify-between gap-4">
+      <div>
+        <h1 class="text-2xl font-bold tracking-tight">{@title}</h1>
+        <p :if={@subtitle} class="mt-1 text-sm text-base-content/60">{@subtitle}</p>
+      </div>
+      <div :if={@actions != []} class="flex flex-wrap items-center gap-2">
+        {render_slot(@actions)}
+      </div>
+    </div>
+    """
+  end
+
+  attr :current_scope, :map, default: nil
+  attr :categories, :list, required: true
+
+  # Site footer: brand, category and site links, and the copyright line.
+  # Extra bottom padding on phones keeps it clear of the bottom tab bar.
+  defp site_footer(assigns) do
+    assigns = assign(assigns, :year, Date.utc_today().year)
+
+    ~H"""
+    <footer
+      id="site-footer"
+      class="border-t border-base-300/70 bg-base-100 pb-[calc(4.5rem+env(safe-area-inset-bottom))] lg:pb-0"
+    >
+      <div class="mx-auto max-w-7xl px-4 pt-12 sm:px-6 lg:px-8">
+        <div class="grid gap-10 sm:grid-cols-2 lg:grid-cols-[1.4fr_1.4fr_1fr_1fr]">
+          <div class="max-w-xs">
+            <.link navigate={~p"/"} class="inline-block leading-none">
+              <span class="block text-2xl font-black tracking-tight text-primary">Taamol</span>
+              <span class="mt-1 block text-[11px] text-base-content/55">
+                {gettext("News for our community")}
+              </span>
+            </.link>
+            <p class="mt-4 text-sm leading-relaxed text-base-content/65">
+              {gettext(
+                "News, the Shia calendar, prayer times and community activities, in one place."
+              )}
+            </p>
+            <.link
+              :if={is_nil(@current_scope)}
+              navigate={~p"/users/register"}
+              class="mt-5 inline-flex items-center gap-1.5 rounded-full bg-primary px-4 py-2 text-sm font-medium text-primary-content transition hover:opacity-85"
+            >
+              {gettext("Join the community")}
+              <.icon name="hero-arrow-right-micro" class="size-4 rtl:rotate-180" />
+            </.link>
+          </div>
+
+          <nav aria-labelledby="footer-categories">
+            <h2
+              id="footer-categories"
+              class="text-[11px] font-semibold uppercase tracking-wider text-base-content/50"
+            >
+              {gettext("Categories")}
+            </h2>
+            <ul class="mt-4 grid grid-cols-2 gap-x-6 gap-y-2.5 text-sm">
+              <li :for={category <- @categories}>
+                <.link
+                  navigate={~p"/categories/#{category}"}
+                  class="text-base-content/70 transition-colors hover:text-primary"
+                >
+                  {TaamolWeb.NewsComponents.category_name(category)}
+                </.link>
+              </li>
+            </ul>
+          </nav>
+
+          <nav aria-labelledby="footer-explore">
+            <h2
+              id="footer-explore"
+              class="text-[11px] font-semibold uppercase tracking-wider text-base-content/50"
+            >
+              {gettext("Explore")}
+            </h2>
+            <ul class="mt-4 space-y-2.5 text-sm">
+              <li>
+                <.footer_link to={~p"/"}>{gettext("Latest news")}</.footer_link>
+              </li>
+              <li>
+                <.footer_link to={~p"/calendar"}>{gettext("Calendar")}</.footer_link>
+              </li>
+              <li>
+                <.footer_link to={~p"/categories"}>{gettext("All categories")}</.footer_link>
+              </li>
+            </ul>
+          </nav>
+
+          <nav aria-labelledby="footer-account">
+            <h2
+              id="footer-account"
+              class="text-[11px] font-semibold uppercase tracking-wider text-base-content/50"
+            >
+              {gettext("Account")}
+            </h2>
+            <ul class="mt-4 space-y-2.5 text-sm">
+              <%= if @current_scope do %>
+                <li><.footer_link to={~p"/dashboard"}>{gettext("Dashboard")}</.footer_link></li>
+                <li>
+                  <.footer_link to={~p"/users/settings"}>{gettext("Account settings")}</.footer_link>
+                </li>
+                <li>
+                  <.link
+                    href={~p"/users/log-out"}
+                    method="delete"
+                    class="text-base-content/70 transition-colors hover:text-primary"
+                  >
+                    {gettext("Log out")}
+                  </.link>
+                </li>
+              <% else %>
+                <li><.footer_link to={~p"/users/log-in"}>{gettext("Log in")}</.footer_link></li>
+                <li>
+                  <.footer_link to={~p"/users/register"}>{gettext("Register")}</.footer_link>
+                </li>
+              <% end %>
+            </ul>
+          </nav>
+        </div>
+
+        <div class="mt-12 flex flex-col gap-2 border-t border-base-300/70 py-6 text-xs text-base-content/55 sm:flex-row sm:items-center sm:justify-between">
+          <p>{gettext("© %{year} Taamol. All rights reserved.", year: @year)}</p>
+          <p class="inline-flex items-center gap-1.5">
+            <.icon name="hero-heart-micro" class="size-3.5 text-primary" />
+            {gettext("Made with care for our community")}
+          </p>
+        </div>
+      </div>
+    </footer>
+    """
+  end
+
+  attr :to, :string, required: true
+  slot :inner_block, required: true
+
+  defp footer_link(assigns) do
+    ~H"""
+    <.link navigate={@to} class="text-base-content/70 transition-colors hover:text-primary">
+      {render_slot(@inner_block)}
+    </.link>
     """
   end
 
@@ -318,7 +609,6 @@ defmodule TaamolWeb.Layouts do
       </button>
       <.dropdown group="user" class="end-0 w-56">
         <.link
-          :if={Taamol.Accounts.allowed?(@current_scope, :view_dashboard)}
           id="dashboard-link"
           navigate={~p"/dashboard"}
           class="flex items-center gap-3 rounded-xl px-3 py-2 text-sm transition hover:bg-base-200"
@@ -327,12 +617,12 @@ defmodule TaamolWeb.Layouts do
           {gettext("Dashboard")}
         </.link>
         <.link
-          :if={Taamol.Accounts.admin?(@current_scope)}
-          navigate={~p"/admin/access"}
+          :if={Taamol.Accounts.can?(@current_scope, :manage_users)}
+          navigate={~p"/dashboard/users"}
           class="flex items-center gap-3 rounded-xl px-3 py-2 text-sm transition hover:bg-base-200"
         >
-          <.icon name="hero-shield-check" class="size-4 text-base-content/50" />
-          {gettext("Access")}
+          <.icon name="hero-users" class="size-4 text-base-content/50" />
+          {gettext("Users")}
         </.link>
         <.link
           navigate={~p"/users/settings"}

@@ -63,7 +63,7 @@ defmodule TaamolWeb.PrayerTimeController do
   defp parse_method(method) do
     if is_binary(method) and Map.has_key?(PrayTime.methods(), method),
       do: method,
-      else: @default_method
+      else: Taamol.Settings.get(:prayer_method) || @default_method
   end
 
   defp timestamp(value) when is_integer(value), do: value
