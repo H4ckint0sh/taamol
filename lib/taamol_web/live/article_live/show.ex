@@ -21,6 +21,7 @@ defmodule TaamolWeb.ArticleLive.Show do
     {:ok,
      socket
      |> assign(page_title: article.title, article: article)
+     |> assign(:upcoming, Taamol.Events.upcoming(limit: 5))
      |> stream(
        :related,
        Tracking.list_public_articles(category: article.category, exclude: article.id, limit: 4)
@@ -144,7 +145,7 @@ defmodule TaamolWeb.ArticleLive.Show do
             </section>
           </article>
 
-          <.rail>
+          <.rail upcoming={@upcoming}>
             <.side_card id="rail-most-read" title={gettext("Most read")}>
               <div id="most-read" phx-update="stream" class="divide-y divide-base-300/70">
                 <.compact_card

@@ -12,7 +12,8 @@ defmodule TaamolWeb.CategoryLive do
   @feed_size 10
 
   @impl true
-  def mount(_params, _session, socket), do: {:ok, socket}
+  def mount(_params, _session, socket),
+    do: {:ok, assign(socket, :upcoming, Taamol.Events.upcoming(limit: 5))}
 
   @impl true
   def handle_params(params, _uri, socket) do
@@ -154,7 +155,7 @@ defmodule TaamolWeb.CategoryLive do
             </div>
           </div>
 
-          <.rail />
+          <.rail upcoming={@upcoming} />
         </div>
       </div>
     </Layouts.app>

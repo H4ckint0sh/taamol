@@ -23,7 +23,7 @@ defmodule TaamolWeb.Layouts do
       </Layouts.app>
 
   Pass `wide` for full-width pages that manage their own container, and
-  `active` (`:home`, `:categories`, `:menu` or a category atom) to highlight the
+  `active` (`:home`, `:categories`, `:calendar`, `:menu` or a category atom) to highlight the
   current navigation item. Category tabs show on mobile for `:home` and
   category pages.
   """
@@ -40,7 +40,7 @@ defmodule TaamolWeb.Layouts do
 
   def app(assigns) do
     categories = TaamolWeb.NewsComponents.categories()
-    {nav_categories, more_categories} = Enum.split(categories, 5)
+    {nav_categories, more_categories} = Enum.split(categories, 4)
 
     assigns =
       assigns
@@ -65,6 +65,11 @@ defmodule TaamolWeb.Layouts do
           <ul class="flex h-full items-stretch gap-5 text-sm font-medium xl:gap-7">
             <li class="flex">
               <.nav_link to={~p"/"} active={@active == :home}>{gettext("Home")}</.nav_link>
+            </li>
+            <li class="flex">
+              <.nav_link to={~p"/calendar"} active={@active == :calendar}>
+                {gettext("Calendar")}
+              </.nav_link>
             </li>
             <li :for={category <- @nav_categories} class="flex">
               <.nav_link to={~p"/categories/#{category}"} active={@active == category}>
@@ -161,7 +166,7 @@ defmodule TaamolWeb.Layouts do
       aria-label={gettext("Main")}
       class="fixed inset-x-0 bottom-0 z-40 border-t border-base-300 bg-base-100/95 pb-[env(safe-area-inset-bottom)] backdrop-blur-md lg:hidden"
     >
-      <ul class="mx-auto grid max-w-md grid-cols-3">
+      <ul class="mx-auto grid max-w-md grid-cols-4">
         <li>
           <.bottom_nav_link to={~p"/"} icon="hero-home" active={@active == :home}>
             {gettext("Home")}
@@ -174,6 +179,15 @@ defmodule TaamolWeb.Layouts do
             active={@active == :categories or @active in @categories}
           >
             {gettext("Categories")}
+          </.bottom_nav_link>
+        </li>
+        <li>
+          <.bottom_nav_link
+            to={~p"/calendar"}
+            icon="hero-calendar-days"
+            active={@active == :calendar}
+          >
+            {gettext("Calendar")}
           </.bottom_nav_link>
         </li>
         <li>

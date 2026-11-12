@@ -21,7 +21,7 @@ msgstr "En länk för att bekräfta din nya e-postadress har skickats."
 msgid "A quick overview of your Taamol community."
 msgstr "En snabb överblick över din Taamol-gemenskap."
 
-#: lib/taamol_web/components/layouts.ex:321
+#: lib/taamol_web/components/layouts.ex:335
 #: lib/taamol_web/live/menu_live.ex:48
 #, elixir-autogen, elixir-format
 msgid "Access"
@@ -98,8 +98,8 @@ msgstr "Ett e-postmeddelande har skickats till %{email}. Öppna det för att bek
 msgid "Article creation is not available yet."
 msgstr "Det går inte att skapa artiklar ännu."
 
-#: lib/taamol_web/components/layouts.ex:426
-#: lib/taamol_web/components/layouts.ex:441
+#: lib/taamol_web/components/layouts.ex:440
+#: lib/taamol_web/components/layouts.ex:455
 #, elixir-autogen, elixir-format
 msgid "Attempting to reconnect"
 msgstr "Försöker återansluta"
@@ -170,7 +170,7 @@ msgstr "Skapad av"
 msgid "Creating account..."
 msgstr "Skapar konto..."
 
-#: lib/taamol_web/components/layouts.ex:313
+#: lib/taamol_web/components/layouts.ex:327
 #: lib/taamol_web/live/dashboard_live/dashboard_start_live.ex:9
 #: lib/taamol_web/live/dashboard_live/dashboard_start_live.ex:25
 #: lib/taamol_web/live/menu_live.ex:40
@@ -262,15 +262,15 @@ msgstr "Ogiltig e-postadress eller lösenord"
 msgid "Keep me logged in on this device"
 msgstr "Håll mig inloggad på denna enhet"
 
-#: lib/taamol_web/components/layouts.ex:485
-#: lib/taamol_web/components/layouts.ex:494
-#: lib/taamol_web/components/layouts.ex:498
+#: lib/taamol_web/components/layouts.ex:499
+#: lib/taamol_web/components/layouts.ex:508
+#: lib/taamol_web/components/layouts.ex:512
 #: lib/taamol_web/live/menu_live.ex:102
 #, elixir-autogen, elixir-format
 msgid "Language"
 msgstr "Språk"
 
-#: lib/taamol_web/components/layouts.ex:119
+#: lib/taamol_web/components/layouts.ex:124
 #: lib/taamol_web/live/menu_live.ex:68
 #: lib/taamol_web/live/user_live/confirmation.ex:53
 #: lib/taamol_web/live/user_live/login.ex:13
@@ -304,7 +304,7 @@ msgstr "Logga in med e-post"
 msgid "Log me in only this time"
 msgstr "Logga in endast denna gång"
 
-#: lib/taamol_web/components/layouts.ex:337
+#: lib/taamol_web/components/layouts.ex:351
 #: lib/taamol_web/live/menu_live.ex:130
 #, elixir-autogen, elixir-format
 msgid "Log out"
@@ -387,8 +387,8 @@ msgstr "Personer och behörigheter"
 msgid "Publication Date"
 msgstr "Publiceringsdatum"
 
-#: lib/taamol_web/components/layouts.ex:125
-#: lib/taamol_web/components/news_components.ex:414
+#: lib/taamol_web/components/layouts.ex:130
+#: lib/taamol_web/components/news_components.ex:424
 #: lib/taamol_web/live/menu_live.ex:75
 #, elixir-autogen, elixir-format
 msgid "Register"
@@ -440,7 +440,7 @@ msgstr "Spara namn"
 msgid "Saving..."
 msgstr "Sparar..."
 
-#: lib/taamol_web/components/layouts.ex:328
+#: lib/taamol_web/components/layouts.ex:342
 #: lib/taamol_web/live/menu_live.ex:51
 #, elixir-autogen, elixir-format
 msgid "Settings"
@@ -451,7 +451,7 @@ msgstr "Inställningar"
 msgid "Sign up"
 msgstr "Registrera dig"
 
-#: lib/taamol_web/components/layouts.ex:433
+#: lib/taamol_web/components/layouts.ex:447
 #, elixir-autogen, elixir-format
 msgid "Something went wrong!"
 msgstr "Något gick fel!"
@@ -467,6 +467,7 @@ msgid "Tip: If you prefer passwords, you can enable them in the user settings."
 msgstr "Tips: Om du föredrar lösenord kan du aktivera det i användarinställningarna."
 
 #: lib/taamol_web/live/article_live/article_list_live.ex:15
+#: lib/taamol_web/live/event_live/form.ex:111
 #, elixir-autogen, elixir-format
 msgid "Title"
 msgstr "Titel"
@@ -496,7 +497,7 @@ msgstr "Användare"
 msgid "User confirmed successfully."
 msgstr "Användaren har bekräftats."
 
-#: lib/taamol_web/components/layouts.ex:418
+#: lib/taamol_web/components/layouts.ex:432
 #, elixir-autogen, elixir-format
 msgid "We can't find the internet"
 msgstr "Vi hittar ingen internetanslutning"
@@ -565,103 +566,103 @@ msgstr "eller"
 msgid "the mailbox page"
 msgstr "brevlådan"
 
-#: lib/taamol_web/components/layouts.ex:757
+#: lib/taamol_web/components/layouts.ex:771
 #, elixir-autogen, elixir-format
 msgid "Allow location access in your browser to see prayer times for where you are."
 msgstr "Tillåt platsåtkomst i webbläsaren för att se bönetider där du befinner dig."
 
-#: lib/taamol_web/components/layouts.ex:555
+#: lib/taamol_web/components/layouts.ex:569
 #, elixir-autogen, elixir-format
 msgid "Asr"
 msgstr "Asr"
 
-#: lib/taamol_web/components/layouts.ex:554
+#: lib/taamol_web/components/layouts.ex:568
 #, elixir-autogen, elixir-format
 msgid "Dhuhr"
 msgstr "Dhuhr"
 
-#: lib/taamol_web/components/layouts.ex:552
+#: lib/taamol_web/components/layouts.ex:566
 #, elixir-autogen, elixir-format
 msgid "Fajr"
 msgstr "Fajr"
 
-#: lib/taamol_web/components/layouts.ex:557
+#: lib/taamol_web/components/layouts.ex:571
 #, elixir-autogen, elixir-format
 msgid "Isha"
 msgstr "Isha"
 
-#: lib/taamol_web/components/layouts.ex:556
+#: lib/taamol_web/components/layouts.ex:570
 #, elixir-autogen, elixir-format
 msgid "Maghrib"
 msgstr "Maghrib"
 
-#: lib/taamol_web/components/layouts.ex:575
-#: lib/taamol_web/components/news_components.ex:352
+#: lib/taamol_web/components/layouts.ex:589
+#: lib/taamol_web/components/news_components.ex:357
 #, elixir-autogen, elixir-format
 msgid "Prayer times"
 msgstr "Bönetider"
 
-#: lib/taamol_web/components/layouts.ex:760
+#: lib/taamol_web/components/layouts.ex:774
 #, elixir-autogen, elixir-format
 msgid "Prayer times could not be loaded. Click to try again."
 msgstr "Bönetiderna kunde inte laddas. Klicka för att försöka igen."
 
-#: lib/taamol_web/components/layouts.ex:553
+#: lib/taamol_web/components/layouts.ex:567
 #, elixir-autogen, elixir-format
 msgid "Sunrise"
 msgstr "Soluppgång"
 
-#: lib/taamol_web/components/layouts.ex:625
+#: lib/taamol_web/components/layouts.ex:639
 #, elixir-autogen, elixir-format
 msgid "Day %{day} of %{total}"
 msgstr "Dag %{day} av %{total}"
 
-#: lib/taamol_web/components/layouts.ex:641
+#: lib/taamol_web/components/layouts.ex:655
 #, elixir-autogen, elixir-format
 msgid "Iftar"
 msgstr "Iftar"
 
-#: lib/taamol_web/components/layouts.ex:621
+#: lib/taamol_web/components/layouts.ex:635
 #, elixir-autogen, elixir-format
 msgid "Ramadan Mubarak"
 msgstr "Ramadan Mubarak"
 
-#: lib/taamol_web/components/layouts.ex:637
+#: lib/taamol_web/components/layouts.ex:651
 #, elixir-autogen, elixir-format
 msgid "Suhoor"
 msgstr "Suhoor"
 
-#: lib/taamol_web/components/layouts.ex:649
+#: lib/taamol_web/components/layouts.ex:663
 #, elixir-autogen, elixir-format
 msgid "Until iftar"
 msgstr "Tills iftar"
 
-#: lib/taamol_web/components/layouts.ex:648
+#: lib/taamol_web/components/layouts.ex:662
 #, elixir-autogen, elixir-format
 msgid "Until suhoor ends"
 msgstr "Tills suhoor slutar"
 
-#: lib/taamol_web/components/layouts.ex:725
+#: lib/taamol_web/components/layouts.ex:739
 #, elixir-autogen, elixir-format
 msgid "until %{prayer}"
 msgstr "till %{prayer}"
 
-#: lib/taamol_web/components/layouts.ex:459
+#: lib/taamol_web/components/layouts.ex:473
 #, elixir-autogen, elixir-format
 msgid "English"
 msgstr "Engelska"
 
-#: lib/taamol_web/components/layouts.ex:460
+#: lib/taamol_web/components/layouts.ex:474
 #, elixir-autogen, elixir-format
 msgid "Persian"
 msgstr "Persiska"
 
-#: lib/taamol_web/components/layouts.ex:461
+#: lib/taamol_web/components/layouts.ex:475
 #, elixir-autogen, elixir-format
 msgid "Swedish"
 msgstr "Svenska"
 
-#: lib/taamol_web/live/category_live.ex:83
+#: lib/taamol_web/live/category_live.ex:84
 #, elixir-autogen, elixir-format
 msgid "%{count} article"
 msgid_plural "%{count} articles"
@@ -682,22 +683,22 @@ msgid_plural "%{count} min ago"
 msgstr[0] "%{count} min sedan"
 msgstr[1] "%{count} min sedan"
 
-#: lib/taamol_web/components/news_components.ex:306
+#: lib/taamol_web/components/news_components.ex:310
 #, elixir-autogen, elixir-format
 msgid "All"
 msgstr "Alla"
 
-#: lib/taamol_web/components/news_components.ex:82
+#: lib/taamol_web/components/news_components.ex:83
 #, elixir-autogen, elixir-format
 msgid "April"
 msgstr "april"
 
-#: lib/taamol_web/components/news_components.ex:86
+#: lib/taamol_web/components/news_components.ex:87
 #, elixir-autogen, elixir-format
 msgid "August"
 msgstr "augusti"
 
-#: lib/taamol_web/live/category_live.ex:67
+#: lib/taamol_web/live/category_live.ex:68
 #, elixir-autogen, elixir-format
 msgid "Browse the news by topic."
 msgstr "Bläddra bland nyheterna efter ämne."
@@ -707,7 +708,7 @@ msgstr "Bläddra bland nyheterna efter ämne."
 msgid "Community"
 msgstr "Gemenskap"
 
-#: lib/taamol_web/components/news_components.ex:406
+#: lib/taamol_web/components/news_components.ex:416
 #: lib/taamol_web/live/menu_live.ex:58
 #, elixir-autogen, elixir-format
 msgid "Create an account to comment, like articles and take part in community activities."
@@ -718,12 +719,12 @@ msgstr "Skapa ett konto för att kommentera, gilla artiklar och delta i gemenska
 msgid "Culture"
 msgstr "Kultur"
 
-#: lib/taamol_web/components/layouts.ex:381
+#: lib/taamol_web/components/layouts.ex:395
 #, elixir-autogen, elixir-format
 msgid "Dark mode"
 msgstr "Mörkt läge"
 
-#: lib/taamol_web/components/news_components.ex:90
+#: lib/taamol_web/components/news_components.ex:91
 #, elixir-autogen, elixir-format
 msgid "December"
 msgstr "december"
@@ -733,7 +734,7 @@ msgstr "december"
 msgid "Education"
 msgstr "Utbildning"
 
-#: lib/taamol_web/components/news_components.ex:80
+#: lib/taamol_web/components/news_components.ex:81
 #, elixir-autogen, elixir-format
 msgid "February"
 msgstr "februari"
@@ -744,30 +745,30 @@ msgid "Health"
 msgstr "Hälsa"
 
 #: lib/taamol_web/components/layouts.ex:67
-#: lib/taamol_web/components/layouts.ex:139
-#: lib/taamol_web/components/layouts.ex:167
+#: lib/taamol_web/components/layouts.ex:144
+#: lib/taamol_web/components/layouts.ex:172
 #: lib/taamol_web/live/home_live.ex:20
 #, elixir-autogen, elixir-format
 msgid "Home"
 msgstr "Hem"
 
-#: lib/taamol_web/components/news_components.ex:79
+#: lib/taamol_web/components/news_components.ex:80
 #, elixir-autogen, elixir-format
 msgid "January"
 msgstr "januari"
 
-#: lib/taamol_web/components/news_components.ex:403
+#: lib/taamol_web/components/news_components.ex:413
 #: lib/taamol_web/live/menu_live.ex:56
 #, elixir-autogen, elixir-format
 msgid "Join the community"
 msgstr "Gå med i gemenskapen"
 
-#: lib/taamol_web/components/news_components.ex:85
+#: lib/taamol_web/components/news_components.ex:86
 #, elixir-autogen, elixir-format
 msgid "July"
 msgstr "juli"
 
-#: lib/taamol_web/components/news_components.ex:84
+#: lib/taamol_web/components/news_components.ex:85
 #, elixir-autogen, elixir-format
 msgid "June"
 msgstr "juni"
@@ -777,54 +778,54 @@ msgstr "juni"
 msgid "Just now"
 msgstr "Just nu"
 
-#: lib/taamol_web/live/home_live.ex:96
+#: lib/taamol_web/live/home_live.ex:97
 #, elixir-autogen, elixir-format
 msgid "Latest news"
 msgstr "Senaste nytt"
 
-#: lib/taamol_web/components/layouts.ex:390
+#: lib/taamol_web/components/layouts.ex:404
 #, elixir-autogen, elixir-format
 msgid "Light mode"
 msgstr "Ljust läge"
 
-#: lib/taamol_web/live/article_live/show.ex:52
+#: lib/taamol_web/live/article_live/show.ex:53
 #, elixir-autogen, elixir-format
 msgid "Link copied"
 msgstr "Länken kopierad"
 
-#: lib/taamol_web/live/category_live.ex:149
-#: lib/taamol_web/live/home_live.ex:178
+#: lib/taamol_web/live/category_live.ex:150
+#: lib/taamol_web/live/home_live.ex:185
 #, elixir-autogen, elixir-format
 msgid "Loading…"
 msgstr "Laddar…"
 
-#: lib/taamol_web/components/layouts.ex:161
+#: lib/taamol_web/components/layouts.ex:166
 #, elixir-autogen, elixir-format
 msgid "Main"
 msgstr "Huvudmeny"
 
-#: lib/taamol_web/components/news_components.ex:81
+#: lib/taamol_web/components/news_components.ex:82
 #, elixir-autogen, elixir-format
 msgid "March"
 msgstr "mars"
 
-#: lib/taamol_web/components/news_components.ex:83
+#: lib/taamol_web/components/news_components.ex:84
 #, elixir-autogen, elixir-format
 msgid "May"
 msgstr "maj"
 
-#: lib/taamol_web/components/layouts.ex:84
+#: lib/taamol_web/components/layouts.ex:89
 #, elixir-autogen, elixir-format
 msgid "More"
 msgstr "Mer"
 
-#: lib/taamol_web/live/article_live/show.ex:148
-#: lib/taamol_web/live/home_live.ex:112
+#: lib/taamol_web/live/article_live/show.ex:149
+#: lib/taamol_web/live/home_live.ex:113
 #, elixir-autogen, elixir-format
 msgid "Most read"
 msgstr "Mest läst"
 
-#: lib/taamol_web/live/home_live.ex:149
+#: lib/taamol_web/live/home_live.ex:156
 #, elixir-autogen, elixir-format
 msgid "News"
 msgstr "Nyheter"
@@ -834,22 +835,22 @@ msgstr "Nyheter"
 msgid "News for our community"
 msgstr "Nyheter för vår gemenskap"
 
-#: lib/taamol_web/live/home_live.ex:68
+#: lib/taamol_web/live/home_live.ex:69
 #, elixir-autogen, elixir-format
 msgid "No news yet"
 msgstr "Inga nyheter än"
 
-#: lib/taamol_web/live/home_live.ex:123
+#: lib/taamol_web/live/home_live.ex:124
 #, elixir-autogen, elixir-format
 msgid "No other articles yet."
 msgstr "Inga andra artiklar än."
 
-#: lib/taamol_web/components/news_components.ex:89
+#: lib/taamol_web/components/news_components.ex:90
 #, elixir-autogen, elixir-format
 msgid "November"
 msgstr "november"
 
-#: lib/taamol_web/components/news_components.ex:88
+#: lib/taamol_web/components/news_components.ex:89
 #, elixir-autogen, elixir-format
 msgid "October"
 msgstr "oktober"
@@ -859,13 +860,13 @@ msgstr "oktober"
 msgid "Preferences"
 msgstr "Inställningar"
 
-#: lib/taamol_web/components/layouts.ex:181
+#: lib/taamol_web/components/layouts.ex:195
 #: lib/taamol_web/live/menu_live.ex:12
 #, elixir-autogen, elixir-format
 msgid "Profile"
 msgstr "Profil"
 
-#: lib/taamol_web/live/home_live.ex:70
+#: lib/taamol_web/live/home_live.ex:71
 #, elixir-autogen, elixir-format
 msgid "Published articles will appear here."
 msgstr "Publicerade artiklar visas här."
@@ -875,18 +876,18 @@ msgstr "Publicerade artiklar visas här."
 msgid "Religion"
 msgstr "Religion"
 
-#: lib/taamol_web/components/news_components.ex:87
+#: lib/taamol_web/components/news_components.ex:88
 #, elixir-autogen, elixir-format
 msgid "September"
 msgstr "september"
 
-#: lib/taamol_web/live/article_live/show.ex:56
+#: lib/taamol_web/live/article_live/show.ex:57
 #, elixir-autogen, elixir-format
 msgid "Share"
 msgstr "Dela"
 
-#: lib/taamol_web/live/category_live.ex:152
-#: lib/taamol_web/live/home_live.ex:181
+#: lib/taamol_web/live/category_live.ex:153
+#: lib/taamol_web/live/home_live.ex:188
 #, elixir-autogen, elixir-format
 msgid "Show more"
 msgstr "Visa fler"
@@ -911,7 +912,7 @@ msgstr "Sverige"
 msgid "Theme"
 msgstr "Tema"
 
-#: lib/taamol_web/components/news_components.ex:195
+#: lib/taamol_web/components/news_components.ex:199
 #, elixir-autogen, elixir-format
 msgid "Top story"
 msgstr "Huvudnyhet"
@@ -932,27 +933,513 @@ msgid "Youth"
 msgstr "Ungdom"
 
 #: lib/taamol_web/components/layouts.ex:64
-#: lib/taamol_web/components/layouts.ex:134
-#: lib/taamol_web/components/layouts.ex:176
-#: lib/taamol_web/components/news_components.ex:385
-#: lib/taamol_web/live/category_live.ex:24
-#: lib/taamol_web/live/category_live.ex:65
+#: lib/taamol_web/components/layouts.ex:139
+#: lib/taamol_web/components/layouts.ex:181
+#: lib/taamol_web/components/news_components.ex:395
+#: lib/taamol_web/live/category_live.ex:25
+#: lib/taamol_web/live/category_live.ex:66
 #, elixir-autogen, elixir-format
 msgid "Categories"
 msgstr "Kategorier"
 
-#: lib/taamol_web/live/article_live/show.ex:128
+#: lib/taamol_web/live/article_live/show.ex:129
 #, elixir-autogen, elixir-format
 msgid "More from %{category}"
 msgstr "Mer från %{category}"
 
-#: lib/taamol_web/live/category_live.ex:123
-#: lib/taamol_web/live/home_live.ex:163
+#: lib/taamol_web/live/category_live.ex:124
+#: lib/taamol_web/live/home_live.ex:170
 #, elixir-autogen, elixir-format
 msgid "No articles in this category yet."
 msgstr "Inga artiklar i den här kategorin än."
 
-#: lib/taamol_web/live/article_live/show.ex:136
+#: lib/taamol_web/live/article_live/show.ex:137
 #, elixir-autogen, elixir-format
 msgid "No other articles in this category yet."
 msgstr "Inga andra artiklar i den här kategorin än."
+
+#: lib/taamol_web/live/calendar_live.ex:333
+#, elixir-autogen, elixir-format
+msgid "+%{count} more"
+msgstr "+%{count} till"
+
+#: lib/taamol_web/live/calendar_live.ex:149
+#: lib/taamol_web/live/event_live/form.ex:28
+#, elixir-autogen, elixir-format
+msgid "Add event"
+msgstr "Lägg till händelse"
+
+#: lib/taamol_web/live/event_live/form.ex:118
+#, elixir-autogen, elixir-format
+msgid "All day"
+msgstr "Heldag"
+
+#: lib/taamol_web/components/calendar_components.ex:24
+#, elixir-autogen, elixir-format
+msgid "Arbaeen"
+msgstr "Arbaeen"
+
+#: lib/taamol_web/components/calendar_components.ex:21
+#, elixir-autogen, elixir-format
+msgid "Ashura, martyrdom of Imam Hussain"
+msgstr "Ashura, imam Husseins martyrskap"
+
+#: lib/taamol_web/components/calendar_components.ex:49
+#, elixir-autogen, elixir-format
+msgid "Birth of Abbas ibn Ali"
+msgstr "Abbas ibn Alis födelse"
+
+#: lib/taamol_web/components/calendar_components.ex:51
+#, elixir-autogen, elixir-format
+msgid "Birth of Ali al-Akbar"
+msgstr "Ali al-Akbars födelse"
+
+#: lib/taamol_web/components/calendar_components.ex:44
+#, elixir-autogen, elixir-format
+msgid "Birth of Imam Ali"
+msgstr "Imam Alis födelse"
+
+#: lib/taamol_web/components/calendar_components.ex:71
+#, elixir-autogen, elixir-format
+msgid "Birth of Imam Ali al-Hadi"
+msgstr "Imam Ali al-Hadis födelse"
+
+#: lib/taamol_web/components/calendar_components.ex:55
+#, elixir-autogen, elixir-format
+msgid "Birth of Imam Hasan"
+msgstr "Imam Hasans födelse"
+
+#: lib/taamol_web/components/calendar_components.ex:35
+#, elixir-autogen, elixir-format
+msgid "Birth of Imam Hasan al-Askari"
+msgstr "Imam Hasan al-Askaris födelse"
+
+#: lib/taamol_web/components/calendar_components.ex:48
+#, elixir-autogen, elixir-format
+msgid "Birth of Imam Hussain"
+msgstr "Imam Husseins födelse"
+
+#: lib/taamol_web/components/calendar_components.ex:52
+#, elixir-autogen, elixir-format
+msgid "Birth of Imam Mahdi"
+msgstr "Imam Mahdis födelse"
+
+#: lib/taamol_web/components/calendar_components.ex:41
+#, elixir-autogen, elixir-format
+msgid "Birth of Imam Muhammad al-Baqir"
+msgstr "Imam Muhammad al-Baqirs födelse"
+
+#: lib/taamol_web/components/calendar_components.ex:43
+#, elixir-autogen, elixir-format
+msgid "Birth of Imam Muhammad al-Jawad"
+msgstr "Imam Muhammad al-Jawads födelse"
+
+#: lib/taamol_web/components/calendar_components.ex:23
+#, elixir-autogen, elixir-format
+msgid "Birth of Imam Musa al-Kadhim"
+msgstr "Imam Musa al-Kadhims födelse"
+
+#: lib/taamol_web/components/calendar_components.ex:62
+#, elixir-autogen, elixir-format
+msgid "Birth of Imam Reza"
+msgstr "Imam Rezas födelse"
+
+#: lib/taamol_web/components/calendar_components.ex:50
+#, elixir-autogen, elixir-format
+msgid "Birth of Imam Sajjad"
+msgstr "Imam Sajjads födelse"
+
+#: lib/taamol_web/components/calendar_components.ex:61
+#, elixir-autogen, elixir-format
+msgid "Birth of Lady Fatima Masumeh"
+msgstr "Fatima Masumehs födelse"
+
+#: lib/taamol_web/components/calendar_components.ex:40
+#, elixir-autogen, elixir-format
+msgid "Birth of Lady Fatima al-Zahra"
+msgstr "Fatima al-Zahras födelse"
+
+#: lib/taamol_web/components/calendar_components.ex:37
+#, elixir-autogen, elixir-format
+msgid "Birth of Lady Zaynab"
+msgstr "Zaynabs födelse"
+
+#: lib/taamol_web/components/calendar_components.ex:33
+#, elixir-autogen, elixir-format
+msgid "Birth of the Prophet and Imam Ja'far al-Sadiq"
+msgstr "Profetens och imam Ja'far al-Sadiqs födelse"
+
+#: lib/taamol_web/components/calendar_components.ex:173
+#: lib/taamol_web/components/layouts.ex:71
+#: lib/taamol_web/components/layouts.ex:190
+#: lib/taamol_web/live/calendar_live.ex:18
+#: lib/taamol_web/live/event_live/form.ex:99
+#, elixir-autogen, elixir-format
+msgid "Calendar"
+msgstr "Kalender"
+
+#: lib/taamol_web/components/calendar_components.ex:77
+#, elixir-autogen, elixir-format
+msgid "Celebration"
+msgstr "Högtid"
+
+#: lib/taamol_web/components/calendar_components.ex:69
+#, elixir-autogen, elixir-format
+msgid "Day of Arafah"
+msgstr "Arafadagen"
+
+#: lib/taamol_web/components/calendar_components.ex:36
+#, elixir-autogen, elixir-format
+msgid "Death of Lady Fatima Masumeh"
+msgstr "Fatima Masumehs bortgång"
+
+#: lib/taamol_web/components/calendar_components.ex:54
+#, elixir-autogen, elixir-format
+msgid "Death of Lady Khadija"
+msgstr "Khadijas bortgång"
+
+#: lib/taamol_web/components/calendar_components.ex:45
+#, elixir-autogen, elixir-format
+msgid "Death of Lady Zaynab"
+msgstr "Zaynabs bortgång"
+
+#: lib/taamol_web/live/event_live/form.ex:135
+#, elixir-autogen, elixir-format
+msgid "Delete"
+msgstr "Ta bort"
+
+#: lib/taamol_web/live/event_live/form.ex:132
+#, elixir-autogen, elixir-format
+msgid "Delete this event?"
+msgstr "Ta bort den här händelsen?"
+
+#: lib/taamol_web/components/calendar_components.ex:27
+#, elixir-autogen, elixir-format
+msgid "Demise of the Prophet and martyrdom of Imam Hasan"
+msgstr "Profetens bortgång och imam Hasans martyrskap"
+
+#: lib/taamol_web/live/event_live/form.ex:124
+#, elixir-autogen, elixir-format
+msgid "Description"
+msgstr "Beskrivning"
+
+#: lib/taamol_web/components/calendar_components.ex:93
+#, elixir-autogen, elixir-format
+msgid "Dhu al-Hijjah"
+msgstr "Dhu al-Hijjah"
+
+#: lib/taamol_web/components/calendar_components.ex:92
+#, elixir-autogen, elixir-format
+msgid "Dhu al-Qadah"
+msgstr "Dhu al-Qadah"
+
+#: lib/taamol_web/live/calendar_live.ex:213
+#, elixir-autogen, elixir-format
+msgid "Edit"
+msgstr "Redigera"
+
+#: lib/taamol_web/live/event_live/form.ex:36
+#, elixir-autogen, elixir-format
+msgid "Edit event"
+msgstr "Redigera händelse"
+
+#: lib/taamol_web/components/calendar_components.ex:70
+#, elixir-autogen, elixir-format
+msgid "Eid al-Adha"
+msgstr "Eid al-Adha"
+
+#: lib/taamol_web/components/calendar_components.ex:59
+#, elixir-autogen, elixir-format
+msgid "Eid al-Fitr"
+msgstr "Eid al-Fitr"
+
+#: lib/taamol_web/components/calendar_components.ex:72
+#, elixir-autogen, elixir-format
+msgid "Eid al-Ghadir"
+msgstr "Eid al-Ghadir"
+
+#: lib/taamol_web/components/calendar_components.ex:73
+#, elixir-autogen, elixir-format
+msgid "Eid al-Mubahala"
+msgstr "Eid al-Mubahala"
+
+#: lib/taamol_web/live/event_live/form.ex:121
+#, elixir-autogen, elixir-format
+msgid "Ends (optional)"
+msgstr "Slutar (valfritt)"
+
+#: lib/taamol_web/live/event_live/form.ex:77
+#, elixir-autogen, elixir-format
+msgid "Event deleted."
+msgstr "Händelsen togs bort."
+
+#: lib/taamol_web/live/event_live/form.ex:61
+#, elixir-autogen, elixir-format
+msgid "Event saved."
+msgstr "Händelsen sparades."
+
+#: lib/taamol_web/components/calendar_components.ex:38
+#, elixir-autogen, elixir-format
+msgid "Fatimiyya (first narration)"
+msgstr "Fatimiyya (första berättelsen)"
+
+#: lib/taamol_web/components/calendar_components.ex:53
+#, elixir-autogen, elixir-format
+msgid "First day of Ramadan"
+msgstr "Ramadans första dag"
+
+#: lib/taamol_web/components/calendar_components.ex:106
+#, elixir-autogen, elixir-format
+msgid "Fri"
+msgstr "fre"
+
+#: lib/taamol_web/components/calendar_components.ex:19
+#, elixir-autogen, elixir-format
+msgid "Islamic New Year"
+msgstr "Islamiskt nyår"
+
+#: lib/taamol_web/components/calendar_components.ex:87
+#, elixir-autogen, elixir-format
+msgid "Jumada al-Thani"
+msgstr "Jumada al-Thani"
+
+#: lib/taamol_web/components/calendar_components.ex:86
+#, elixir-autogen, elixir-format
+msgid "Jumada al-Ula"
+msgstr "Jumada al-Ula"
+
+#: lib/taamol_web/live/event_live/form.ex:123
+#, elixir-autogen, elixir-format
+msgid "Location"
+msgstr "Plats"
+
+#: lib/taamol_web/components/calendar_components.ex:47
+#, elixir-autogen, elixir-format
+msgid "Mab'ath, the Prophet's mission"
+msgstr "Mab'ath, profetens kallelse"
+
+#: lib/taamol_web/components/calendar_components.ex:66
+#, elixir-autogen, elixir-format
+msgid "Marriage of Imam Ali and Lady Fatima"
+msgstr "Imam Alis och Fatimas giftermål"
+
+#: lib/taamol_web/components/calendar_components.ex:42
+#, elixir-autogen, elixir-format
+msgid "Martyrdom of Imam Ali al-Hadi"
+msgstr "Imam Ali al-Hadis martyrskap"
+
+#: lib/taamol_web/components/calendar_components.ex:57
+#, elixir-autogen, elixir-format
+msgid "Martyrdom of Imam Ali, Night of Qadr"
+msgstr "Imam Alis martyrskap, Qadr-natten"
+
+#: lib/taamol_web/components/calendar_components.ex:30
+#, elixir-autogen, elixir-format
+msgid "Martyrdom of Imam Hasan al-Askari"
+msgstr "Imam Hasan al-Askaris martyrskap"
+
+#: lib/taamol_web/components/calendar_components.ex:60
+#, elixir-autogen, elixir-format
+msgid "Martyrdom of Imam Ja'far al-Sadiq"
+msgstr "Imam Ja'far al-Sadiqs martyrskap"
+
+#: lib/taamol_web/components/calendar_components.ex:68
+#, elixir-autogen, elixir-format
+msgid "Martyrdom of Imam Muhammad al-Baqir"
+msgstr "Imam Muhammad al-Baqirs martyrskap"
+
+#: lib/taamol_web/components/calendar_components.ex:63
+#, elixir-autogen, elixir-format
+msgid "Martyrdom of Imam Muhammad al-Jawad"
+msgstr "Imam Muhammad al-Jawads martyrskap"
+
+#: lib/taamol_web/components/calendar_components.ex:46
+#, elixir-autogen, elixir-format
+msgid "Martyrdom of Imam Musa al-Kadhim"
+msgstr "Imam Musa al-Kadhims martyrskap"
+
+#: lib/taamol_web/components/calendar_components.ex:29
+#, elixir-autogen, elixir-format
+msgid "Martyrdom of Imam Reza"
+msgstr "Imam Rezas martyrskap"
+
+#: lib/taamol_web/components/calendar_components.ex:22
+#, elixir-autogen, elixir-format
+msgid "Martyrdom of Imam Sajjad"
+msgstr "Imam Sajjads martyrskap"
+
+#: lib/taamol_web/components/calendar_components.ex:39
+#, elixir-autogen, elixir-format
+msgid "Martyrdom of Lady Fatima al-Zahra"
+msgstr "Fatima al-Zahras martyrskap"
+
+#: lib/taamol_web/components/calendar_components.ex:102
+#, elixir-autogen, elixir-format
+msgid "Mon"
+msgstr "mån"
+
+#: lib/taamol_web/components/calendar_components.ex:78
+#, elixir-autogen, elixir-format
+msgid "Mourning"
+msgstr "Sorg"
+
+#: lib/taamol_web/components/calendar_components.ex:82
+#, elixir-autogen, elixir-format
+msgid "Muharram"
+msgstr "Muharram"
+
+#: lib/taamol_web/live/calendar_live.ex:136
+#, elixir-autogen, elixir-format
+msgid "Next month"
+msgstr "Nästa månad"
+
+#: lib/taamol_web/components/calendar_components.ex:56
+#, elixir-autogen, elixir-format
+msgid "Night of Qadr (19th)"
+msgstr "Qadr-natten (19:e)"
+
+#: lib/taamol_web/components/calendar_components.ex:58
+#, elixir-autogen, elixir-format
+msgid "Night of Qadr (23rd)"
+msgstr "Qadr-natten (23:e)"
+
+#: lib/taamol_web/components/calendar_components.ex:178
+#, elixir-autogen, elixir-format
+msgid "Nothing coming up."
+msgstr "Inget på gång."
+
+#: lib/taamol_web/live/calendar_live.ex:191
+#, elixir-autogen, elixir-format
+msgid "Nothing on this day."
+msgstr "Inget den här dagen."
+
+#: lib/taamol_web/live/calendar_live.ex:249
+#, elixir-autogen, elixir-format
+msgid "Nothing this month."
+msgstr "Inget den här månaden."
+
+#: lib/taamol_web/components/calendar_components.ex:79
+#, elixir-autogen, elixir-format
+msgid "Observance"
+msgstr "Minnesdag"
+
+#: lib/taamol_web/live/calendar_live.ex:128
+#, elixir-autogen, elixir-format
+msgid "Previous month"
+msgstr "Föregående månad"
+
+#: lib/taamol_web/components/calendar_components.ex:84
+#, elixir-autogen, elixir-format
+msgid "Rabi al-Awwal"
+msgstr "Rabi al-Awwal"
+
+#: lib/taamol_web/components/calendar_components.ex:85
+#, elixir-autogen, elixir-format
+msgid "Rabi al-Thani"
+msgstr "Rabi al-Thani"
+
+#: lib/taamol_web/components/calendar_components.ex:88
+#, elixir-autogen, elixir-format
+msgid "Rajab"
+msgstr "Rajab"
+
+#: lib/taamol_web/components/calendar_components.ex:90
+#, elixir-autogen, elixir-format
+msgid "Ramadan"
+msgstr "Ramadan"
+
+#: lib/taamol_web/components/calendar_components.ex:83
+#, elixir-autogen, elixir-format
+msgid "Safar"
+msgstr "Safar"
+
+#: lib/taamol_web/components/calendar_components.ex:107
+#, elixir-autogen, elixir-format
+msgid "Sat"
+msgstr "lör"
+
+#: lib/taamol_web/live/event_live/form.ex:143
+#, elixir-autogen, elixir-format
+msgid "Save event"
+msgstr "Spara händelse"
+
+#: lib/taamol_web/live/event_live/form.ex:140
+#, elixir-autogen, elixir-format
+msgid "Saving…"
+msgstr "Sparar…"
+
+#: lib/taamol_web/components/calendar_components.ex:89
+#, elixir-autogen, elixir-format
+msgid "Shaban"
+msgstr "Shaban"
+
+#: lib/taamol_web/components/calendar_components.ex:91
+#, elixir-autogen, elixir-format
+msgid "Shawwal"
+msgstr "Shawwal"
+
+#: lib/taamol_web/live/event_live/form.ex:120
+#, elixir-autogen, elixir-format
+msgid "Starts"
+msgstr "Börjar"
+
+#: lib/taamol_web/components/calendar_components.ex:108
+#, elixir-autogen, elixir-format
+msgid "Sun"
+msgstr "sön"
+
+#: lib/taamol_web/components/calendar_components.ex:76
+#, elixir-autogen, elixir-format
+msgid "Taamol event"
+msgstr "Taamol-evenemang"
+
+#: lib/taamol_web/components/calendar_components.ex:20
+#, elixir-autogen, elixir-format
+msgid "Tasu'a"
+msgstr "Tasu'a"
+
+#: lib/taamol_web/live/event_live/form.ex:81
+#, elixir-autogen, elixir-format
+msgid "The event could not be deleted."
+msgstr "Händelsen kunde inte tas bort."
+
+#: lib/taamol_web/live/calendar_live.ex:247
+#, elixir-autogen, elixir-format
+msgid "This month"
+msgstr "Den här månaden"
+
+#: lib/taamol_web/components/calendar_components.ex:105
+#, elixir-autogen, elixir-format
+msgid "Thu"
+msgstr "tors"
+
+#: lib/taamol_web/live/calendar_live.ex:122
+#: lib/taamol_web/live/calendar_live.ex:183
+#, elixir-autogen, elixir-format
+msgid "Today"
+msgstr "Idag"
+
+#: lib/taamol_web/components/calendar_components.ex:103
+#, elixir-autogen, elixir-format
+msgid "Tue"
+msgstr "tis"
+
+#: lib/taamol_web/live/event_live/form.ex:115
+#, elixir-autogen, elixir-format
+msgid "Type"
+msgstr "Typ"
+
+#: lib/taamol_web/components/calendar_components.ex:167
+#, elixir-autogen, elixir-format
+msgid "Upcoming"
+msgstr "Kommande"
+
+#: lib/taamol_web/components/calendar_components.ex:104
+#, elixir-autogen, elixir-format
+msgid "Wed"
+msgstr "ons"
+
+#: lib/taamol_web/live/event_live/form.ex:68
+#, elixir-autogen, elixir-format
+msgid "You are not allowed to do that."
+msgstr "Du har inte behörighet att göra det."

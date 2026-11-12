@@ -104,3 +104,63 @@ else
 
   IO.puts("Inserted #{length(articles)} demo articles.")
 end
+
+# ---------------------------------------------------------------------------
+# Demo community events (development only). Skipped when events exist.
+# ---------------------------------------------------------------------------
+alias Taamol.Events.Event
+
+if Repo.exists?(Event) do
+  IO.puts("Events already exist, skipping demo events.")
+else
+  admin = Repo.one(from u in User, where: u.role == :admin, limit: 1)
+  today = Date.utc_today()
+  at = fn days, time -> NaiveDateTime.new!(Date.add(today, days), time) end
+
+  events = [
+    %{
+      title: "Dua Kumayl gathering",
+      kind: :community,
+      location: "Taamol centre, main hall",
+      starts_at: at.(1, ~T[19:30:00]),
+      ends_at: at.(1, ~T[21:00:00]),
+      description: "Weekly recitation of Dua Kumayl followed by tea."
+    },
+    %{
+      title: "Fatimiyya majlis",
+      kind: :mourning,
+      location: "Taamol centre",
+      starts_at: at.(2, ~T[18:00:00]),
+      ends_at: at.(2, ~T[21:00:00]),
+      description: "Commemoration with a lecture in Persian and Swedish. Dinner is served."
+    },
+    %{
+      title: "Youth football training",
+      kind: :community,
+      location: "Rinkeby sports hall",
+      starts_at: at.(4, ~T[17:00:00]),
+      ends_at: at.(4, ~T[18:30:00])
+    },
+    %{
+      title: "Weekend school open house",
+      kind: :community,
+      location: "Taamol centre, classrooms",
+      starts_at: at.(9, ~T[11:00:00]),
+      ends_at: at.(9, ~T[14:00:00]),
+      description: "Meet the teachers and register for Quran, Persian and Arabic classes."
+    },
+    %{
+      title: "Community clean-up day",
+      kind: :community,
+      all_day: true,
+      starts_at: at.(16, ~T[00:00:00]),
+      location: "Meeting point: centre entrance"
+    }
+  ]
+
+  for attrs <- events do
+    %Event{creator_id: admin && admin.id} |> Event.changeset(attrs) |> Repo.insert!()
+  end
+
+  IO.puts("Inserted #{length(events)} demo events.")
+end

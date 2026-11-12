@@ -18,6 +18,7 @@ defmodule TaamolWeb.HomeLive do
     {:ok,
      socket
      |> assign(page_title: gettext("Home"), lead: lead)
+     |> assign(:upcoming, Taamol.Events.upcoming(limit: 5))
      |> stream(:latest, Tracking.list_public_articles(limit: 5, exclude: lead && lead.id))
      |> stream(:most_read, Tracking.list_most_read_articles(limit: 5))}
   end
@@ -144,6 +145,12 @@ defmodule TaamolWeb.HomeLive do
               </div>
             </section>
 
+            <TaamolWeb.CalendarComponents.upcoming_card
+              id="home-upcoming"
+              entries={Enum.take(@upcoming, 3)}
+              class="xl:hidden"
+            />
+
             <section :if={@lead} id="news" aria-labelledby="news-title">
               <h2 id="news-title" class="mb-4 text-xl font-bold tracking-tight">
                 {gettext("News")}
@@ -184,7 +191,7 @@ defmodule TaamolWeb.HomeLive do
             </section>
           </div>
 
-          <.rail />
+          <.rail upcoming={@upcoming} />
         </div>
       </div>
     </Layouts.app>

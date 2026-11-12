@@ -74,6 +74,8 @@ defmodule TaamolWeb.Router do
     live_session :admin,
       on_mount: [{TaamolWeb.Locale, :default}, {TaamolWeb.UserAuth, :require_admin}] do
       live "/access", AdminAccessLive, :index
+      live "/events/new", EventLive.Form, :new
+      live "/events/:id/edit", EventLive.Form, :edit
     end
   end
 
@@ -105,6 +107,7 @@ defmodule TaamolWeb.Router do
       live "/categories/:category", CategoryLive, :show
       live "/articles/:id", ArticleLive.Show, :show
       live "/menu", MenuLive, :index
+      live "/calendar", CalendarLive, :index
     end
 
     post "/users/log-in", UserSessionController, :create

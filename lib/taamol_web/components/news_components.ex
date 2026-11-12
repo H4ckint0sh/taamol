@@ -76,18 +76,22 @@ defmodule TaamolWeb.NewsComponents do
       else: date
   end
 
-  defp month_name(1), do: gettext("January")
-  defp month_name(2), do: gettext("February")
-  defp month_name(3), do: gettext("March")
-  defp month_name(4), do: gettext("April")
-  defp month_name(5), do: gettext("May")
-  defp month_name(6), do: gettext("June")
-  defp month_name(7), do: gettext("July")
-  defp month_name(8), do: gettext("August")
-  defp month_name(9), do: gettext("September")
-  defp month_name(10), do: gettext("October")
-  defp month_name(11), do: gettext("November")
-  defp month_name(12), do: gettext("December")
+  @doc "Translated month name."
+  def month_name(1), do: gettext("January")
+  def month_name(2), do: gettext("February")
+  def month_name(3), do: gettext("March")
+  def month_name(4), do: gettext("April")
+  def month_name(5), do: gettext("May")
+  def month_name(6), do: gettext("June")
+  def month_name(7), do: gettext("July")
+  def month_name(8), do: gettext("August")
+  def month_name(9), do: gettext("September")
+  def month_name(10), do: gettext("October")
+  def month_name(11), do: gettext("November")
+  def month_name(12), do: gettext("December")
+
+  @doc "Abbreviated month name (\"Nov\")."
+  def month_short(month), do: month |> month_name() |> String.slice(0, 3)
 
   @doc "Groups thousands with a thin space: 12540 -> \"12 540\"."
   def format_count(nil), do: "0"
@@ -333,11 +337,15 @@ defmodule TaamolWeb.NewsComponents do
     """
   end
 
+  attr :upcoming, :list,
+    default: nil,
+    doc: "upcoming calendar entries (`Taamol.Events.upcoming/1`)"
+
   slot :inner_block, doc: "extra cards below the prayer times (e.g. most read)"
 
   @doc """
-  The right-hand column on wide screens: prayer times plus any extra cards.
-  This is also where the community calendar will go.
+  The right-hand column on wide screens: prayer times, upcoming calendar
+  entries and any extra cards.
   """
   def rail(assigns) do
     ~H"""
@@ -353,6 +361,11 @@ defmodule TaamolWeb.NewsComponents do
           </h2>
           <Layouts.prayer_times id="rail-prayer-times" variant={:card} />
         </section>
+        <TaamolWeb.CalendarComponents.upcoming_card
+          :if={@upcoming}
+          id="rail-upcoming"
+          entries={@upcoming}
+        />
         {render_slot(@inner_block)}
       </div>
     </aside>
