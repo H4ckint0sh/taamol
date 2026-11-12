@@ -12,18 +12,20 @@ defmodule TaamolWeb.Layouts do
   embed_templates "layouts/*"
 
   @doc """
-  Renders your app layout.
-
-  This function is typically invoked from every template,
-  and it often contains your application menu, sidebar,
-  or similar.
+  Renders the app layout: the site header (category navigation, prayer times,
+  language, theme and account menu), the mobile category tabs and bottom tab
+  bar, and the page content.
 
   ## Examples
 
-      <Layouts.app flash={@flash}>
+      <Layouts.app flash={@flash} current_scope={@current_scope}>
         <h1>Content</h1>
       </Layouts.app>
 
+  Pass `wide` for full-width pages that manage their own container, and
+  `active` (`:home`, `:categories`, `:menu` or a category atom) to highlight the
+  current navigation item. Category tabs show on mobile for `:home` and
+  category pages.
   """
   attr :flash, :map, required: true, doc: "the map of flash messages"
 
@@ -32,81 +34,365 @@ defmodule TaamolWeb.Layouts do
     doc: "the current [scope](https://phoenix.hexdocs.pm/scopes.html)"
 
   attr :wide, :boolean, default: false
+  attr :active, :atom, default: nil, doc: "the current navigation item"
 
   slot :inner_block, required: true
 
   def app(assigns) do
+    categories = TaamolWeb.NewsComponents.categories()
+    {nav_categories, more_categories} = Enum.split(categories, 5)
+
+    assigns =
+      assigns
+      |> assign(:categories, categories)
+      |> assign(:nav_categories, nav_categories)
+      |> assign(:more_categories, more_categories)
+      |> assign(:category_tabs?, assigns.active == :home or assigns.active in categories)
+
     ~H"""
-    <header class="relative z-10 border-b border-base-300/70 bg-base-100">
-      <nav class="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-4 px-4 py-4 sm:px-6 lg:px-8">
-        <.link href={~p"/"} class="inline-flex items-center gap-3 font-semibold tracking-tight">
-          <span class="grid size-9 place-items-center rounded-xl bg-primary text-lg font-bold text-primary-content">T</span>
-          <span class="text-lg">Taamol</span>
+    <header class="sticky top-0 z-40 border-b border-base-300/70 bg-base-100/90 backdrop-blur-md">
+      <div class="mx-auto flex h-16 max-w-7xl items-center gap-6 px-4 sm:px-6 lg:h-20 lg:px-8">
+        <.link navigate={~p"/"} id="site-logo" class="shrink-0 leading-none">
+          <span class="block text-2xl font-black tracking-tight text-primary lg:text-[1.9rem]">
+            Taamol
+          </span>
+          <span class="mt-1 hidden text-[11px] text-base-content/55 sm:block">
+            {gettext("News for our community")}
+          </span>
         </.link>
-        <ul class="flex flex-wrap items-center gap-x-4 gap-y-3 text-sm font-medium sm:gap-x-6">
-          <li>
-            <.prayer_times />
-          </li>
-          <li>
-            <.locale_switcher />
-          </li>
-          <li>
-            <.theme_toggle />
-          </li>
-          <%= if @current_scope do %>
-            <li class="hidden text-base-content/60 sm:block">
-              {@current_scope.user.name}
+
+        <nav id="main-nav" aria-label={gettext("Categories")} class="hidden h-full min-w-0 lg:block">
+          <ul class="flex h-full items-stretch gap-5 text-sm font-medium xl:gap-7">
+            <li class="flex">
+              <.nav_link to={~p"/"} active={@active == :home}>{gettext("Home")}</.nav_link>
             </li>
-            <li :if={Taamol.Accounts.allowed?(@current_scope, :view_dashboard)}>
-              <.link
-                id="dashboard-link"
-                href={~p"/dashboard"}
-                class="hover:text-primary transition-colors"
+            <li :for={category <- @nav_categories} class="flex">
+              <.nav_link to={~p"/categories/#{category}"} active={@active == category}>
+                {TaamolWeb.NewsComponents.category_name(category)}
+              </.nav_link>
+            </li>
+            <li class="group/more relative flex items-center">
+              <button
+                type="button"
+                id="main-nav-more"
+                aria-haspopup="true"
+                class={[
+                  "inline-flex items-center gap-1 transition-colors hover:text-primary",
+                  @active in @more_categories && "text-primary"
+                ]}
               >
-                {gettext("Dashboard")}
-              </.link>
+                {gettext("More")}
+                <.icon
+                  name="hero-chevron-down-micro"
+                  class="size-4 transition-transform group-hover/more:rotate-180 group-focus-within/more:rotate-180"
+                />
+              </button>
+              <.dropdown group="more" class="start-0 w-52">
+                <.link
+                  :for={category <- @more_categories}
+                  navigate={~p"/categories/#{category}"}
+                  aria-current={if(@active == category, do: "page")}
+                  class="flex items-center gap-3 rounded-xl px-3 py-2 text-sm transition hover:bg-base-200 aria-[current=page]:text-primary"
+                >
+                  <.icon
+                    name={TaamolWeb.NewsComponents.category_icon(category)}
+                    class="size-4 text-base-content/50"
+                  />
+                  {TaamolWeb.NewsComponents.category_name(category)}
+                </.link>
+              </.dropdown>
             </li>
-            <li :if={Taamol.Accounts.admin?(@current_scope)}>
-              <.link href={~p"/admin/access"} class="hover:text-primary transition-colors">{gettext(
-                "Access"
-              )}</.link>
-            </li>
-            <li>
-              <.link href={~p"/users/settings"} class="hover:text-primary transition-colors">{gettext(
-                "Settings"
-              )}</.link>
-            </li>
-            <li>
-              <.link
-                href={~p"/users/log-out"}
-                method="delete"
-                class="hover:text-primary transition-colors"
-              >{gettext("Log out")}</.link>
-            </li>
+          </ul>
+        </nav>
+
+        <div class="ms-auto flex items-center gap-2 sm:gap-3">
+          <.prayer_times />
+          <div class="hidden lg:block"><.locale_switcher /></div>
+          <.theme_button class="hidden lg:inline-grid" />
+          <%= if @current_scope do %>
+            <.user_menu current_scope={@current_scope} class="hidden lg:block" />
           <% else %>
-            <li>
-              <.link href={~p"/users/log-in"} class="hover:text-primary transition-colors">{gettext(
-                "Log in"
-              )}</.link>
-            </li>
-            <li>
-              <.link
-                href={~p"/users/register"}
-                class="rounded-full bg-primary px-4 py-2 text-primary-content transition hover:opacity-85"
-              >{gettext("Register")}</.link>
-            </li>
+            <.link
+              href={~p"/users/log-in"}
+              class="hidden text-sm font-medium transition-colors hover:text-primary lg:inline"
+            >
+              {gettext("Log in")}
+            </.link>
+            <.link
+              href={~p"/users/register"}
+              class="hidden rounded-full bg-primary px-4 py-2 text-sm font-medium text-primary-content transition hover:opacity-85 lg:inline"
+            >
+              {gettext("Register")}
+            </.link>
           <% end %>
+        </div>
+      </div>
+
+      <nav
+        :if={@category_tabs?}
+        id="mobile-category-tabs"
+        aria-label={gettext("Categories")}
+        class="overflow-x-auto border-t border-base-300/60 px-4 [scrollbar-width:none] sm:px-6 lg:hidden [&::-webkit-scrollbar]:hidden"
+      >
+        <ul class="flex min-w-max gap-5 text-sm">
+          <li>
+            <.tab_nav_link to={~p"/"} active={@active == :home}>{gettext("Home")}</.tab_nav_link>
+          </li>
+          <li :for={category <- @categories}>
+            <.tab_nav_link to={~p"/categories/#{category}"} active={@active == category}>
+              {TaamolWeb.NewsComponents.category_name(category)}
+            </.tab_nav_link>
+          </li>
         </ul>
       </nav>
     </header>
 
-    <main class={if(@wide, do: nil, else: "px-4 py-20 sm:px-6 lg:px-8")}>
+    <main class={[
+      "pb-24 lg:pb-0",
+      if(@wide, do: nil, else: "px-4 pt-10 sm:px-6 sm:pt-16 lg:px-8 lg:pb-20")
+    ]}>
       <div class={if(@wide, do: nil, else: "mx-auto max-w-2xl space-y-4")}>
         {render_slot(@inner_block)}
       </div>
     </main>
 
+    <nav
+      id="bottom-nav"
+      aria-label={gettext("Main")}
+      class="fixed inset-x-0 bottom-0 z-40 border-t border-base-300 bg-base-100/95 pb-[env(safe-area-inset-bottom)] backdrop-blur-md lg:hidden"
+    >
+      <ul class="mx-auto grid max-w-md grid-cols-3">
+        <li>
+          <.bottom_nav_link to={~p"/"} icon="hero-home" active={@active == :home}>
+            {gettext("Home")}
+          </.bottom_nav_link>
+        </li>
+        <li>
+          <.bottom_nav_link
+            to={~p"/categories"}
+            icon="hero-squares-2x2"
+            active={@active == :categories or @active in @categories}
+          >
+            {gettext("Categories")}
+          </.bottom_nav_link>
+        </li>
+        <li>
+          <.bottom_nav_link to={~p"/menu"} icon="hero-user-circle" active={@active == :menu}>
+            {gettext("Profile")}
+          </.bottom_nav_link>
+        </li>
+      </ul>
+    </nav>
+
     <.flash_group flash={@flash} />
+    """
+  end
+
+  attr :to, :string, required: true
+  attr :active, :boolean, default: false
+  slot :inner_block, required: true
+
+  defp nav_link(assigns) do
+    ~H"""
+    <.link
+      navigate={@to}
+      aria-current={if(@active, do: "page")}
+      class="-mb-px flex items-center whitespace-nowrap border-b-2 border-transparent transition-colors hover:text-primary aria-[current=page]:border-primary aria-[current=page]:text-primary"
+    >
+      {render_slot(@inner_block)}
+    </.link>
+    """
+  end
+
+  attr :to, :string, required: true
+  attr :active, :boolean, default: false
+  slot :inner_block, required: true
+
+  defp tab_nav_link(assigns) do
+    ~H"""
+    <.link
+      navigate={@to}
+      aria-current={if(@active, do: "page")}
+      class="inline-block whitespace-nowrap border-b-2 border-transparent py-3 text-base-content/60 transition-colors aria-[current=page]:border-primary aria-[current=page]:font-semibold aria-[current=page]:text-primary"
+    >
+      {render_slot(@inner_block)}
+    </.link>
+    """
+  end
+
+  attr :to, :string, required: true
+  attr :icon, :string, required: true
+  attr :active, :boolean, default: false
+  slot :inner_block, required: true
+
+  defp bottom_nav_link(assigns) do
+    ~H"""
+    <.link
+      navigate={@to}
+      aria-current={if(@active, do: "page")}
+      class="flex flex-col items-center gap-1 py-2.5 text-[11px] text-base-content/55 transition-colors aria-[current=page]:text-primary"
+    >
+      <.icon name={if(@active, do: "#{@icon}-solid", else: @icon)} class="size-6" />
+      {render_slot(@inner_block)}
+    </.link>
+    """
+  end
+
+  attr :group, :string,
+    required: true,
+    values: ~w(more user),
+    doc: "the Tailwind group name of the trigger's parent"
+
+  attr :class, :string, default: nil
+  slot :inner_block, required: true
+
+  # Hover/focus dropdown panel, positioned under its `group/<name>` parent.
+  # Class names are spelled out in full so Tailwind can find them.
+  defp dropdown(assigns) do
+    assigns =
+      assign(
+        assigns,
+        :open_classes,
+        case assigns.group do
+          "more" ->
+            "group-hover/more:visible group-hover/more:translate-y-0 group-hover/more:opacity-100 group-focus-within/more:visible group-focus-within/more:translate-y-0 group-focus-within/more:opacity-100"
+
+          "user" ->
+            "group-hover/user:visible group-hover/user:translate-y-0 group-hover/user:opacity-100 group-focus-within/user:visible group-focus-within/user:translate-y-0 group-focus-within/user:opacity-100"
+        end
+      )
+
+    ~H"""
+    <div class={[
+      "invisible absolute top-full z-50 translate-y-1 pt-2 opacity-0 transition duration-200 ease-out",
+      @open_classes,
+      @class
+    ]}>
+      <div class="rounded-2xl border border-base-300 bg-base-100 p-1 shadow-xl shadow-base-content/10">
+        {render_slot(@inner_block)}
+      </div>
+    </div>
+    """
+  end
+
+  attr :current_scope, :map, required: true
+  attr :class, :string, default: nil
+
+  @doc "Avatar, name and email with a dropdown of account links."
+  def user_menu(assigns) do
+    ~H"""
+    <div id="user-menu" class={["group/user relative", @class]}>
+      <button
+        type="button"
+        id="user-menu-trigger"
+        aria-haspopup="true"
+        class="flex items-center gap-3 rounded-full py-1 pe-2 ps-1 transition hover:bg-base-200"
+      >
+        <.avatar user={@current_scope.user} />
+        <span class="hidden text-start leading-tight xl:block">
+          <span class="block max-w-40 truncate text-sm font-semibold" dir="auto">
+            {@current_scope.user.name}
+          </span>
+          <span class="block max-w-40 truncate text-xs text-base-content/55">
+            {@current_scope.user.email}
+          </span>
+        </span>
+        <.icon
+          name="hero-chevron-down-micro"
+          class="size-4 text-base-content/50 transition-transform group-hover/user:rotate-180 group-focus-within/user:rotate-180"
+        />
+      </button>
+      <.dropdown group="user" class="end-0 w-56">
+        <.link
+          :if={Taamol.Accounts.allowed?(@current_scope, :view_dashboard)}
+          id="dashboard-link"
+          navigate={~p"/dashboard"}
+          class="flex items-center gap-3 rounded-xl px-3 py-2 text-sm transition hover:bg-base-200"
+        >
+          <.icon name="hero-chart-bar-square" class="size-4 text-base-content/50" />
+          {gettext("Dashboard")}
+        </.link>
+        <.link
+          :if={Taamol.Accounts.admin?(@current_scope)}
+          navigate={~p"/admin/access"}
+          class="flex items-center gap-3 rounded-xl px-3 py-2 text-sm transition hover:bg-base-200"
+        >
+          <.icon name="hero-shield-check" class="size-4 text-base-content/50" />
+          {gettext("Access")}
+        </.link>
+        <.link
+          navigate={~p"/users/settings"}
+          class="flex items-center gap-3 rounded-xl px-3 py-2 text-sm transition hover:bg-base-200"
+        >
+          <.icon name="hero-cog-6-tooth" class="size-4 text-base-content/50" />
+          {gettext("Settings")}
+        </.link>
+        <div class="my-1 border-t border-base-300" />
+        <.link
+          href={~p"/users/log-out"}
+          method="delete"
+          class="flex items-center gap-3 rounded-xl px-3 py-2 text-sm text-error transition hover:bg-error/10"
+        >
+          <.icon name="hero-arrow-right-start-on-rectangle" class="size-4 rtl:rotate-180" />
+          {gettext("Log out")}
+        </.link>
+      </.dropdown>
+    </div>
+    """
+  end
+
+  attr :user, :map, required: true
+  attr :class, :string, default: "size-9 text-sm"
+
+  @doc "Round avatar with the user's initials."
+  def avatar(assigns) do
+    initials =
+      (assigns.user.name || assigns.user.email || "?")
+      |> String.split(~r/\s+/, trim: true)
+      |> Enum.take(2)
+      |> Enum.map_join(&String.first/1)
+      |> String.upcase()
+
+    assigns = assign(assigns, :initials, initials)
+
+    ~H"""
+    <span
+      aria-hidden="true"
+      class={[
+        "grid shrink-0 place-items-center rounded-full bg-primary/15 font-semibold text-primary",
+        @class
+      ]}
+    >
+      {@initials}
+    </span>
+    """
+  end
+
+  attr :class, :string, default: nil
+
+  @doc "One-button light/dark switch (the full system/light/dark toggle is on /menu)."
+  def theme_button(assigns) do
+    ~H"""
+    <span class={["size-9 place-items-center", @class]}>
+      <button
+        type="button"
+        phx-click={JS.dispatch("phx:set-theme")}
+        data-phx-theme="dark"
+        aria-label={gettext("Dark mode")}
+        class="grid size-9 place-items-center rounded-full text-base-content/70 transition hover:bg-base-200 hover:text-base-content [[data-theme=dark]_&]:hidden"
+      >
+        <.icon name="hero-moon" class="size-5" />
+      </button>
+      <button
+        type="button"
+        phx-click={JS.dispatch("phx:set-theme")}
+        data-phx-theme="light"
+        aria-label={gettext("Light mode")}
+        class="hidden size-9 place-items-center rounded-full text-base-content/70 transition hover:bg-base-200 hover:text-base-content [[data-theme=dark]_&]:grid"
+      >
+        <.icon name="hero-sun" class="size-5" />
+      </button>
+    </span>
     """
   end
 
@@ -164,6 +450,8 @@ defmodule TaamolWeb.Layouts do
   hover/focus. Each option submits the form to `/locale`, so it works on both
   controller and LiveView pages without JavaScript.
   """
+  attr :id, :string, default: "locale-switcher"
+
   def locale_switcher(assigns) do
     current = Gettext.get_locale(TaamolWeb.Gettext)
 
@@ -183,9 +471,9 @@ defmodule TaamolWeb.Layouts do
     <div class="group/locale relative">
       <button
         type="button"
-        id="locale-switcher-trigger"
+        id={"#{@id}-trigger"}
         aria-haspopup="true"
-        aria-controls="locale-switcher"
+        aria-controls={@id}
         class="inline-flex items-center gap-1.5 rounded-full border border-base-300 bg-base-100 px-3 py-1.5 text-xs transition hover:border-primary/40 hover:bg-base-200 focus-visible:outline-2 focus-visible:outline-primary"
       >
         <.icon name="hero-language-micro" class="size-4 text-base-content/60" />
@@ -202,7 +490,7 @@ defmodule TaamolWeb.Layouts do
           for={@form}
           action={~p"/locale"}
           method="post"
-          id="locale-switcher"
+          id={@id}
           aria-label={gettext("Language")}
           class="rounded-2xl border border-base-300 bg-base-100 p-1 shadow-xl shadow-base-content/10"
         >
@@ -214,7 +502,7 @@ defmodule TaamolWeb.Layouts do
             type="submit"
             name="locale"
             value={lang.code}
-            id={"locale-option-#{lang.code}"}
+            id={"#{@id}-option-#{lang.code}"}
             aria-current={if(@current == lang.code, do: "true")}
             class="group/option flex w-full items-center gap-3 rounded-xl px-3 py-2 text-start transition hover:bg-base-200 focus-visible:bg-base-200 focus-visible:outline-none aria-[current=true]:bg-primary/10"
           >
@@ -251,6 +539,13 @@ defmodule TaamolWeb.Layouts do
   the inner `data-role="root"` element because LiveView still patches the
   attributes of the ignored container itself.
   """
+  attr :id, :string, default: "prayer-times"
+
+  attr :variant, :atom,
+    default: :popover,
+    values: [:popover, :card],
+    doc: "a header chip with a hover popover, or an inline card (for sidebars)"
+
   def prayer_times(assigns) do
     assigns =
       assign(assigns, :prayers, [
@@ -263,13 +558,13 @@ defmodule TaamolWeb.Layouts do
       ])
 
     ~H"""
-    <prayer-times id="prayer-times" phx-update="ignore" class="block">
+    <prayer-times :if={@variant == :popover} id={@id} phx-update="ignore" class="block">
       <div data-role="root" data-state="loading" class="group/prayer relative">
         <button
           type="button"
-          id="prayer-times-trigger"
+          id={"#{@id}-trigger"}
           data-role="trigger"
-          aria-describedby="prayer-times-popover"
+          aria-describedby={"#{@id}-popover"}
           class="inline-flex items-center gap-2 rounded-full border border-base-300 bg-base-100 px-3 py-1.5 text-xs transition hover:border-primary/40 hover:bg-base-200 focus-visible:outline-2 focus-visible:outline-primary"
         >
           <span class="relative grid size-5 place-items-center rounded-full bg-primary/10 text-primary">
@@ -287,166 +582,185 @@ defmodule TaamolWeb.Layouts do
         </button>
 
         <div
-          id="prayer-times-popover"
+          id={"#{@id}-popover"}
           role="tooltip"
           class="invisible absolute end-0 top-full z-50 w-[18rem] max-w-[calc(100vw-2rem)] translate-y-1 pt-2 opacity-0 transition duration-200 ease-out group-hover/prayer:visible group-hover/prayer:translate-y-0 group-hover/prayer:opacity-100 group-focus-within/prayer:visible group-focus-within/prayer:translate-y-0 group-focus-within/prayer:opacity-100"
         >
-          <div class="space-y-1 rounded-2xl border border-base-300 bg-base-100 p-1 text-base-content shadow-xl shadow-base-content/10">
-            <%!-- Ramadan banner, shown only during Ramadan --%>
-            <section
-              id="prayer-times-ramadan"
-              class="hidden rounded-xl bg-primary p-3 text-primary-content group-data-[ramadan]/prayer:block"
-            >
-              <p class="flex items-center gap-1.5 text-sm font-semibold">
-                <.icon name="hero-moon-solid" class="size-4" />
-                {gettext("Ramadan Mubarak")}
-              </p>
-              <p
-                data-role="ramadan-day"
-                data-template={gettext("Day %{day} of %{total}", day: "%{day}", total: "%{total}")}
-                class="mt-0.5 text-[11px] opacity-80"
-              />
-              <div class="mt-2 h-1 overflow-hidden rounded-full bg-primary-content/25">
-                <div
-                  data-role="ramadan-progress"
-                  class="h-full w-0 rounded-full bg-primary-content transition-[width] duration-700"
-                />
-              </div>
-              <div class="mt-3 flex items-end justify-between gap-2">
-                <dl class="flex gap-4">
-                  <div>
-                    <dt class="text-[10px] opacity-75">{gettext("Suhoor")}</dt>
-                    <dd data-role="suhoor" class="text-sm font-semibold tabular-nums" />
-                  </div>
-                  <div>
-                    <dt class="text-[10px] opacity-75">{gettext("Iftar")}</dt>
-                    <dd data-role="iftar" class="text-sm font-semibold tabular-nums" />
-                  </div>
-                </dl>
-                <div class="rounded-lg bg-primary-content/15 px-3 py-1.5 text-end">
-                  <p
-                    data-role="fast-label"
-                    data-suhoor={gettext("Until suhoor ends")}
-                    data-iftar={gettext("Until iftar")}
-                    class="text-[10px] opacity-80"
-                  />
-                  <p data-role="fast-countdown" class="text-base font-semibold tabular-nums" />
-                </div>
-              </div>
-            </section>
-
-            <section class="p-2">
-              <div class="flex flex-wrap items-center justify-center gap-1.5 text-[11px] text-base-content/70">
-                <span class="inline-flex items-center gap-1 rounded-full bg-base-200 px-2 py-0.5">
-                  <.icon name="hero-map-pin-micro" class="size-3 text-primary" />
-                  <span data-role="place" />
-                </span>
-                <span class="inline-flex items-center gap-1 rounded-full bg-base-200 px-2 py-0.5 has-[[data-role=hijri]:empty]:hidden">
-                  <.icon name="hero-moon-micro" class="size-3 text-primary" />
-                  <span data-role="hijri" />
-                </span>
-              </div>
-
-              <%!-- sun path from Fajr (left) to Isha (right) --%>
-              <div dir="ltr" class="relative mt-2 aspect-[200/112] w-full">
-                <svg
-                  viewBox="0 0 200 112"
-                  class="absolute inset-0 size-full overflow-visible"
-                  aria-hidden="true"
-                >
-                  <path
-                    d="M 12 104 A 88 88 0 0 1 188 104"
-                    pathLength="1"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="1.5"
-                    class="text-base-300"
-                  />
-                  <path
-                    data-role="arc-progress"
-                    d="M 12 104 A 88 88 0 0 1 188 104"
-                    pathLength="1"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="2"
-                    stroke-linecap="round"
-                    stroke-dasharray="0 1"
-                    class="text-primary transition-[stroke-dasharray] duration-700"
-                  />
-                  <circle
-                    :for={{key, _label, _icon} <- @prayers}
-                    data-marker={key}
-                    r="2.5"
-                    cx="12"
-                    cy="104"
-                    stroke-width="1.5"
-                    class="fill-base-100 stroke-base-content/30"
-                  />
-                </svg>
-                <span
-                  data-role="sun"
-                  class="absolute grid size-6 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full bg-base-100 shadow-md ring-1 ring-base-300 transition-[left,top] duration-700"
-                  style="left: 6%; top: 93%"
-                >
-                  <.icon
-                    name="hero-sun-solid"
-                    class="size-4 text-primary group-data-[night]/prayer:hidden"
-                  />
-                  <.icon
-                    name="hero-moon-solid"
-                    class="hidden size-3.5 text-base-content/70 group-data-[night]/prayer:block"
-                  />
-                </span>
-                <div class="absolute inset-x-0 bottom-0 text-center">
-                  <p data-role="countdown" class="text-3xl font-semibold tracking-tight tabular-nums">
-                    --:--:--
-                  </p>
-                  <p
-                    data-role="until"
-                    data-template={gettext("until %{prayer}", prayer: "%{prayer}")}
-                    class="text-[11px] text-base-content/60"
-                  />
-                  <p data-role="next-at" class="text-xs tabular-nums text-base-content/60" />
-                </div>
-              </div>
-
-              <ul
-                id="prayer-times-grid"
-                class="mt-3 grid grid-cols-3 gap-1 group-data-[state=denied]/prayer:hidden group-data-[state=error]/prayer:hidden"
-              >
-                <li
-                  :for={{key, label, icon} <- @prayers}
-                  id={"prayer-time-#{key}"}
-                  data-prayer={key}
-                  data-label={label}
-                  class="group/cell flex flex-col items-center gap-0.5 rounded-xl px-1 py-2 text-base-content/70 transition duration-300 hover:bg-base-200 data-[next]:bg-primary/10 data-[next]:text-primary data-[past]:opacity-45"
-                >
-                  <.prayer_icon type={icon} />
-                  <span class="mt-0.5 text-[11px] text-base-content/60 group-data-[next]/cell:text-primary">
-                    {label}
-                  </span>
-                  <span
-                    data-role="time"
-                    class="text-sm font-medium tracking-tight tabular-nums text-base-content group-data-[next]/cell:text-primary"
-                  >
-                    <span class="inline-block h-3.5 w-10 rounded bg-base-300 align-middle motion-safe:animate-pulse" />
-                  </span>
-                </li>
-              </ul>
-
-              <p class="mt-3 hidden rounded-xl bg-base-200 px-3 py-2 text-center text-xs text-base-content/70 group-data-[state=denied]/prayer:block">
-                {gettext(
-                  "Allow location access in your browser to see prayer times for where you are."
-                )}
-              </p>
-              <p class="mt-3 hidden rounded-xl bg-base-200 px-3 py-2 text-center text-xs text-base-content/70 group-data-[state=error]/prayer:block">
-                {gettext("Prayer times could not be loaded. Click to try again.")}
-              </p>
-            </section>
-          </div>
+          <.prayer_panel
+            id={@id}
+            prayers={@prayers}
+            class="rounded-2xl border border-base-300 bg-base-100 p-1 shadow-xl shadow-base-content/10"
+          />
         </div>
       </div>
     </prayer-times>
+
+    <prayer-times :if={@variant == :card} id={@id} phx-update="ignore" class="block">
+      <div data-role="root" data-state="loading" class="group/prayer cursor-default">
+        <.prayer_panel id={@id} prayers={@prayers} />
+      </div>
+    </prayer-times>
+    """
+  end
+
+  attr :id, :string, required: true
+  attr :prayers, :list, required: true
+  attr :class, :string, default: nil
+
+  # The countdown, arc and prayer grid shared by the popover and the card.
+  defp prayer_panel(assigns) do
+    ~H"""
+    <div class={["space-y-1 text-base-content", @class]}>
+      <%!-- Ramadan banner, shown only during Ramadan --%>
+      <section
+        id={"#{@id}-ramadan"}
+        class="hidden rounded-xl bg-primary p-3 text-primary-content group-data-[ramadan]/prayer:block"
+      >
+        <p class="flex items-center gap-1.5 text-sm font-semibold">
+          <.icon name="hero-moon-solid" class="size-4" />
+          {gettext("Ramadan Mubarak")}
+        </p>
+        <p
+          data-role="ramadan-day"
+          data-template={gettext("Day %{day} of %{total}", day: "%{day}", total: "%{total}")}
+          class="mt-0.5 text-[11px] opacity-80"
+        />
+        <div class="mt-2 h-1 overflow-hidden rounded-full bg-primary-content/25">
+          <div
+            data-role="ramadan-progress"
+            class="h-full w-0 rounded-full bg-primary-content transition-[width] duration-700"
+          />
+        </div>
+        <div class="mt-3 flex items-end justify-between gap-2">
+          <dl class="flex gap-4">
+            <div>
+              <dt class="text-[10px] opacity-75">{gettext("Suhoor")}</dt>
+              <dd data-role="suhoor" class="text-sm font-semibold tabular-nums" />
+            </div>
+            <div>
+              <dt class="text-[10px] opacity-75">{gettext("Iftar")}</dt>
+              <dd data-role="iftar" class="text-sm font-semibold tabular-nums" />
+            </div>
+          </dl>
+          <div class="rounded-lg bg-primary-content/15 px-3 py-1.5 text-end">
+            <p
+              data-role="fast-label"
+              data-suhoor={gettext("Until suhoor ends")}
+              data-iftar={gettext("Until iftar")}
+              class="text-[10px] opacity-80"
+            />
+            <p data-role="fast-countdown" class="text-base font-semibold tabular-nums" />
+          </div>
+        </div>
+      </section>
+
+      <section class="p-2">
+        <div class="flex flex-wrap items-center justify-center gap-1.5 text-[11px] text-base-content/70">
+          <span class="inline-flex items-center gap-1 rounded-full bg-base-200 px-2 py-0.5">
+            <.icon name="hero-map-pin-micro" class="size-3 text-primary" />
+            <span data-role="place" />
+          </span>
+          <span class="inline-flex items-center gap-1 rounded-full bg-base-200 px-2 py-0.5 has-[[data-role=hijri]:empty]:hidden">
+            <.icon name="hero-moon-micro" class="size-3 text-primary" />
+            <span data-role="hijri" />
+          </span>
+        </div>
+
+        <%!-- sun path from Fajr (left) to Isha (right) --%>
+        <div dir="ltr" class="relative mt-2 aspect-[200/112] w-full">
+          <svg
+            viewBox="0 0 200 112"
+            class="absolute inset-0 size-full overflow-visible"
+            aria-hidden="true"
+          >
+            <path
+              d="M 12 104 A 88 88 0 0 1 188 104"
+              pathLength="1"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.5"
+              class="text-base-300"
+            />
+            <path
+              data-role="arc-progress"
+              d="M 12 104 A 88 88 0 0 1 188 104"
+              pathLength="1"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-dasharray="0 1"
+              class="text-primary transition-[stroke-dasharray] duration-700"
+            />
+            <circle
+              :for={{key, _label, _icon} <- @prayers}
+              data-marker={key}
+              r="2.5"
+              cx="12"
+              cy="104"
+              stroke-width="1.5"
+              class="fill-base-100 stroke-base-content/30"
+            />
+          </svg>
+          <span
+            data-role="sun"
+            class="absolute grid size-6 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full bg-base-100 shadow-md ring-1 ring-base-300 transition-[left,top] duration-700"
+            style="left: 6%; top: 93%"
+          >
+            <.icon
+              name="hero-sun-solid"
+              class="size-4 text-primary group-data-[night]/prayer:hidden"
+            />
+            <.icon
+              name="hero-moon-solid"
+              class="hidden size-3.5 text-base-content/70 group-data-[night]/prayer:block"
+            />
+          </span>
+          <div class="absolute inset-x-0 bottom-0 text-center">
+            <p data-role="countdown" class="text-3xl font-semibold tracking-tight tabular-nums">
+              --:--:--
+            </p>
+            <p
+              data-role="until"
+              data-template={gettext("until %{prayer}", prayer: "%{prayer}")}
+              class="text-[11px] text-base-content/60"
+            />
+            <p data-role="next-at" class="text-xs tabular-nums text-base-content/60" />
+          </div>
+        </div>
+
+        <ul
+          id={"#{@id}-grid"}
+          class="mt-3 grid grid-cols-3 gap-1 group-data-[state=denied]/prayer:hidden group-data-[state=error]/prayer:hidden"
+        >
+          <li
+            :for={{key, label, icon} <- @prayers}
+            id={"#{@id}-time-#{key}"}
+            data-prayer={key}
+            data-label={label}
+            class="group/cell flex flex-col items-center gap-0.5 rounded-xl px-1 py-2 text-base-content/70 transition duration-300 hover:bg-base-200 data-[next]:bg-primary/10 data-[next]:text-primary data-[past]:opacity-45"
+          >
+            <.prayer_icon type={icon} />
+            <span class="mt-0.5 text-[11px] text-base-content/60 group-data-[next]/cell:text-primary">
+              {label}
+            </span>
+            <span
+              data-role="time"
+              class="text-sm font-medium tracking-tight tabular-nums text-base-content group-data-[next]/cell:text-primary"
+            >
+              <span class="inline-block h-3.5 w-10 rounded bg-base-300 align-middle motion-safe:animate-pulse" />
+            </span>
+          </li>
+        </ul>
+
+        <p class="mt-3 hidden rounded-xl bg-base-200 px-3 py-2 text-center text-xs text-base-content/70 group-data-[state=denied]/prayer:block">
+          {gettext("Allow location access in your browser to see prayer times for where you are.")}
+        </p>
+        <p class="mt-3 hidden rounded-xl bg-base-200 px-3 py-2 text-center text-xs text-base-content/70 group-data-[state=error]/prayer:block">
+          {gettext("Prayer times could not be loaded. Click to try again.")}
+        </p>
+      </section>
+    </div>
     """
   end
 

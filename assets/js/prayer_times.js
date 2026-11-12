@@ -82,23 +82,30 @@ class PrayerTimes extends HTMLElement {
     // City from the device timezone ("Europe/Stockholm" -> "Stockholm"). No
     // network lookup, so it names the timezone's city, not the exact town.
     const zone = Intl.DateTimeFormat().resolvedOptions().timeZone || ""
-    this.$("place").textContent = zone.split("/").pop().replace(/_/g, " ")
+    this.set("place", zone.split("/").pop().replace(/_/g, " "))
 
     this.onTrigger = () => {
       const state = this.root.dataset.state
       if (state === "denied" || state === "error") this.start({retry: true})
     }
-    this.$("trigger")?.addEventListener("click", this.onTrigger)
+    // the chip (popover) or the whole card retries after a failure
+    this.root.addEventListener("click", this.onTrigger)
 
     this.start()
   }
 
   disconnectedCallback() {
     this.stopTimers()
-    this.$("trigger")?.removeEventListener("click", this.onTrigger)
+    this.root?.removeEventListener("click", this.onTrigger)
   }
 
   $(role) { return this.querySelector(`[data-role=${role}]`) }
+
+  // the card variant has no header chip, so every target is optional
+  set(role, text) {
+    const el = this.$(role)
+    if (el) el.textContent = text
+  }
 
   stopTimers() {
     clearTimeout(this.timer)
@@ -149,20 +156,23 @@ class PrayerTimes extends HTMLElement {
     this.nextAt = next ? times[next] : nextFajr
     if (!next && nextFajr) next = "fajr"
 
+    // after Isha the next prayer is tomorrow's Fajr: show that time in its cell
+    const tomorrowFajr = !PRAYERS.some(key => times[key] && times[key] > now)
+
     this.querySelectorAll("[data-prayer]").forEach(cell => {
       const key = cell.dataset.prayer
-      const ts = times[key]
+      const ts = key === "fajr" && tomorrowFajr && nextFajr ? nextFajr : times[key]
       cell.querySelector("[data-role=time]").textContent = format(ts)
       cell.toggleAttribute("data-next", key === next)
       cell.toggleAttribute("data-past", Boolean(ts) && ts <= now && key !== next)
     })
 
     const label = next ? this.querySelector(`[data-prayer="${next}"]`).dataset.label : ""
-    this.$("next-label").textContent = label
-    this.$("next-time").textContent = this.nextAt ? format(this.nextAt) : ""
-    this.$("until").textContent = label ? this.$("until").dataset.template.replace("%{prayer}", label) : ""
-    this.$("next-at").textContent = this.nextAt ? format(this.nextAt) : ""
-    this.$("hijri").textContent = this.hijriFormat ? this.hijriFormat.format(now) : ""
+    this.set("next-label", label)
+    this.set("next-time", this.nextAt ? format(this.nextAt) : "")
+    this.set("until", label ? this.$("until").dataset.template.replace("%{prayer}", label) : "")
+    this.set("next-at", this.nextAt ? format(this.nextAt) : "")
+    this.set("hijri", this.hijriFormat ? this.hijriFormat.format(now) : "")
 
     this.renderArc(now, times)
     this.renderRamadan(now, times, format)
@@ -206,12 +216,12 @@ class PrayerTimes extends HTMLElement {
     // Umm al-Qura months have 29 or 30 days
     const total = this.hijri(now + (30 - parts.day) * DAY).month === 9 ? 30 : 29
     const template = this.$("ramadan-day").dataset.template
-    this.$("ramadan-day").textContent = template
+    this.set("ramadan-day", template
       .replace("%{day}", this.number.format(parts.day))
-      .replace("%{total}", this.number.format(total))
+      .replace("%{total}", this.number.format(total)))
     this.$("ramadan-progress").style.width = `${(parts.day / total) * 100}%`
-    this.$("suhoor").textContent = format(times.fajr)
-    this.$("iftar").textContent = format(times.maghrib)
+    this.set("suhoor", format(times.fajr))
+    this.set("iftar", format(times.maghrib))
 
     // fasting until Maghrib; otherwise count down to the end of suhoor (Fajr)
     const fasting = times.fajr && times.maghrib && now >= times.fajr && now < times.maghrib
@@ -233,13 +243,12 @@ class PrayerTimes extends HTMLElement {
     const h = Math.floor(left / 3600)
     const m = Math.floor((left % 3600) / 60)
     const s = left % 60
-    this.$("countdown").textContent = `${this.two.format(h)}:${this.two.format(m)}:${this.two.format(s)}`
+    this.set("countdown", `${this.two.format(h)}:${this.two.format(m)}:${this.two.format(s)}`)
 
     if (this.root.hasAttribute("data-ramadan") && this.fastUntil) {
       const mins = Math.max(0, Math.ceil((this.fastUntil - now) / 60000))
       const fh = Math.floor(mins / 60)
-      this.$("fast-countdown").textContent =
-        [fh && this.hours.format(fh), this.minutes.format(mins % 60)].filter(Boolean).join(" ")
+      this.set("fast-countdown", [fh && this.hours.format(fh), this.minutes.format(mins % 60)].filter(Boolean).join(" "))
     }
   }
 }

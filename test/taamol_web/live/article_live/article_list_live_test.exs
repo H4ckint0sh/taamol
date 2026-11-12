@@ -12,7 +12,11 @@ defmodule TaamolWeb.ArticleLive.ArticleListLiveTest do
 
     published =
       %Article{creator_id: creator.id}
-      |> Article.changeset(%{title: "Published", body: "A story", published: Date.utc_today()})
+      |> Article.changeset(%{
+        title: "Published",
+        body: "A story",
+        published: DateTime.add(DateTime.utc_now(:second), -60)
+      })
       |> Repo.insert!()
 
     draft =
@@ -22,7 +26,10 @@ defmodule TaamolWeb.ArticleLive.ArticleListLiveTest do
 
     future =
       %Article{creator_id: creator.id}
-      |> Article.changeset(%{title: "Future", published: Date.add(Date.utc_today(), 1)})
+      |> Article.changeset(%{
+        title: "Future",
+        published: DateTime.add(DateTime.utc_now(:second), 86_400)
+      })
       |> Repo.insert!()
 
     {:ok, view, _html} = live(conn, ~p"/articles")

@@ -10,19 +10,109 @@ defmodule Taamol.Tracking do
   alias Taamol.Tracking.{Article, ArticleLike, Comment, CommentLike}
 
   @doc """
-  Lists published articles.
+  Lists published articles, newest first.
+
+  ## Options
+
+    * `:category` - only articles in this category (atom)
+    * `:exclude` - an article id to leave out (e.g. the one already shown)
+    * `:limit` / `:offset` - pagination (defaults 10 / 0)
   """
   def list_public_articles(opts \\ []) do
-    today = Date.utc_today()
+    opts
+    |> public_articles_query()
+    |> order_by([a], desc: a.published, desc: a.inserted_at, desc: a.id)
+    |> limit(^Keyword.get(opts, :limit, 10))
+    |> offset(^Keyword.get(opts, :offset, 0))
+    |> preload(:creator)
+    |> Repo.all()
+  end
 
-    Repo.all(
-      from n in Article,
-        where: not is_nil(n.published) and n.published <= ^today,
-        order_by: [desc: n.published, desc: n.inserted_at, desc: n.id],
-        preload: [:creator],
-        limit: ^Keyword.get(opts, :limit, 10),
-        offset: ^Keyword.get(opts, :offset, 0)
-    )
+  @doc "Lists the most viewed published articles."
+  def list_most_read_articles(opts \\ []) do
+    opts
+    |> public_articles_query()
+    |> order_by([a], desc: a.view_count, desc: a.published, desc: a.id)
+    |> limit(^Keyword.get(opts, :limit, 5))
+    |> preload(:creator)
+    |> Repo.all()
+  end
+
+  @doc """
+  Returns the lead story: the newest featured published article, falling back
+  to the newest published article. Returns `nil` when nothing is published.
+  """
+  def get_lead_article(opts \\ []) do
+    base = public_articles_query(opts)
+
+    featured =
+      base
+      |> where([a], a.featured)
+      |> order_by([a], desc: a.published, desc: a.id)
+      |> limit(1)
+      |> preload(:creator)
+      |> Repo.one()
+
+    featured ||
+      base
+      |> order_by([a], desc: a.published, desc: a.id)
+      |> limit(1)
+      |> preload(:creator)
+      |> Repo.one()
+  end
+
+  @doc "Counts published articles per category, as a map of category => count."
+  def count_public_articles_by_category do
+    public_articles_query([])
+    |> group_by([a], a.category)
+    |> select([a], {a.category, count(a.id)})
+    |> Repo.all()
+    |> Map.new()
+  end
+
+  @doc """
+  Gets a published article. Raises `Ecto.NoResultsError` for drafts, future
+  articles and unknown ids, so they render as 404.
+  """
+  def get_public_article!(id) do
+    with {:ok, uuid} <- Ecto.UUID.cast(id),
+         %Article{} = article <-
+           public_articles_query([])
+           |> where([a], a.id == ^uuid)
+           |> preload(:creator)
+           |> Repo.one() do
+      article
+    else
+      _ -> raise Ecto.NoResultsError, queryable: Article
+    end
+  end
+
+  @doc "Counts one view of an article."
+  def increment_article_views(%Article{id: id}) do
+    {1, [count]} =
+      Repo.update_all(
+        from(a in Article, where: a.id == ^id, select: a.view_count),
+        inc: [view_count: 1]
+      )
+
+    count
+  end
+
+  defp public_articles_query(opts) do
+    now = DateTime.utc_now()
+
+    query = from a in Article, where: not is_nil(a.published) and a.published <= ^now
+
+    query =
+      case Keyword.get(opts, :category) do
+        nil -> query
+        category -> where(query, [a], a.category == ^category)
+      end
+
+    case Keyword.get(opts, :exclude) do
+      nil -> query
+      id -> where(query, [a], a.id != ^id)
+    end
   end
 
   @doc """

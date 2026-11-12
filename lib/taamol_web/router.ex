@@ -36,7 +36,6 @@ defmodule TaamolWeb.Router do
   scope "/", TaamolWeb do
     pipe_through :browser
 
-    get "/", PageController, :home
     post "/locale", LocaleController, :update
   end
 
@@ -100,6 +99,12 @@ defmodule TaamolWeb.Router do
       live "/users/log-in", UserLive.Login, :new
       live "/users/log-in/:token", UserLive.Confirmation, :new
       live "/articles", ArticleLive.ArticleListLive, :new
+      # public news pages: work for visitors and logged-in users alike
+      live "/", HomeLive, :index
+      live "/categories", CategoryLive, :index
+      live "/categories/:category", CategoryLive, :show
+      live "/articles/:id", ArticleLive.Show, :show
+      live "/menu", MenuLive, :index
     end
 
     post "/users/log-in", UserSessionController, :create

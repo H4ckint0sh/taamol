@@ -118,3 +118,9 @@
 [data-phx-session], [data-phx-teleported-src] { display: contents }
 
 /* This file is for your main application CSS */
+
+/* Persian pages: show all digits (including server-rendered ones) as Persian
+   digits, using Arad's "ss01" stylistic set. */
+html[lang="fa"] body {
+  font-feature-settings: "ss01";
+}

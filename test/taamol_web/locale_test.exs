@@ -32,7 +32,7 @@ defmodule TaamolWeb.LocaleTest do
     html = conn |> get(~p"/") |> html_response(200)
     assert html =~ ~s(lang="sv")
     assert html =~ ~s(dir="ltr")
-    assert html =~ "Välkommen till Taamol"
+    assert html =~ "Nyheter för vår gemenskap"
     assert {:ok, view, _} = live(conn, ~p"/users/register")
     assert has_element?(view, "#registration_form label", "E-post")
   end
@@ -82,9 +82,12 @@ defmodule TaamolWeb.LocaleTest do
 
     assert document |> LazyHTML.query("#locale-switcher button[name=locale]") |> Enum.count() == 3
 
-    assert document |> LazyHTML.query(~s(#locale-option-sv[aria-current="true"])) |> Enum.count() ==
+    assert document
+           |> LazyHTML.query(~s(#locale-switcher-option-sv[aria-current="true"]))
+           |> Enum.count() ==
              1
 
-    assert document |> LazyHTML.query("#locale-option-en[aria-current]") |> Enum.count() == 0
+    assert document |> LazyHTML.query("#locale-switcher-option-en[aria-current]") |> Enum.count() ==
+             0
   end
 end
