@@ -21,22 +21,22 @@ msgstr "پیوند تأیید تغییر ایمیل به نشانی جدید ف�
 msgid "A little more connection."
 msgstr "کمی ارتباط بیشتر."
 
-#: lib/taamol_web/controllers/page_html/home.html.heex:62
+#: lib/taamol_web/controllers/page_html/home.html.heex:68
 #, elixir-autogen, elixir-format
 msgid "A place to begin"
 msgstr "جایی برای شروع"
 
-#: lib/taamol_web/live/dashboard_live/dashboard_start_live.ex:25
+#: lib/taamol_web/live/dashboard_live/dashboard_start_live.ex:28
 #, elixir-autogen, elixir-format
 msgid "A quick overview of your Taamol community."
 msgstr "نگاهی کوتاه به جامعه تعامل."
 
-#: lib/taamol_web/components/layouts.ex:73
+#: lib/taamol_web/components/layouts.ex:70
 #, elixir-autogen, elixir-format
 msgid "Access"
 msgstr "دسترسی"
 
-#: lib/taamol_web/live/admin_access_live.ex:103
+#: lib/taamol_web/live/admin_access_live.ex:111
 #, elixir-autogen, elixir-format
 msgid "Access could not be updated. Refresh and try again."
 msgstr "دسترسی به‌روزرسانی نشد. صفحه را تازه کنید و دوباره تلاش کنید."
@@ -46,7 +46,7 @@ msgstr "دسترسی به‌روزرسانی نشد. صفحه را تازه کن
 msgid "Access management"
 msgstr "مدیریت دسترسی"
 
-#: lib/taamol_web/live/admin_access_live.ex:93
+#: lib/taamol_web/live/admin_access_live.ex:101
 #, elixir-autogen, elixir-format
 msgid "Access updated."
 msgstr "دسترسی به‌روزرسانی شد."
@@ -56,17 +56,17 @@ msgstr "دسترسی به‌روزرسانی شد."
 msgid "Account Settings"
 msgstr "تنظیمات حساب"
 
-#: lib/taamol_web/live/dashboard_live/dashboard_start_live.ex:36
+#: lib/taamol_web/live/dashboard_live/dashboard_start_live.ex:40
 #, elixir-autogen, elixir-format
 msgid "Account overview"
 msgstr "نمای کلی حساب‌ها"
 
-#: lib/taamol_web/controllers/page_html/home.html.heex:22
+#: lib/taamol_web/controllers/page_html/home.html.heex:24
 #, elixir-autogen, elixir-format
 msgid "Account settings"
 msgstr "تنظیمات حساب"
 
-#: lib/taamol_web/live/dashboard_live/dashboard_start_live.ex:59
+#: lib/taamol_web/live/dashboard_live/dashboard_start_live.ex:63
 #, elixir-autogen, elixir-format
 msgid "Accounts with admin access"
 msgstr "حساب‌های دارای دسترسی مدیر"
@@ -82,12 +82,12 @@ msgstr "عملیات"
 msgid "Administration"
 msgstr "مدیریت"
 
-#: lib/taamol_web/live/admin_access_live.ex:40
+#: lib/taamol_web/live/admin_access_live.ex:42
 #, elixir-autogen, elixir-format
 msgid "Administrator"
 msgstr "مدیر"
 
-#: lib/taamol_web/live/dashboard_live/dashboard_start_live.ex:55
+#: lib/taamol_web/live/dashboard_live/dashboard_start_live.ex:59
 #, elixir-autogen, elixir-format
 msgid "Administrators"
 msgstr "مدیران"
@@ -97,7 +97,7 @@ msgstr "مدیران"
 msgid "Administrators can manage access. Dashboard access can be granted only to administrators. Changing access signs the affected user out."
 msgstr "مدیران می‌توانند دسترسی‌ها را مدیریت کنند. دسترسی داشبورد فقط به مدیران داده می‌شود. تغییر دسترسی کاربر مربوطه را از حساب خارج می‌کند."
 
-#: lib/taamol_web/controllers/page_html/home.html.heex:43
+#: lib/taamol_web/controllers/page_html/home.html.heex:48
 #, elixir-autogen, elixir-format
 msgid "Already have an account? Log in"
 msgstr "حساب دارید؟ وارد شوید"
@@ -117,8 +117,8 @@ msgstr "ایمیلی به %{email} فرستاده شد. برای تأیید حس
 msgid "Article creation is not available yet."
 msgstr "ایجاد مقاله هنوز در دسترس نیست."
 
-#: lib/taamol_web/components/layouts.ex:137
-#: lib/taamol_web/components/layouts.ex:152
+#: lib/taamol_web/components/layouts.ex:140
+#: lib/taamol_web/components/layouts.ex:155
 #, elixir-autogen, elixir-format
 msgid "Attempting to reconnect"
 msgstr "در حال تلاش برای اتصال دوباره"
@@ -138,7 +138,7 @@ msgstr "تغییر ایمیل"
 msgid "Changing..."
 msgstr "در حال تغییر..."
 
-#: lib/taamol_web/live/user_live/confirmation.ex:34
+#: lib/taamol_web/live/user_live/confirmation.ex:37
 #, elixir-autogen, elixir-format
 msgid "Confirm and log in only this time"
 msgstr "تأیید و ورود فقط برای این بار"
@@ -153,23 +153,23 @@ msgstr "تأیید و وارد ماندن"
 msgid "Confirm new password"
 msgstr "تأیید گذرواژه جدید"
 
-#: lib/taamol/accounts/user_notifier.ex:46
+#: lib/taamol/accounts/user_notifier.ex:62
 #, elixir-autogen, elixir-format
 msgid "Confirmation instructions"
 msgstr "راهنمای تأیید"
 
-#: lib/taamol_web/live/dashboard_live/dashboard_start_live.ex:47
+#: lib/taamol_web/live/dashboard_live/dashboard_start_live.ex:51
 #, elixir-autogen, elixir-format
 msgid "Confirmed accounts"
 msgstr "حساب‌های تأییدشده"
 
 #: lib/taamol_web/live/user_live/confirmation.ex:28
-#: lib/taamol_web/live/user_live/confirmation.ex:33
+#: lib/taamol_web/live/user_live/confirmation.ex:34
 #, elixir-autogen, elixir-format
 msgid "Confirming..."
 msgstr "در حال تأیید..."
 
-#: lib/taamol_web/controllers/page_html/home.html.heex:36
+#: lib/taamol_web/controllers/page_html/home.html.heex:40
 #: lib/taamol_web/live/user_live/registration.ex:45
 #, elixir-autogen, elixir-format
 msgid "Create an account"
@@ -190,19 +190,19 @@ msgstr "ایجادکننده"
 msgid "Creating account..."
 msgstr "در حال ایجاد حساب..."
 
-#: lib/taamol_web/components/layouts.ex:69
+#: lib/taamol_web/components/layouts.ex:66
 #: lib/taamol_web/live/dashboard_live/dashboard_start_live.ex:9
-#: lib/taamol_web/live/dashboard_live/dashboard_start_live.ex:24
+#: lib/taamol_web/live/dashboard_live/dashboard_start_live.ex:25
 #, elixir-autogen, elixir-format
 msgid "Dashboard"
 msgstr "داشبورد"
 
-#: lib/taamol_web/live/admin_access_live.ex:42
+#: lib/taamol_web/live/admin_access_live.ex:45
 #, elixir-autogen, elixir-format
 msgid "Dashboard allowed"
 msgstr "دسترسی به داشبورد مجاز است"
 
-#: lib/taamol_web/live/admin_access_live.ex:42
+#: lib/taamol_web/live/admin_access_live.ex:46
 #, elixir-autogen, elixir-format
 msgid "Dashboard denied"
 msgstr "دسترسی به داشبورد مجاز نیست"
@@ -212,15 +212,15 @@ msgstr "دسترسی به داشبورد مجاز نیست"
 msgid "Don't have an account?"
 msgstr "حساب ندارید؟"
 
-#: lib/taamol_web/live/user_live/login.ex:48
-#: lib/taamol_web/live/user_live/login.ex:72
+#: lib/taamol_web/live/user_live/login.ex:49
+#: lib/taamol_web/live/user_live/login.ex:75
 #: lib/taamol_web/live/user_live/registration.ex:28
 #: lib/taamol_web/live/user_live/settings.ex:46
 #, elixir-autogen, elixir-format
 msgid "Email"
 msgstr "ایمیل"
 
-#: lib/taamol_web/live/dashboard_live/dashboard_start_live.ex:51
+#: lib/taamol_web/live/dashboard_live/dashboard_start_live.ex:55
 #, elixir-autogen, elixir-format
 msgid "Email addresses verified"
 msgstr "نشانی‌های ایمیل تأییدشده"
@@ -241,37 +241,37 @@ msgstr "ایمیل با موفقیت تغییر کرد."
 msgid "Full Name"
 msgstr "نام کامل"
 
-#: lib/taamol_web/controllers/page_html/home.html.heex:29
+#: lib/taamol_web/controllers/page_html/home.html.heex:32
 #, elixir-autogen, elixir-format
 msgid "Go to dashboard"
 msgstr "رفتن به داشبورد"
 
-#: lib/taamol_web/live/admin_access_live.ex:77
+#: lib/taamol_web/live/admin_access_live.ex:83
 #, elixir-autogen, elixir-format
 msgid "Grant dashboard"
 msgstr "دادن دسترسی داشبورد"
 
-#: lib/taamol/accounts/user_notifier.ex:27
+#: lib/taamol/accounts/user_notifier.ex:29
 #, elixir-autogen, elixir-format
 msgid "Hi %{email},\n\nYou can change your email by visiting the URL below:\n\n%{url}\n\nIf you didn't request this change, please ignore this."
 msgstr "سلام %{email}،\n\nبرای تغییر ایمیل خود به نشانی زیر بروید:\n\n%{url}\n\nاگر این درخواست را نداده‌اید، این ایمیل را نادیده بگیرید."
 
-#: lib/taamol/accounts/user_notifier.ex:47
+#: lib/taamol/accounts/user_notifier.ex:63
 #, elixir-autogen, elixir-format
 msgid "Hi %{email},\n\nYou can confirm your account by visiting the URL below:\n\n%{url}\n\nIf you didn't create an account with us, please ignore this."
 msgstr "سلام %{email}،\n\nبرای تأیید حساب خود به نشانی زیر بروید:\n\n%{url}\n\nاگر حسابی ایجاد نکرده‌اید، این ایمیل را نادیده بگیرید."
 
-#: lib/taamol/accounts/user_notifier.ex:42
+#: lib/taamol/accounts/user_notifier.ex:51
 #, elixir-autogen, elixir-format
 msgid "Hi %{email},\n\nYou can log into your account by visiting the URL below:\n\n%{url}\n\nIf you didn't request this email, please ignore this."
 msgstr "سلام %{email}،\n\nبرای ورود به حساب خود به نشانی زیر بروید:\n\n%{url}\n\nاگر این درخواست را نداده‌اید، این ایمیل را نادیده بگیرید."
 
-#: lib/taamol_web/live/user_live/login.ex:121
+#: lib/taamol_web/live/user_live/login.ex:125
 #, elixir-autogen, elixir-format
 msgid "If your email is in our system, you will receive instructions for logging in shortly."
 msgstr "اگر ایمیل شما در سیستم ما باشد، به‌زودی راهنمای ورود را دریافت می‌کنید."
 
-#: lib/taamol_web/live/admin_access_live.ex:108
+#: lib/taamol_web/live/admin_access_live.ex:116
 #, elixir-autogen, elixir-format
 msgid "Invalid access change."
 msgstr "تغییر دسترسی نامعتبر است."
@@ -281,50 +281,52 @@ msgstr "تغییر دسترسی نامعتبر است."
 msgid "Invalid email or password"
 msgstr "ایمیل یا گذرواژه نامعتبر است"
 
-#: lib/taamol_web/live/user_live/confirmation.ex:59
+#: lib/taamol_web/live/user_live/confirmation.ex:62
 #, elixir-autogen, elixir-format
 msgid "Keep me logged in on this device"
 msgstr "مرا در این دستگاه وارد نگه دار"
 
-#: lib/taamol_web/components/layouts.ex:50
+#: lib/taamol_web/components/layouts.ex:197
+#: lib/taamol_web/components/layouts.ex:206
+#: lib/taamol_web/components/layouts.ex:210
 #, elixir-autogen, elixir-format
 msgid "Language"
 msgstr "زبان"
 
-#: lib/taamol_web/components/layouts.ex:87
-#: lib/taamol_web/live/user_live/confirmation.ex:50
+#: lib/taamol_web/components/layouts.ex:88
+#: lib/taamol_web/live/user_live/confirmation.ex:53
 #: lib/taamol_web/live/user_live/login.ex:13
 #: lib/taamol_web/live/user_live/registration.ex:18
 #, elixir-autogen, elixir-format
 msgid "Log in"
 msgstr "ورود"
 
-#: lib/taamol_web/live/user_live/login.ex:85
+#: lib/taamol_web/live/user_live/login.ex:88
 #, elixir-autogen, elixir-format
 msgid "Log in and stay logged in"
 msgstr "ورود و وارد ماندن"
 
-#: lib/taamol/accounts/user_notifier.ex:41
+#: lib/taamol/accounts/user_notifier.ex:50
 #, elixir-autogen, elixir-format
 msgid "Log in instructions"
 msgstr "راهنمای ورود"
 
-#: lib/taamol_web/live/user_live/login.ex:88
+#: lib/taamol_web/live/user_live/login.ex:92
 #, elixir-autogen, elixir-format
 msgid "Log in only this time"
 msgstr "ورود فقط برای این بار"
 
-#: lib/taamol_web/live/user_live/login.ex:55
+#: lib/taamol_web/live/user_live/login.ex:56
 #, elixir-autogen, elixir-format
 msgid "Log in with email"
 msgstr "ورود با ایمیل"
 
-#: lib/taamol_web/live/user_live/confirmation.ex:62
+#: lib/taamol_web/live/user_live/confirmation.ex:68
 #, elixir-autogen, elixir-format
 msgid "Log me in only this time"
 msgstr "ورود فقط برای این بار"
 
-#: lib/taamol_web/components/layouts.ex:83
+#: lib/taamol_web/components/layouts.ex:84
 #, elixir-autogen, elixir-format
 msgid "Log out"
 msgstr "خروج"
@@ -334,29 +336,29 @@ msgstr "خروج"
 msgid "Logged out successfully."
 msgstr "با موفقیت خارج شدید."
 
-#: lib/taamol_web/live/user_live/confirmation.ex:49
-#: lib/taamol_web/live/user_live/confirmation.ex:56
-#: lib/taamol_web/live/user_live/confirmation.ex:61
+#: lib/taamol_web/live/user_live/confirmation.ex:52
+#: lib/taamol_web/live/user_live/confirmation.ex:59
+#: lib/taamol_web/live/user_live/confirmation.ex:65
 #, elixir-autogen, elixir-format
 msgid "Logging in..."
 msgstr "در حال ورود..."
 
-#: lib/taamol_web/live/user_live/confirmation.ex:85
+#: lib/taamol_web/live/user_live/confirmation.ex:91
 #, elixir-autogen, elixir-format
 msgid "Magic link is invalid or it has expired."
 msgstr "پیوند ورود نامعتبر یا منقضی شده است."
 
-#: lib/taamol_web/live/admin_access_live.ex:56
+#: lib/taamol_web/live/admin_access_live.ex:60
 #, elixir-autogen, elixir-format
 msgid "Make admin"
 msgstr "مدیر کردن"
 
-#: lib/taamol_web/live/admin_access_live.ex:54
+#: lib/taamol_web/live/admin_access_live.ex:58
 #, elixir-autogen, elixir-format
 msgid "Make this user an administrator?"
 msgstr "این کاربر مدیر شود؟"
 
-#: lib/taamol_web/live/dashboard_live/dashboard_start_live.ex:32
+#: lib/taamol_web/live/dashboard_live/dashboard_start_live.ex:36
 #, elixir-autogen, elixir-format
 msgid "Manage access"
 msgstr "مدیریت دسترسی"
@@ -381,12 +383,12 @@ msgstr "نام با موفقیت به‌روزرسانی شد."
 msgid "New password"
 msgstr "گذرواژه جدید"
 
-#: lib/taamol_web/live/dashboard_live/dashboard_start_live.ex:75
+#: lib/taamol_web/live/dashboard_live/dashboard_start_live.ex:79
 #, elixir-autogen, elixir-format
 msgid "Open access management"
 msgstr "باز کردن مدیریت دسترسی"
 
-#: lib/taamol_web/live/user_live/login.ex:80
+#: lib/taamol_web/live/user_live/login.ex:83
 #, elixir-autogen, elixir-format
 msgid "Password"
 msgstr "گذرواژه"
@@ -396,7 +398,7 @@ msgstr "گذرواژه"
 msgid "Password updated successfully!"
 msgstr "گذرواژه با موفقیت به‌روزرسانی شد!"
 
-#: lib/taamol_web/live/dashboard_live/dashboard_start_live.ex:66
+#: lib/taamol_web/live/dashboard_live/dashboard_start_live.ex:70
 #, elixir-autogen, elixir-format
 msgid "People and permissions"
 msgstr "کاربران و مجوزها"
@@ -406,7 +408,7 @@ msgstr "کاربران و مجوزها"
 msgid "Publication Date"
 msgstr "تاریخ انتشار"
 
-#: lib/taamol_web/components/layouts.ex:93
+#: lib/taamol_web/components/layouts.ex:96
 #, elixir-autogen, elixir-format
 msgid "Register"
 msgstr "ثبت‌نام"
@@ -416,27 +418,27 @@ msgstr "ثبت‌نام"
 msgid "Register for an account"
 msgstr "ایجاد حساب کاربری"
 
-#: lib/taamol_web/live/dashboard_live/dashboard_start_live.ex:43
+#: lib/taamol_web/live/dashboard_live/dashboard_start_live.ex:47
 #, elixir-autogen, elixir-format
 msgid "Registered users"
 msgstr "کاربران ثبت‌نام‌شده"
 
-#: lib/taamol_web/live/admin_access_live.ex:66
+#: lib/taamol_web/live/admin_access_live.ex:70
 #, elixir-autogen, elixir-format
 msgid "Remove admin"
 msgstr "حذف دسترسی مدیر"
 
-#: lib/taamol_web/live/admin_access_live.ex:64
+#: lib/taamol_web/live/admin_access_live.ex:68
 #, elixir-autogen, elixir-format
 msgid "Remove this user's administrator access?"
 msgstr "دسترسی مدیر این کاربر حذف شود؟"
 
-#: lib/taamol_web/live/dashboard_live/dashboard_start_live.ex:68
+#: lib/taamol_web/live/dashboard_live/dashboard_start_live.ex:72
 #, elixir-autogen, elixir-format
 msgid "Review administrator roles and control dashboard access."
 msgstr "نقش مدیران و دسترسی به داشبورد را مدیریت کنید."
 
-#: lib/taamol_web/live/admin_access_live.ex:77
+#: lib/taamol_web/live/admin_access_live.ex:82
 #, elixir-autogen, elixir-format
 msgid "Revoke dashboard"
 msgstr "لغو دسترسی داشبورد"
@@ -457,7 +459,7 @@ msgstr "ذخیره نام"
 msgid "Saving..."
 msgstr "در حال ذخیره..."
 
-#: lib/taamol_web/components/layouts.ex:76
+#: lib/taamol_web/components/layouts.ex:75
 #, elixir-autogen, elixir-format
 msgid "Settings"
 msgstr "تنظیمات"
@@ -467,7 +469,7 @@ msgstr "تنظیمات"
 msgid "Sign up"
 msgstr "ثبت‌نام"
 
-#: lib/taamol_web/components/layouts.ex:144
+#: lib/taamol_web/components/layouts.ex:147
 #, elixir-autogen, elixir-format
 msgid "Something went wrong!"
 msgstr "مشکلی پیش آمد!"
@@ -477,7 +479,7 @@ msgstr "مشکلی پیش آمد!"
 msgid "The link is invalid or it has expired."
 msgstr "پیوند نامعتبر یا منقضی شده است."
 
-#: lib/taamol_web/live/user_live/confirmation.ex:68
+#: lib/taamol_web/live/user_live/confirmation.ex:74
 #, elixir-autogen, elixir-format
 msgid "Tip: If you prefer passwords, you can enable them in the user settings."
 msgstr "نکته: اگر گذرواژه را ترجیح می‌دهید، می‌توانید آن را در تنظیمات کاربر فعال کنید."
@@ -492,22 +494,22 @@ msgstr "عنوان"
 msgid "To see sent emails, visit"
 msgstr "برای دیدن ایمیل‌های ارسال‌شده، بروید به"
 
-#: lib/taamol_web/controllers/page_html/home.html.heex:64
+#: lib/taamol_web/controllers/page_html/home.html.heex:71
 #, elixir-autogen, elixir-format
 msgid "Together starts here."
 msgstr "با هم بودن از اینجا آغاز می‌شود."
 
-#: lib/taamol_web/live/dashboard_live/dashboard_start_live.ex:39
+#: lib/taamol_web/live/dashboard_live/dashboard_start_live.ex:43
 #, elixir-autogen, elixir-format
 msgid "Total accounts"
 msgstr "تعداد کل حساب‌ها"
 
-#: lib/taamol/accounts/user_notifier.ex:26
+#: lib/taamol/accounts/user_notifier.ex:28
 #, elixir-autogen, elixir-format
 msgid "Update email instructions"
 msgstr "راهنمای تغییر ایمیل"
 
-#: lib/taamol_web/live/admin_access_live.ex:40
+#: lib/taamol_web/live/admin_access_live.ex:42
 #, elixir-autogen, elixir-format
 msgid "User"
 msgstr "کاربر"
@@ -517,12 +519,12 @@ msgstr "کاربر"
 msgid "User confirmed successfully."
 msgstr "حساب کاربر با موفقیت تأیید شد."
 
-#: lib/taamol_web/components/layouts.ex:129
+#: lib/taamol_web/components/layouts.ex:132
 #, elixir-autogen, elixir-format
 msgid "We can't find the internet"
 msgstr "اتصال اینترنت پیدا نشد"
 
-#: lib/taamol_web/components/layouts/root.html.heex:7
+#: lib/taamol_web/components/layouts/root.html.heex:10
 #, elixir-autogen, elixir-format
 msgid "Welcome"
 msgstr "خوش آمدید"
@@ -547,13 +549,13 @@ msgstr "به فضای خود در تعامل خوش آمدید. برای مدی�
 msgid "Welcome, %{email}"
 msgstr "خوش آمدید، %{email}"
 
-#: lib/taamol_web/user_auth.ex:246
-#: lib/taamol_web/user_auth.ex:310
+#: lib/taamol_web/user_auth.ex:234
+#: lib/taamol_web/user_auth.ex:302
 #, elixir-autogen, elixir-format
 msgid "You are not authorized to access this page."
 msgstr "شما اجازه دسترسی به این صفحه را ندارید."
 
-#: lib/taamol_web/live/admin_access_live.ex:98
+#: lib/taamol_web/live/admin_access_live.ex:106
 #, elixir-autogen, elixir-format
 msgid "You are not authorized to manage access."
 msgstr "شما اجازه مدیریت دسترسی را ندارید."
@@ -563,15 +565,15 @@ msgstr "شما اجازه مدیریت دسترسی را ندارید."
 msgid "You are running the local mail adapter."
 msgstr "ارسال‌کننده ایمیل محلی فعال است."
 
-#: lib/taamol_web/user_auth.ex:230
-#: lib/taamol_web/user_auth.ex:293
+#: lib/taamol_web/user_auth.ex:216
+#: lib/taamol_web/user_auth.ex:285
 #, elixir-autogen, elixir-format
 msgid "You must log in to access this page."
 msgstr "برای دسترسی به این صفحه باید وارد شوید."
 
 #: lib/taamol_web/controllers/user_session_controller.ex:79
 #: lib/taamol_web/live/user_live/settings.ex:152
-#: lib/taamol_web/user_auth.ex:259
+#: lib/taamol_web/user_auth.ex:250
 #, elixir-autogen, elixir-format
 msgid "You must re-authenticate to access this page."
 msgstr "برای دسترسی به این صفحه باید دوباره وارد شوید."
@@ -586,7 +588,7 @@ msgstr "برای انجام عملیات حساس حساب باید دوباره
 msgid "close"
 msgstr "بستن"
 
-#: lib/taamol_web/live/user_live/login.ex:59
+#: lib/taamol_web/live/user_live/login.ex:61
 #, elixir-autogen, elixir-format
 msgid "or"
 msgstr "یا"
@@ -595,3 +597,98 @@ msgstr "یا"
 #, elixir-autogen, elixir-format
 msgid "the mailbox page"
 msgstr "صفحه صندوق ایمیل"
+
+#: lib/taamol_web/components/layouts.ex:527
+#, elixir-autogen, elixir-format
+msgid "Allow location access in your browser to see prayer times for where you are."
+msgstr "برای دیدن اوقات شرعی محل خود، دسترسی به موقعیت مکانی را در مرورگر مجاز کنید."
+
+#: lib/taamol_web/components/layouts.ex:258
+#, elixir-autogen, elixir-format
+msgid "Asr"
+msgstr "عصر"
+
+#: lib/taamol_web/components/layouts.ex:257
+#, elixir-autogen, elixir-format
+msgid "Dhuhr"
+msgstr "ظهر"
+
+#: lib/taamol_web/components/layouts.ex:255
+#, elixir-autogen, elixir-format
+msgid "Fajr"
+msgstr "صبح"
+
+#: lib/taamol_web/components/layouts.ex:260
+#, elixir-autogen, elixir-format
+msgid "Isha"
+msgstr "عشا"
+
+#: lib/taamol_web/components/layouts.ex:259
+#, elixir-autogen, elixir-format
+msgid "Maghrib"
+msgstr "مغرب"
+
+#: lib/taamol_web/components/layouts.ex:305
+#, elixir-autogen, elixir-format
+msgid "Prayer times"
+msgstr "اوقات شرعی"
+
+#: lib/taamol_web/components/layouts.ex:530
+#, elixir-autogen, elixir-format
+msgid "Prayer times could not be loaded. Click to try again."
+msgstr "اوقات شرعی بارگذاری نشد. برای تلاش دوباره کلیک کنید."
+
+#: lib/taamol_web/components/layouts.ex:256
+#, elixir-autogen, elixir-format
+msgid "Sunrise"
+msgstr "طلوع آفتاب"
+
+#: lib/taamol_web/components/layouts.ex:331
+#, elixir-autogen, elixir-format
+msgid "Day %{day} of %{total}"
+msgstr "روز %{day} از %{total}"
+
+#: lib/taamol_web/components/layouts.ex:347
+#, elixir-autogen, elixir-format
+msgid "Iftar"
+msgstr "افطار"
+
+#: lib/taamol_web/components/layouts.ex:327
+#, elixir-autogen, elixir-format
+msgid "Ramadan Mubarak"
+msgstr "رمضان مبارک"
+
+#: lib/taamol_web/components/layouts.ex:343
+#, elixir-autogen, elixir-format
+msgid "Suhoor"
+msgstr "سحر"
+
+#: lib/taamol_web/components/layouts.ex:355
+#, elixir-autogen, elixir-format
+msgid "Until iftar"
+msgstr "تا افطار"
+
+#: lib/taamol_web/components/layouts.ex:354
+#, elixir-autogen, elixir-format
+msgid "Until suhoor ends"
+msgstr "تا پایان سحر"
+
+#: lib/taamol_web/components/layouts.ex:500
+#, elixir-autogen, elixir-format
+msgid "until %{prayer}"
+msgstr "تا %{prayer}"
+
+#: lib/taamol_web/components/layouts.ex:171
+#, elixir-autogen, elixir-format
+msgid "English"
+msgstr "انگلیسی"
+
+#: lib/taamol_web/components/layouts.ex:172
+#, elixir-autogen, elixir-format
+msgid "Persian"
+msgstr "فارسی"
+
+#: lib/taamol_web/components/layouts.ex:173
+#, elixir-autogen, elixir-format
+msgid "Swedish"
+msgstr "سوئدی"

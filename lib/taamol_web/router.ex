@@ -40,10 +40,13 @@ defmodule TaamolWeb.Router do
     post "/locale", LocaleController, :update
   end
 
-  # Other scopes may use custom stacks.
-  # scope "/api", TaamolWeb do
-  #   pipe_through :api
-  # end
+  # Public JSON API. Prayer times only depend on a location and date, so no
+  # session, CSRF token or login is needed.
+  scope "/api", TaamolWeb do
+    pipe_through :api
+
+    get "/prayer-times", PrayerTimeController, :index
+  end
 
   # Enable the mailbox preview in development.
   if Application.compile_env(:taamol, :dev_routes) do

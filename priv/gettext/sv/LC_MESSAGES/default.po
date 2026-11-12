@@ -21,22 +21,22 @@ msgstr "En länk för att bekräfta din nya e-postadress har skickats."
 msgid "A little more connection."
 msgstr "Lite mer gemenskap."
 
-#: lib/taamol_web/controllers/page_html/home.html.heex:62
+#: lib/taamol_web/controllers/page_html/home.html.heex:68
 #, elixir-autogen, elixir-format
 msgid "A place to begin"
 msgstr "En plats att börja"
 
-#: lib/taamol_web/live/dashboard_live/dashboard_start_live.ex:25
+#: lib/taamol_web/live/dashboard_live/dashboard_start_live.ex:28
 #, elixir-autogen, elixir-format
 msgid "A quick overview of your Taamol community."
 msgstr "En snabb överblick över din Taamol-gemenskap."
 
-#: lib/taamol_web/components/layouts.ex:73
+#: lib/taamol_web/components/layouts.ex:70
 #, elixir-autogen, elixir-format
 msgid "Access"
 msgstr "Åtkomst"
 
-#: lib/taamol_web/live/admin_access_live.ex:103
+#: lib/taamol_web/live/admin_access_live.ex:111
 #, elixir-autogen, elixir-format
 msgid "Access could not be updated. Refresh and try again."
 msgstr "Åtkomsten kunde inte uppdateras. Ladda om och försök igen."
@@ -46,7 +46,7 @@ msgstr "Åtkomsten kunde inte uppdateras. Ladda om och försök igen."
 msgid "Access management"
 msgstr "Åtkomsthantering"
 
-#: lib/taamol_web/live/admin_access_live.ex:93
+#: lib/taamol_web/live/admin_access_live.ex:101
 #, elixir-autogen, elixir-format
 msgid "Access updated."
 msgstr "Åtkomsten har uppdaterats."
@@ -56,17 +56,17 @@ msgstr "Åtkomsten har uppdaterats."
 msgid "Account Settings"
 msgstr "Kontoinställningar"
 
-#: lib/taamol_web/live/dashboard_live/dashboard_start_live.ex:36
+#: lib/taamol_web/live/dashboard_live/dashboard_start_live.ex:40
 #, elixir-autogen, elixir-format
 msgid "Account overview"
 msgstr "Kontoöversikt"
 
-#: lib/taamol_web/controllers/page_html/home.html.heex:22
+#: lib/taamol_web/controllers/page_html/home.html.heex:24
 #, elixir-autogen, elixir-format
 msgid "Account settings"
 msgstr "Kontoinställningar"
 
-#: lib/taamol_web/live/dashboard_live/dashboard_start_live.ex:59
+#: lib/taamol_web/live/dashboard_live/dashboard_start_live.ex:63
 #, elixir-autogen, elixir-format
 msgid "Accounts with admin access"
 msgstr "Konton med administratörsåtkomst"
@@ -82,12 +82,12 @@ msgstr "Åtgärder"
 msgid "Administration"
 msgstr "Administration"
 
-#: lib/taamol_web/live/admin_access_live.ex:40
+#: lib/taamol_web/live/admin_access_live.ex:42
 #, elixir-autogen, elixir-format
 msgid "Administrator"
 msgstr "Administratör"
 
-#: lib/taamol_web/live/dashboard_live/dashboard_start_live.ex:55
+#: lib/taamol_web/live/dashboard_live/dashboard_start_live.ex:59
 #, elixir-autogen, elixir-format
 msgid "Administrators"
 msgstr "Administratörer"
@@ -97,7 +97,7 @@ msgstr "Administratörer"
 msgid "Administrators can manage access. Dashboard access can be granted only to administrators. Changing access signs the affected user out."
 msgstr "Administratörer kan hantera åtkomst. Endast administratörer kan få åtkomst till kontrollpanelen. Ändringar loggar ut den berörda användaren."
 
-#: lib/taamol_web/controllers/page_html/home.html.heex:43
+#: lib/taamol_web/controllers/page_html/home.html.heex:48
 #, elixir-autogen, elixir-format
 msgid "Already have an account? Log in"
 msgstr "Har du redan ett konto? Logga in"
@@ -117,8 +117,8 @@ msgstr "Ett e-postmeddelande har skickats till %{email}. Öppna det för att bek
 msgid "Article creation is not available yet."
 msgstr "Det går inte att skapa artiklar ännu."
 
-#: lib/taamol_web/components/layouts.ex:137
-#: lib/taamol_web/components/layouts.ex:152
+#: lib/taamol_web/components/layouts.ex:140
+#: lib/taamol_web/components/layouts.ex:155
 #, elixir-autogen, elixir-format
 msgid "Attempting to reconnect"
 msgstr "Försöker återansluta"
@@ -138,7 +138,7 @@ msgstr "Ändra e-postadress"
 msgid "Changing..."
 msgstr "Ändrar..."
 
-#: lib/taamol_web/live/user_live/confirmation.ex:34
+#: lib/taamol_web/live/user_live/confirmation.ex:37
 #, elixir-autogen, elixir-format
 msgid "Confirm and log in only this time"
 msgstr "Bekräfta och logga in endast denna gång"
@@ -153,23 +153,23 @@ msgstr "Bekräfta och förbli inloggad"
 msgid "Confirm new password"
 msgstr "Bekräfta nytt lösenord"
 
-#: lib/taamol/accounts/user_notifier.ex:46
+#: lib/taamol/accounts/user_notifier.ex:62
 #, elixir-autogen, elixir-format
 msgid "Confirmation instructions"
 msgstr "Bekräftelseinstruktioner"
 
-#: lib/taamol_web/live/dashboard_live/dashboard_start_live.ex:47
+#: lib/taamol_web/live/dashboard_live/dashboard_start_live.ex:51
 #, elixir-autogen, elixir-format
 msgid "Confirmed accounts"
 msgstr "Bekräftade konton"
 
 #: lib/taamol_web/live/user_live/confirmation.ex:28
-#: lib/taamol_web/live/user_live/confirmation.ex:33
+#: lib/taamol_web/live/user_live/confirmation.ex:34
 #, elixir-autogen, elixir-format
 msgid "Confirming..."
 msgstr "Bekräftar..."
 
-#: lib/taamol_web/controllers/page_html/home.html.heex:36
+#: lib/taamol_web/controllers/page_html/home.html.heex:40
 #: lib/taamol_web/live/user_live/registration.ex:45
 #, elixir-autogen, elixir-format
 msgid "Create an account"
@@ -190,19 +190,19 @@ msgstr "Skapad av"
 msgid "Creating account..."
 msgstr "Skapar konto..."
 
-#: lib/taamol_web/components/layouts.ex:69
+#: lib/taamol_web/components/layouts.ex:66
 #: lib/taamol_web/live/dashboard_live/dashboard_start_live.ex:9
-#: lib/taamol_web/live/dashboard_live/dashboard_start_live.ex:24
+#: lib/taamol_web/live/dashboard_live/dashboard_start_live.ex:25
 #, elixir-autogen, elixir-format
 msgid "Dashboard"
 msgstr "Kontrollpanel"
 
-#: lib/taamol_web/live/admin_access_live.ex:42
+#: lib/taamol_web/live/admin_access_live.ex:45
 #, elixir-autogen, elixir-format
 msgid "Dashboard allowed"
 msgstr "Åtkomst till kontrollpanelen tillåten"
 
-#: lib/taamol_web/live/admin_access_live.ex:42
+#: lib/taamol_web/live/admin_access_live.ex:46
 #, elixir-autogen, elixir-format
 msgid "Dashboard denied"
 msgstr "Åtkomst till kontrollpanelen nekad"
@@ -212,15 +212,15 @@ msgstr "Åtkomst till kontrollpanelen nekad"
 msgid "Don't have an account?"
 msgstr "Har du inget konto?"
 
-#: lib/taamol_web/live/user_live/login.ex:48
-#: lib/taamol_web/live/user_live/login.ex:72
+#: lib/taamol_web/live/user_live/login.ex:49
+#: lib/taamol_web/live/user_live/login.ex:75
 #: lib/taamol_web/live/user_live/registration.ex:28
 #: lib/taamol_web/live/user_live/settings.ex:46
 #, elixir-autogen, elixir-format
 msgid "Email"
 msgstr "E-post"
 
-#: lib/taamol_web/live/dashboard_live/dashboard_start_live.ex:51
+#: lib/taamol_web/live/dashboard_live/dashboard_start_live.ex:55
 #, elixir-autogen, elixir-format
 msgid "Email addresses verified"
 msgstr "Verifierade e-postadresser"
@@ -241,37 +241,37 @@ msgstr "E-postadressen har ändrats."
 msgid "Full Name"
 msgstr "Fullständigt namn"
 
-#: lib/taamol_web/controllers/page_html/home.html.heex:29
+#: lib/taamol_web/controllers/page_html/home.html.heex:32
 #, elixir-autogen, elixir-format
 msgid "Go to dashboard"
 msgstr "Gå till kontrollpanelen"
 
-#: lib/taamol_web/live/admin_access_live.ex:77
+#: lib/taamol_web/live/admin_access_live.ex:83
 #, elixir-autogen, elixir-format
 msgid "Grant dashboard"
 msgstr "Ge åtkomst till kontrollpanelen"
 
-#: lib/taamol/accounts/user_notifier.ex:27
+#: lib/taamol/accounts/user_notifier.ex:29
 #, elixir-autogen, elixir-format
 msgid "Hi %{email},\n\nYou can change your email by visiting the URL below:\n\n%{url}\n\nIf you didn't request this change, please ignore this."
 msgstr "Hej %{email},\n\nBesök länken nedan för att ändra din e-postadress:\n\n%{url}\n\nOm du inte begärde detta kan du ignorera meddelandet."
 
-#: lib/taamol/accounts/user_notifier.ex:47
+#: lib/taamol/accounts/user_notifier.ex:63
 #, elixir-autogen, elixir-format
 msgid "Hi %{email},\n\nYou can confirm your account by visiting the URL below:\n\n%{url}\n\nIf you didn't create an account with us, please ignore this."
 msgstr "Hej %{email},\n\nBesök länken nedan för att bekräfta ditt konto:\n\n%{url}\n\nOm du inte begärde detta kan du ignorera meddelandet."
 
-#: lib/taamol/accounts/user_notifier.ex:42
+#: lib/taamol/accounts/user_notifier.ex:51
 #, elixir-autogen, elixir-format
 msgid "Hi %{email},\n\nYou can log into your account by visiting the URL below:\n\n%{url}\n\nIf you didn't request this email, please ignore this."
 msgstr "Hej %{email},\n\nBesök länken nedan för att logga in på ditt konto:\n\n%{url}\n\nOm du inte begärde detta kan du ignorera meddelandet."
 
-#: lib/taamol_web/live/user_live/login.ex:121
+#: lib/taamol_web/live/user_live/login.ex:125
 #, elixir-autogen, elixir-format
 msgid "If your email is in our system, you will receive instructions for logging in shortly."
 msgstr "Om din e-postadress finns i vårt system får du snart inloggningsinstruktioner."
 
-#: lib/taamol_web/live/admin_access_live.ex:108
+#: lib/taamol_web/live/admin_access_live.ex:116
 #, elixir-autogen, elixir-format
 msgid "Invalid access change."
 msgstr "Ogiltig åtkomständring."
@@ -281,50 +281,52 @@ msgstr "Ogiltig åtkomständring."
 msgid "Invalid email or password"
 msgstr "Ogiltig e-postadress eller lösenord"
 
-#: lib/taamol_web/live/user_live/confirmation.ex:59
+#: lib/taamol_web/live/user_live/confirmation.ex:62
 #, elixir-autogen, elixir-format
 msgid "Keep me logged in on this device"
 msgstr "Håll mig inloggad på denna enhet"
 
-#: lib/taamol_web/components/layouts.ex:50
+#: lib/taamol_web/components/layouts.ex:197
+#: lib/taamol_web/components/layouts.ex:206
+#: lib/taamol_web/components/layouts.ex:210
 #, elixir-autogen, elixir-format
 msgid "Language"
 msgstr "Språk"
 
-#: lib/taamol_web/components/layouts.ex:87
-#: lib/taamol_web/live/user_live/confirmation.ex:50
+#: lib/taamol_web/components/layouts.ex:88
+#: lib/taamol_web/live/user_live/confirmation.ex:53
 #: lib/taamol_web/live/user_live/login.ex:13
 #: lib/taamol_web/live/user_live/registration.ex:18
 #, elixir-autogen, elixir-format
 msgid "Log in"
 msgstr "Logga in"
 
-#: lib/taamol_web/live/user_live/login.ex:85
+#: lib/taamol_web/live/user_live/login.ex:88
 #, elixir-autogen, elixir-format
 msgid "Log in and stay logged in"
 msgstr "Logga in och förbli inloggad"
 
-#: lib/taamol/accounts/user_notifier.ex:41
+#: lib/taamol/accounts/user_notifier.ex:50
 #, elixir-autogen, elixir-format
 msgid "Log in instructions"
 msgstr "Inloggningsinstruktioner"
 
-#: lib/taamol_web/live/user_live/login.ex:88
+#: lib/taamol_web/live/user_live/login.ex:92
 #, elixir-autogen, elixir-format
 msgid "Log in only this time"
 msgstr "Logga in endast denna gång"
 
-#: lib/taamol_web/live/user_live/login.ex:55
+#: lib/taamol_web/live/user_live/login.ex:56
 #, elixir-autogen, elixir-format
 msgid "Log in with email"
 msgstr "Logga in med e-post"
 
-#: lib/taamol_web/live/user_live/confirmation.ex:62
+#: lib/taamol_web/live/user_live/confirmation.ex:68
 #, elixir-autogen, elixir-format
 msgid "Log me in only this time"
 msgstr "Logga in endast denna gång"
 
-#: lib/taamol_web/components/layouts.ex:83
+#: lib/taamol_web/components/layouts.ex:84
 #, elixir-autogen, elixir-format
 msgid "Log out"
 msgstr "Logga ut"
@@ -334,29 +336,29 @@ msgstr "Logga ut"
 msgid "Logged out successfully."
 msgstr "Du har loggats ut."
 
-#: lib/taamol_web/live/user_live/confirmation.ex:49
-#: lib/taamol_web/live/user_live/confirmation.ex:56
-#: lib/taamol_web/live/user_live/confirmation.ex:61
+#: lib/taamol_web/live/user_live/confirmation.ex:52
+#: lib/taamol_web/live/user_live/confirmation.ex:59
+#: lib/taamol_web/live/user_live/confirmation.ex:65
 #, elixir-autogen, elixir-format
 msgid "Logging in..."
 msgstr "Loggar in..."
 
-#: lib/taamol_web/live/user_live/confirmation.ex:85
+#: lib/taamol_web/live/user_live/confirmation.ex:91
 #, elixir-autogen, elixir-format
 msgid "Magic link is invalid or it has expired."
 msgstr "Inloggningslänken är ogiltig eller har gått ut."
 
-#: lib/taamol_web/live/admin_access_live.ex:56
+#: lib/taamol_web/live/admin_access_live.ex:60
 #, elixir-autogen, elixir-format
 msgid "Make admin"
 msgstr "Gör till administratör"
 
-#: lib/taamol_web/live/admin_access_live.ex:54
+#: lib/taamol_web/live/admin_access_live.ex:58
 #, elixir-autogen, elixir-format
 msgid "Make this user an administrator?"
 msgstr "Göra denna användare till administratör?"
 
-#: lib/taamol_web/live/dashboard_live/dashboard_start_live.ex:32
+#: lib/taamol_web/live/dashboard_live/dashboard_start_live.ex:36
 #, elixir-autogen, elixir-format
 msgid "Manage access"
 msgstr "Hantera åtkomst"
@@ -381,12 +383,12 @@ msgstr "Namnet har uppdaterats."
 msgid "New password"
 msgstr "Nytt lösenord"
 
-#: lib/taamol_web/live/dashboard_live/dashboard_start_live.ex:75
+#: lib/taamol_web/live/dashboard_live/dashboard_start_live.ex:79
 #, elixir-autogen, elixir-format
 msgid "Open access management"
 msgstr "Öppna åtkomsthantering"
 
-#: lib/taamol_web/live/user_live/login.ex:80
+#: lib/taamol_web/live/user_live/login.ex:83
 #, elixir-autogen, elixir-format
 msgid "Password"
 msgstr "Lösenord"
@@ -396,7 +398,7 @@ msgstr "Lösenord"
 msgid "Password updated successfully!"
 msgstr "Lösenordet har uppdaterats!"
 
-#: lib/taamol_web/live/dashboard_live/dashboard_start_live.ex:66
+#: lib/taamol_web/live/dashboard_live/dashboard_start_live.ex:70
 #, elixir-autogen, elixir-format
 msgid "People and permissions"
 msgstr "Personer och behörigheter"
@@ -406,7 +408,7 @@ msgstr "Personer och behörigheter"
 msgid "Publication Date"
 msgstr "Publiceringsdatum"
 
-#: lib/taamol_web/components/layouts.ex:93
+#: lib/taamol_web/components/layouts.ex:96
 #, elixir-autogen, elixir-format
 msgid "Register"
 msgstr "Registrera dig"
@@ -416,27 +418,27 @@ msgstr "Registrera dig"
 msgid "Register for an account"
 msgstr "Registrera ett konto"
 
-#: lib/taamol_web/live/dashboard_live/dashboard_start_live.ex:43
+#: lib/taamol_web/live/dashboard_live/dashboard_start_live.ex:47
 #, elixir-autogen, elixir-format
 msgid "Registered users"
 msgstr "Registrerade användare"
 
-#: lib/taamol_web/live/admin_access_live.ex:66
+#: lib/taamol_web/live/admin_access_live.ex:70
 #, elixir-autogen, elixir-format
 msgid "Remove admin"
 msgstr "Ta bort administratörsbehörighet"
 
-#: lib/taamol_web/live/admin_access_live.ex:64
+#: lib/taamol_web/live/admin_access_live.ex:68
 #, elixir-autogen, elixir-format
 msgid "Remove this user's administrator access?"
 msgstr "Ta bort användarens administratörsbehörighet?"
 
-#: lib/taamol_web/live/dashboard_live/dashboard_start_live.ex:68
+#: lib/taamol_web/live/dashboard_live/dashboard_start_live.ex:72
 #, elixir-autogen, elixir-format
 msgid "Review administrator roles and control dashboard access."
 msgstr "Granska administratörsroller och hantera åtkomst till kontrollpanelen."
 
-#: lib/taamol_web/live/admin_access_live.ex:77
+#: lib/taamol_web/live/admin_access_live.ex:82
 #, elixir-autogen, elixir-format
 msgid "Revoke dashboard"
 msgstr "Återkalla åtkomst till kontrollpanelen"
@@ -457,7 +459,7 @@ msgstr "Spara namn"
 msgid "Saving..."
 msgstr "Sparar..."
 
-#: lib/taamol_web/components/layouts.ex:76
+#: lib/taamol_web/components/layouts.ex:75
 #, elixir-autogen, elixir-format
 msgid "Settings"
 msgstr "Inställningar"
@@ -467,7 +469,7 @@ msgstr "Inställningar"
 msgid "Sign up"
 msgstr "Registrera dig"
 
-#: lib/taamol_web/components/layouts.ex:144
+#: lib/taamol_web/components/layouts.ex:147
 #, elixir-autogen, elixir-format
 msgid "Something went wrong!"
 msgstr "Något gick fel!"
@@ -477,7 +479,7 @@ msgstr "Något gick fel!"
 msgid "The link is invalid or it has expired."
 msgstr "Länken är ogiltig eller har gått ut."
 
-#: lib/taamol_web/live/user_live/confirmation.ex:68
+#: lib/taamol_web/live/user_live/confirmation.ex:74
 #, elixir-autogen, elixir-format
 msgid "Tip: If you prefer passwords, you can enable them in the user settings."
 msgstr "Tips: Om du föredrar lösenord kan du aktivera det i användarinställningarna."
@@ -492,22 +494,22 @@ msgstr "Titel"
 msgid "To see sent emails, visit"
 msgstr "För att se skickade e-postmeddelanden, besök"
 
-#: lib/taamol_web/controllers/page_html/home.html.heex:64
+#: lib/taamol_web/controllers/page_html/home.html.heex:71
 #, elixir-autogen, elixir-format
 msgid "Together starts here."
 msgstr "Tillsammans börjar här."
 
-#: lib/taamol_web/live/dashboard_live/dashboard_start_live.ex:39
+#: lib/taamol_web/live/dashboard_live/dashboard_start_live.ex:43
 #, elixir-autogen, elixir-format
 msgid "Total accounts"
 msgstr "Totalt antal konton"
 
-#: lib/taamol/accounts/user_notifier.ex:26
+#: lib/taamol/accounts/user_notifier.ex:28
 #, elixir-autogen, elixir-format
 msgid "Update email instructions"
 msgstr "Instruktioner för att ändra e-postadress"
 
-#: lib/taamol_web/live/admin_access_live.ex:40
+#: lib/taamol_web/live/admin_access_live.ex:42
 #, elixir-autogen, elixir-format
 msgid "User"
 msgstr "Användare"
@@ -517,12 +519,12 @@ msgstr "Användare"
 msgid "User confirmed successfully."
 msgstr "Användaren har bekräftats."
 
-#: lib/taamol_web/components/layouts.ex:129
+#: lib/taamol_web/components/layouts.ex:132
 #, elixir-autogen, elixir-format
 msgid "We can't find the internet"
 msgstr "Vi hittar ingen internetanslutning"
 
-#: lib/taamol_web/components/layouts/root.html.heex:7
+#: lib/taamol_web/components/layouts/root.html.heex:10
 #, elixir-autogen, elixir-format
 msgid "Welcome"
 msgstr "Välkommen"
@@ -547,13 +549,13 @@ msgstr "Välkommen till din plats på Taamol. Logga in för att hantera ditt kon
 msgid "Welcome, %{email}"
 msgstr "Välkommen, %{email}"
 
-#: lib/taamol_web/user_auth.ex:246
-#: lib/taamol_web/user_auth.ex:310
+#: lib/taamol_web/user_auth.ex:234
+#: lib/taamol_web/user_auth.ex:302
 #, elixir-autogen, elixir-format
 msgid "You are not authorized to access this page."
 msgstr "Du har inte behörighet att öppna den här sidan."
 
-#: lib/taamol_web/live/admin_access_live.ex:98
+#: lib/taamol_web/live/admin_access_live.ex:106
 #, elixir-autogen, elixir-format
 msgid "You are not authorized to manage access."
 msgstr "Du har inte behörighet att hantera åtkomst."
@@ -563,15 +565,15 @@ msgstr "Du har inte behörighet att hantera åtkomst."
 msgid "You are running the local mail adapter."
 msgstr "Den lokala e-postadaptern används."
 
-#: lib/taamol_web/user_auth.ex:230
-#: lib/taamol_web/user_auth.ex:293
+#: lib/taamol_web/user_auth.ex:216
+#: lib/taamol_web/user_auth.ex:285
 #, elixir-autogen, elixir-format
 msgid "You must log in to access this page."
 msgstr "Du måste logga in för att öppna den här sidan."
 
 #: lib/taamol_web/controllers/user_session_controller.ex:79
 #: lib/taamol_web/live/user_live/settings.ex:152
-#: lib/taamol_web/user_auth.ex:259
+#: lib/taamol_web/user_auth.ex:250
 #, elixir-autogen, elixir-format
 msgid "You must re-authenticate to access this page."
 msgstr "Du måste verifiera dig igen för att öppna den här sidan."
@@ -586,7 +588,7 @@ msgstr "Du måste verifiera dig igen för att utföra känsliga åtgärder på d
 msgid "close"
 msgstr "stäng"
 
-#: lib/taamol_web/live/user_live/login.ex:59
+#: lib/taamol_web/live/user_live/login.ex:61
 #, elixir-autogen, elixir-format
 msgid "or"
 msgstr "eller"
@@ -595,3 +597,98 @@ msgstr "eller"
 #, elixir-autogen, elixir-format
 msgid "the mailbox page"
 msgstr "brevlådan"
+
+#: lib/taamol_web/components/layouts.ex:527
+#, elixir-autogen, elixir-format
+msgid "Allow location access in your browser to see prayer times for where you are."
+msgstr "Tillåt platsåtkomst i webbläsaren för att se bönetider där du befinner dig."
+
+#: lib/taamol_web/components/layouts.ex:258
+#, elixir-autogen, elixir-format
+msgid "Asr"
+msgstr "Asr"
+
+#: lib/taamol_web/components/layouts.ex:257
+#, elixir-autogen, elixir-format
+msgid "Dhuhr"
+msgstr "Dhuhr"
+
+#: lib/taamol_web/components/layouts.ex:255
+#, elixir-autogen, elixir-format
+msgid "Fajr"
+msgstr "Fajr"
+
+#: lib/taamol_web/components/layouts.ex:260
+#, elixir-autogen, elixir-format
+msgid "Isha"
+msgstr "Isha"
+
+#: lib/taamol_web/components/layouts.ex:259
+#, elixir-autogen, elixir-format
+msgid "Maghrib"
+msgstr "Maghrib"
+
+#: lib/taamol_web/components/layouts.ex:305
+#, elixir-autogen, elixir-format
+msgid "Prayer times"
+msgstr "Bönetider"
+
+#: lib/taamol_web/components/layouts.ex:530
+#, elixir-autogen, elixir-format
+msgid "Prayer times could not be loaded. Click to try again."
+msgstr "Bönetiderna kunde inte laddas. Klicka för att försöka igen."
+
+#: lib/taamol_web/components/layouts.ex:256
+#, elixir-autogen, elixir-format
+msgid "Sunrise"
+msgstr "Soluppgång"
+
+#: lib/taamol_web/components/layouts.ex:331
+#, elixir-autogen, elixir-format
+msgid "Day %{day} of %{total}"
+msgstr "Dag %{day} av %{total}"
+
+#: lib/taamol_web/components/layouts.ex:347
+#, elixir-autogen, elixir-format
+msgid "Iftar"
+msgstr "Iftar"
+
+#: lib/taamol_web/components/layouts.ex:327
+#, elixir-autogen, elixir-format
+msgid "Ramadan Mubarak"
+msgstr "Ramadan Mubarak"
+
+#: lib/taamol_web/components/layouts.ex:343
+#, elixir-autogen, elixir-format
+msgid "Suhoor"
+msgstr "Suhoor"
+
+#: lib/taamol_web/components/layouts.ex:355
+#, elixir-autogen, elixir-format
+msgid "Until iftar"
+msgstr "Tills iftar"
+
+#: lib/taamol_web/components/layouts.ex:354
+#, elixir-autogen, elixir-format
+msgid "Until suhoor ends"
+msgstr "Tills suhoor slutar"
+
+#: lib/taamol_web/components/layouts.ex:500
+#, elixir-autogen, elixir-format
+msgid "until %{prayer}"
+msgstr "till %{prayer}"
+
+#: lib/taamol_web/components/layouts.ex:171
+#, elixir-autogen, elixir-format
+msgid "English"
+msgstr "Engelska"
+
+#: lib/taamol_web/components/layouts.ex:172
+#, elixir-autogen, elixir-format
+msgid "Persian"
+msgstr "Persiska"
+
+#: lib/taamol_web/components/layouts.ex:173
+#, elixir-autogen, elixir-format
+msgid "Swedish"
+msgstr "Svenska"

@@ -75,4 +75,16 @@ defmodule TaamolWeb.LocaleTest do
       assert email.text_body =~ "https://example.com/token"
     end)
   end
+
+  test "the language menu marks the current language", %{conn: conn} do
+    conn = conn |> post(~p"/locale", %{"locale" => "sv"}) |> recycle() |> get(~p"/")
+    document = conn |> html_response(200) |> LazyHTML.from_document()
+
+    assert document |> LazyHTML.query("#locale-switcher button[name=locale]") |> Enum.count() == 3
+
+    assert document |> LazyHTML.query(~s(#locale-option-sv[aria-current="true"])) |> Enum.count() ==
+             1
+
+    assert document |> LazyHTML.query("#locale-option-en[aria-current]") |> Enum.count() == 0
+  end
 end

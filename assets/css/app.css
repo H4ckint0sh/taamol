@@ -9,6 +9,21 @@
 /* Required for Tailwind to automatically pick up changes in colocated CSS files in dev */
 @source "../../_build/dev/phoenix-colocated/taamol/*/";
 
+/* Arad (SIL OFL 1.1, https://github.com/MohamadDarvishi/Arad): one variable
+   font covering Latin (incl. å ä ö), Persian and both digit sets, weights
+   100–1000. Served from priv/static/fonts. */
+@font-face {
+  font-family: "Arad";
+  src: url("/fonts/AradVF.woff2") format("woff2-variations"), url("/fonts/AradVF.woff2") format("woff2");
+  font-weight: 100 1000;
+  font-style: normal;
+  font-display: swap;
+}
+
+@theme {
+  --font-sans: "Arad", ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
+}
+
 /* A Tailwind plugin that makes "hero-#{ICON}" classes available.
    The heroicons installation itself is managed by your mix.exs */
 @plugin "../vendor/heroicons";
