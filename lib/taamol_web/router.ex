@@ -79,6 +79,7 @@ defmodule TaamolWeb.Router do
       live "/dashboard/events", DashboardLive.Events, :index
       live "/dashboard/events/new", DashboardLive.EventForm, :new
       live "/dashboard/events/:id/edit", DashboardLive.EventForm, :edit
+      live "/dashboard/gallery", DashboardLive.Gallery, :index
       live "/dashboard/settings", DashboardLive.SiteSettings, :edit
     end
 
@@ -102,6 +103,7 @@ defmodule TaamolWeb.Router do
       live "/articles/:id", ArticleLive.Show, :show
       live "/menu", MenuLive, :index
       live "/calendar", CalendarLive, :index
+      live "/gallery", GalleryLive, :index
     end
 
     post "/users/log-in", UserSessionController, :create

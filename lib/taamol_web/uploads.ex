@@ -38,6 +38,23 @@ defmodule TaamolWeb.Uploads do
     "/uploads/#{folder}/#{name}"
   end
 
+  @doc """
+  Deletes a previously stored upload (`"/uploads/…"`). Other URLs and
+  paths that would leave the uploads folder are ignored.
+  """
+  def delete("/uploads/" <> relative) do
+    root = Path.expand(root())
+    path = Path.expand(relative, root)
+
+    if String.starts_with?(path, root <> "/") do
+      _ = File.rm(path)
+    end
+
+    :ok
+  end
+
+  def delete(_url), do: :ok
+
   defp root do
     Application.get_env(:taamol, :uploads_dir) ||
       Path.join(:code.priv_dir(:taamol), "static/uploads")

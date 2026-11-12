@@ -94,6 +94,28 @@ defmodule TaamolWeb.DashboardLive.SiteSettings do
             />
           </section>
 
+          <section class="rounded-2xl border border-base-300 bg-base-100 p-5">
+            <h2 class="font-semibold">{gettext("Social media")}</h2>
+            <p class="mb-4 mt-1 text-sm text-base-content/60">
+              {gettext("Links shown as icons in the site footer. Leave a field empty to hide it.")}
+            </p>
+            <div class="space-y-1">
+              <div :for={network <- TaamolWeb.SocialIcons.networks()} class="flex items-start gap-3">
+                <span class="mt-7 grid size-9 shrink-0 place-items-center rounded-full border border-base-300 text-base-content/70">
+                  <TaamolWeb.SocialIcons.social_icon network={network} class="size-4" />
+                </span>
+                <div class="flex-1">
+                  <.input
+                    field={@form[:"#{network}_url"]}
+                    type="url"
+                    label={TaamolWeb.SocialIcons.name(network)}
+                    placeholder="https://"
+                  />
+                </div>
+              </div>
+            </div>
+          </section>
+
           <div class="flex justify-end">
             <button
               type="submit"

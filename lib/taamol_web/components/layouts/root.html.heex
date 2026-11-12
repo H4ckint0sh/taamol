@@ -38,6 +38,10 @@
         }
         window.addEventListener("storage", (e) => e.key === "phx:theme" && setTheme(e.newValue || "system"));
         window.addEventListener("phx:set-theme", (e) => setTheme(e.target.dataset.phxTheme));
+        // the light/dark switch flips whatever is showing now
+        window.addEventListener("phx:toggle-theme", () =>
+          setTheme(document.documentElement.getAttribute("data-theme") === "dark" ? "light" : "dark")
+        );
 
         matchMedia("(prefers-color-scheme: dark)").addEventListener("change", (e) => {
           if (document.documentElement.getAttribute("data-theme-source") === "system") {

@@ -164,3 +164,72 @@ else
 
   IO.puts("Inserted #{length(events)} demo events.")
 end
+
+# ---------------------------------------------------------------------------
+# Demo gallery photos (development only). Skipped when the gallery has photos.
+# ---------------------------------------------------------------------------
+alias Taamol.Gallery.Image
+
+if Repo.exists?(Image) do
+  IO.puts("Gallery already has photos, skipping demo photos.")
+else
+  admin = Repo.one(from u in User, where: u.role == :admin, limit: 1)
+  now = DateTime.utc_now(:second)
+
+  captions = [
+    "Ashura majlis at the centre",
+    "Arbaeen walk in Stockholm",
+    "Community iftar",
+    "Weekend school graduation",
+    "Youth football tournament",
+    "Eid al-Ghadir celebration",
+    "Calligraphy exhibition",
+    "Volunteers preparing food packages",
+    "Night of Qadr programme",
+    "Summer picnic"
+  ]
+
+  for {caption, i} <- Enum.with_index(captions) do
+    Repo.insert!(%Image{
+      image_url: "https://picsum.photos/seed/taamol-gallery-#{i}/1600/1100",
+      caption: caption,
+      creator_id: admin && admin.id,
+      inserted_at: DateTime.add(now, -i * 3600),
+      updated_at: now
+    })
+  end
+
+  IO.puts("Inserted #{length(captions)} demo gallery photos.")
+end
+
+# ---------------------------------------------------------------------------
+# Placeholder social media links (development only). Only empty fields are
+# filled, so real links saved in Dashboard → Site settings are kept.
+# Replace these with the community's real accounts.
+# ---------------------------------------------------------------------------
+alias Taamol.Settings.SiteSetting
+
+placeholder_links = %{
+  instagram_url: "https://instagram.com/taamol",
+  facebook_url: "https://facebook.com/taamol",
+  youtube_url: "https://youtube.com/@taamol",
+  x_url: "https://x.com/taamol",
+  telegram_url: "https://t.me/taamol",
+  whatsapp_url: "https://wa.me/46700000000",
+  tiktok_url: "https://tiktok.com/@taamol"
+}
+
+settings = Repo.get(SiteSetting, 1) || %SiteSetting{id: 1}
+
+missing =
+  for {field, url} <- placeholder_links,
+      Map.get(settings, field) in [nil, ""],
+      into: %{},
+      do: {field, url}
+
+if missing == %{} do
+  IO.puts("Social links already set, skipping placeholders.")
+else
+  settings |> SiteSetting.changeset(missing) |> Repo.insert_or_update!()
+  IO.puts("Added #{map_size(missing)} placeholder social links.")
+end

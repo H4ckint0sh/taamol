@@ -23,7 +23,7 @@ defmodule TaamolWeb.Layouts do
       </Layouts.app>
 
   Pass `wide` for full-width pages that manage their own container, and
-  `active` (`:home`, `:categories`, `:calendar`, `:menu` or a category atom) to highlight the
+  `active` (`:home`, `:categories`, `:calendar`, `:gallery`, `:menu` or a category atom) to highlight the
   current navigation item. Category tabs show on mobile for `:home` and
   category pages.
   """
@@ -40,7 +40,7 @@ defmodule TaamolWeb.Layouts do
 
   def app(assigns) do
     categories = TaamolWeb.NewsComponents.categories()
-    {nav_categories, more_categories} = Enum.split(categories, 4)
+    {nav_categories, more_categories} = Enum.split(categories, 3)
 
     assigns =
       assigns
@@ -51,7 +51,17 @@ defmodule TaamolWeb.Layouts do
 
     ~H"""
     <header class="sticky top-0 z-40 border-b border-base-300/70 bg-base-100/90 backdrop-blur-md">
-      <div class="mx-auto flex h-16 max-w-7xl items-center gap-6 px-4 sm:px-6 lg:h-20 lg:px-8">
+      <div class="mx-auto flex h-16 max-w-7xl items-center gap-3 px-4 sm:gap-6 sm:px-6 lg:h-20 lg:px-8">
+        <button
+          type="button"
+          id="mobile-menu-open"
+          aria-label={gettext("Open menu")}
+          aria-controls="mobile-drawer"
+          phx-click={open_drawer()}
+          class="-ms-2 grid size-10 shrink-0 place-items-center rounded-xl text-base-content/80 transition hover:bg-base-200 active:scale-95 lg:hidden"
+        >
+          <.icon name="hero-bars-3" class="size-6" />
+        </button>
         <.link navigate={~p"/"} id="site-logo" class="shrink-0 leading-none">
           <span class="block text-2xl font-black tracking-tight text-primary lg:text-[1.9rem]">
             Taamol
@@ -62,13 +72,30 @@ defmodule TaamolWeb.Layouts do
         </.link>
 
         <nav id="main-nav" aria-label={gettext("Categories")} class="hidden h-full min-w-0 lg:block">
-          <ul class="flex h-full items-stretch gap-5 text-sm font-medium xl:gap-7">
+          <ul
+            id="main-nav-items"
+            phx-hook=".NavIndicator"
+            class="relative flex h-full items-center gap-0.5 text-sm font-medium xl:gap-1"
+          >
+            <%!-- the pill behind the active item; positioned by the hook below --%>
+            <span
+              id="main-nav-indicator"
+              phx-update="ignore"
+              data-role="nav-indicator"
+              aria-hidden="true"
+              class="pointer-events-none absolute top-1/2 h-9 -translate-y-1/2 rounded-full bg-primary/10 opacity-0 ring-1 ring-primary/15 transition-[left,width,opacity,background-color] duration-300 ease-out data-[preview]:bg-base-content/[0.06] data-[preview]:ring-transparent"
+            />
             <li class="flex">
               <.nav_link to={~p"/"} active={@active == :home}>{gettext("Home")}</.nav_link>
             </li>
             <li class="flex">
               <.nav_link to={~p"/calendar"} active={@active == :calendar}>
                 {gettext("Calendar")}
+              </.nav_link>
+            </li>
+            <li class="flex">
+              <.nav_link to={~p"/gallery"} active={@active == :gallery}>
+                {gettext("Gallery")}
               </.nav_link>
             </li>
             <li :for={category <- @nav_categories} class="flex">
@@ -81,8 +108,10 @@ defmodule TaamolWeb.Layouts do
                 type="button"
                 id="main-nav-more"
                 aria-haspopup="true"
+                data-nav-item
+                data-active={@active in @more_categories}
                 class={[
-                  "inline-flex items-center gap-1 transition-colors hover:text-primary",
+                  "relative z-10 inline-flex h-9 items-center gap-1 rounded-full px-3.5 transition-colors hover:text-primary",
                   @active in @more_categories && "text-primary"
                 ]}
               >
@@ -108,12 +137,76 @@ defmodule TaamolWeb.Layouts do
               </.dropdown>
             </li>
           </ul>
+          <script :type={Phoenix.LiveView.ColocatedHook} name=".NavIndicator">
+            // Slides the pill to the active item. LiveView rebuilds the header on
+            // every page, so the pill's last position is kept on `window` and the
+            // new page animates from there. Hovering previews other items.
+            const reduceMotion = () => window.matchMedia("(prefers-reduced-motion: reduce)").matches
+
+            export default {
+              mounted() {
+                this.indicator = this.el.querySelector("[data-role=nav-indicator]")
+                const previous = window.__taamolNavIndicator
+                const active = this.activeItem()
+
+                if (active && previous && !reduceMotion()) {
+                  this.place(previous, false)
+                  requestAnimationFrame(() => requestAnimationFrame(() => this.reset(true)))
+                } else {
+                  this.reset(false)
+                }
+
+                this.el.addEventListener("mouseover", (e) => {
+                  const item = e.target.closest("[data-nav-item]")
+                  if (item && this.el.contains(item)) {
+                    this.place(this.rect(item), true, item !== this.activeItem())
+                  }
+                })
+                this.el.addEventListener("mouseleave", () => this.reset(true))
+                // start moving right away; the next page picks up from here
+                this.el.addEventListener("click", (e) => {
+                  const link = e.target.closest("a[data-nav-item]")
+                  if (!link) return
+                  window.__taamolNavIndicator = this.rect(link)
+                  this.place(window.__taamolNavIndicator, true)
+                })
+                this.onResize = () => this.reset(false)
+                window.addEventListener("resize", this.onResize)
+              },
+              updated() { this.reset(true) },
+              destroyed() { window.removeEventListener("resize", this.onResize) },
+
+              activeItem() { return this.el.querySelector("[data-nav-item][data-active]") },
+              rect(item) {
+                const a = item.getBoundingClientRect(), b = this.el.getBoundingClientRect()
+                return {left: a.left - b.left, width: a.width}
+              },
+              place({left, width}, animate, preview = false) {
+                const style = this.indicator.style
+                style.transition = animate && !reduceMotion() ? "" : "none"
+                style.left = `${left}px`
+                style.width = `${width}px`
+                style.opacity = "1"
+                this.indicator.toggleAttribute("data-preview", preview)
+              },
+              reset(animate) {
+                const active = this.activeItem()
+                if (active) {
+                  window.__taamolNavIndicator = this.rect(active)
+                  this.place(window.__taamolNavIndicator, animate)
+                } else {
+                  window.__taamolNavIndicator = null
+                  this.indicator.style.opacity = "0"
+                }
+              },
+            }
+          </script>
         </nav>
 
         <div class="ms-auto flex items-center gap-2 sm:gap-3">
           <.prayer_times />
-          <div class="hidden lg:block"><.locale_switcher /></div>
-          <.theme_button class="hidden lg:inline-grid" />
+          <.locale_toggle id="header-locale" />
+          <.theme_switch id="header-theme" class="hidden lg:block" />
           <%= if @current_scope do %>
             <.user_menu current_scope={@current_scope} class="hidden lg:block" />
           <% else %>
@@ -133,23 +226,27 @@ defmodule TaamolWeb.Layouts do
         </div>
       </div>
 
-      <nav
-        :if={@category_tabs?}
-        id="mobile-category-tabs"
-        aria-label={gettext("Categories")}
-        class="overflow-x-auto border-t border-base-300/60 px-4 [scrollbar-width:none] sm:px-6 lg:hidden [&::-webkit-scrollbar]:hidden"
-      >
-        <ul class="flex min-w-max gap-5 text-sm">
+      <div :if={@category_tabs?} class="border-t border-base-300/60 lg:hidden">
+        <TaamolWeb.NewsComponents.chip_row
+          id="mobile-category-tabs"
+          class="px-4 py-2 sm:px-6"
+        >
           <li>
-            <.tab_nav_link to={~p"/"} active={@active == :home}>{gettext("Home")}</.tab_nav_link>
+            <TaamolWeb.NewsComponents.chip to={~p"/"} icon="hero-home" active={@active == :home}>
+              {gettext("Home")}
+            </TaamolWeb.NewsComponents.chip>
           </li>
           <li :for={category <- @categories}>
-            <.tab_nav_link to={~p"/categories/#{category}"} active={@active == category}>
+            <TaamolWeb.NewsComponents.chip
+              to={~p"/categories/#{category}"}
+              icon={TaamolWeb.NewsComponents.category_icon(category)}
+              active={@active == category}
+            >
               {TaamolWeb.NewsComponents.category_name(category)}
-            </.tab_nav_link>
+            </TaamolWeb.NewsComponents.chip>
           </li>
-        </ul>
-      </nav>
+        </TaamolWeb.NewsComponents.chip_row>
+      </div>
     </header>
 
     <main class={[
@@ -163,6 +260,8 @@ defmodule TaamolWeb.Layouts do
 
     <.site_footer current_scope={@current_scope} categories={@categories} />
 
+    <.mobile_drawer current_scope={@current_scope} categories={@categories} active={@active} />
+
     <nav
       id="bottom-nav"
       aria-label={gettext("Main")}
@@ -170,7 +269,12 @@ defmodule TaamolWeb.Layouts do
     >
       <ul class="mx-auto grid max-w-md grid-cols-4">
         <li>
-          <.bottom_nav_link to={~p"/"} icon="hero-home" active={@active == :home}>
+          <.bottom_nav_link
+            to={~p"/"}
+            icon="hero-home"
+            active_icon="hero-home-solid"
+            active={@active == :home}
+          >
             {gettext("Home")}
           </.bottom_nav_link>
         </li>
@@ -178,6 +282,7 @@ defmodule TaamolWeb.Layouts do
           <.bottom_nav_link
             to={~p"/categories"}
             icon="hero-squares-2x2"
+            active_icon="hero-squares-2x2-solid"
             active={@active == :categories or @active in @categories}
           >
             {gettext("Categories")}
@@ -187,13 +292,19 @@ defmodule TaamolWeb.Layouts do
           <.bottom_nav_link
             to={~p"/calendar"}
             icon="hero-calendar-days"
+            active_icon="hero-calendar-days-solid"
             active={@active == :calendar}
           >
             {gettext("Calendar")}
           </.bottom_nav_link>
         </li>
         <li>
-          <.bottom_nav_link to={~p"/menu"} icon="hero-user-circle" active={@active == :menu}>
+          <.bottom_nav_link
+            to={~p"/menu"}
+            icon="hero-user-circle"
+            active_icon="hero-user-circle-solid"
+            active={@active == :menu}
+          >
             {gettext("Profile")}
           </.bottom_nav_link>
         </li>
@@ -232,7 +343,9 @@ defmodule TaamolWeb.Layouts do
            {:news, gettext("News"), "hero-newspaper", ~p"/dashboard/news",
             Taamol.Accounts.can?(scope, :manage_news)},
            {:events, gettext("Calendar events"), "hero-calendar-days", ~p"/dashboard/events",
-            Taamol.Accounts.can?(scope, :manage_events)}
+            Taamol.Accounts.can?(scope, :manage_events)},
+           {:gallery, gettext("Gallery"), "hero-photo", ~p"/dashboard/gallery",
+            Taamol.Accounts.can?(scope, :manage_gallery)}
          ]},
         {gettext("People"),
          [
@@ -327,8 +440,8 @@ defmodule TaamolWeb.Layouts do
             <span class="truncate font-medium">{@title}</span>
           </nav>
           <div class="ms-auto flex items-center gap-2">
-            <.theme_button />
-            <div class="hidden sm:block"><.locale_switcher id="dashboard-locale" /></div>
+            <.theme_switch id="dashboard-theme" />
+            <.locale_toggle id="dashboard-locale" />
             <.user_menu current_scope={@current_scope} />
           </div>
         </header>
@@ -362,13 +475,238 @@ defmodule TaamolWeb.Layouts do
     """
   end
 
+  # opens/closes the mobile drawer; scrolling the page is locked while open
+  defp open_drawer do
+    JS.add_class("drawer-open", to: "#mobile-drawer")
+    |> JS.add_class("overflow-hidden", to: "body")
+    |> JS.focus(to: "#mobile-menu-close")
+  end
+
+  defp close_drawer(js \\ %JS{}) do
+    js
+    |> JS.remove_class("drawer-open", to: "#mobile-drawer")
+    |> JS.remove_class("overflow-hidden", to: "body")
+  end
+
+  attr :current_scope, :map, default: nil
+  attr :categories, :list, required: true
+  attr :active, :atom, default: nil
+
+  # Slide-in navigation for phones and tablets. It enters from the reading
+  # start side (left in English/Swedish, right in Persian).
+  defp mobile_drawer(assigns) do
+    assigns =
+      assigns
+      |> assign(:social_links, Taamol.Settings.social_links())
+
+    ~H"""
+    <div
+      id="mobile-drawer"
+      class="group/drawer pointer-events-none fixed inset-0 z-50 lg:hidden [&.drawer-open]:pointer-events-auto"
+      phx-window-keydown={close_drawer()}
+      phx-key="Escape"
+    >
+      <div
+        class="absolute inset-0 bg-black/40 opacity-0 backdrop-blur-[2px] transition-opacity duration-300 group-[.drawer-open]/drawer:opacity-100"
+        phx-click={close_drawer()}
+      />
+
+      <nav
+        role="dialog"
+        aria-modal="true"
+        aria-label={gettext("Menu")}
+        class="absolute inset-y-0 start-0 flex w-[min(21rem,88vw)] -translate-x-full flex-col bg-base-100 shadow-2xl transition-transform duration-300 ease-out rtl:translate-x-full group-[.drawer-open]/drawer:translate-x-0"
+      >
+        <div class="flex h-16 shrink-0 items-center justify-between border-b border-base-300/70 px-4">
+          <.link navigate={~p"/"} phx-click={close_drawer()} class="leading-none">
+            <span class="block text-2xl font-black tracking-tight text-primary">Taamol</span>
+            <span class="mt-1 block text-[11px] text-base-content/55">
+              {gettext("News for our community")}
+            </span>
+          </.link>
+          <button
+            type="button"
+            id="mobile-menu-close"
+            aria-label={gettext("Close menu")}
+            phx-click={close_drawer()}
+            class="grid size-10 place-items-center rounded-xl text-base-content/70 transition hover:bg-base-200 active:scale-95"
+          >
+            <.icon name="hero-x-mark" class="size-6" />
+          </button>
+        </div>
+
+        <div class="flex-1 space-y-6 overflow-y-auto overscroll-contain px-4 py-5">
+          <%!-- account --%>
+          <%= if @current_scope do %>
+            <.link
+              navigate={~p"/dashboard"}
+              phx-click={close_drawer()}
+              class="flex items-center gap-3 rounded-2xl bg-base-200/70 p-3 transition hover:bg-base-200"
+            >
+              <.avatar user={@current_scope.user} class="size-11 text-base" />
+              <span class="min-w-0 flex-1">
+                <span dir="auto" class="block truncate font-semibold">{@current_scope.user.name}</span>
+                <span class="block truncate text-xs text-base-content/55">
+                  {@current_scope.user.email}
+                </span>
+              </span>
+              <.icon name="hero-chevron-right" class="size-4 text-base-content/40 rtl:rotate-180" />
+            </.link>
+          <% else %>
+            <div class="grid grid-cols-2 gap-2">
+              <.link
+                navigate={~p"/users/log-in"}
+                phx-click={close_drawer()}
+                class="rounded-xl border border-base-300 py-2.5 text-center text-sm font-semibold transition hover:bg-base-200"
+              >
+                {gettext("Log in")}
+              </.link>
+              <.link
+                navigate={~p"/users/register"}
+                phx-click={close_drawer()}
+                class="rounded-xl bg-primary py-2.5 text-center text-sm font-semibold text-primary-content transition hover:opacity-85"
+              >
+                {gettext("Register")}
+              </.link>
+            </div>
+          <% end %>
+
+          <%!-- main pages --%>
+          <div class="grid grid-cols-2 gap-2">
+            <.drawer_tile to={~p"/"} icon="hero-home" active={@active == :home}>
+              {gettext("Home")}
+            </.drawer_tile>
+            <.drawer_tile to={~p"/calendar"} icon="hero-calendar-days" active={@active == :calendar}>
+              {gettext("Calendar")}
+            </.drawer_tile>
+            <.drawer_tile to={~p"/gallery"} icon="hero-photo" active={@active == :gallery}>
+              {gettext("Gallery")}
+            </.drawer_tile>
+            <.drawer_tile
+              to={~p"/categories"}
+              icon="hero-squares-2x2"
+              active={@active == :categories}
+            >
+              {gettext("Categories")}
+            </.drawer_tile>
+          </div>
+
+          <%!-- categories --%>
+          <section>
+            <h2 class="mb-2 px-1 text-[11px] font-semibold uppercase tracking-wider text-base-content/50">
+              {gettext("Categories")}
+            </h2>
+            <ul class="grid grid-cols-2 gap-1">
+              <li :for={category <- @categories}>
+                <.link
+                  navigate={~p"/categories/#{category}"}
+                  phx-click={close_drawer()}
+                  aria-current={if(@active == category, do: "page")}
+                  class="flex items-center gap-2.5 rounded-xl px-2.5 py-2 text-sm text-base-content/80 transition hover:bg-base-200 aria-[current=page]:bg-primary/10 aria-[current=page]:font-semibold aria-[current=page]:text-primary"
+                >
+                  <.icon
+                    name={TaamolWeb.NewsComponents.category_icon(category)}
+                    class="size-4 shrink-0 text-base-content/45"
+                  />
+                  <span class="truncate">{TaamolWeb.NewsComponents.category_name(category)}</span>
+                </.link>
+              </li>
+            </ul>
+          </section>
+
+          <%!-- preferences --%>
+          <section class="space-y-3">
+            <h2 class="px-1 text-[11px] font-semibold uppercase tracking-wider text-base-content/50">
+              {gettext("Preferences")}
+            </h2>
+            <div class="flex items-center justify-between rounded-xl bg-base-200/70 px-3 py-2">
+              <span class="flex items-center gap-2 text-sm text-base-content/75">
+                <.icon name="hero-language" class="size-4" />{gettext("Language")}
+              </span>
+              <.locale_toggle id="drawer-locale" />
+            </div>
+            <div class="flex items-center justify-between rounded-xl bg-base-200/70 px-3 py-2">
+              <span class="flex items-center gap-2 text-sm text-base-content/75">
+                <.icon name="hero-swatch" class="size-4" />{gettext("Theme")}
+              </span>
+              <.theme_switch id="drawer-theme" />
+            </div>
+          </section>
+
+          <%!-- account links --%>
+          <ul :if={@current_scope} class="space-y-1">
+            <li>
+              <.link
+                navigate={~p"/users/settings"}
+                phx-click={close_drawer()}
+                class="flex items-center gap-3 rounded-xl px-2.5 py-2.5 text-sm transition hover:bg-base-200"
+              >
+                <.icon name="hero-cog-6-tooth" class="size-5 text-base-content/50" />
+                {gettext("Account settings")}
+              </.link>
+            </li>
+            <li>
+              <.link
+                href={~p"/users/log-out"}
+                method="delete"
+                class="flex items-center gap-3 rounded-xl px-2.5 py-2.5 text-sm text-error transition hover:bg-error/10"
+              >
+                <.icon name="hero-arrow-right-start-on-rectangle" class="size-5 rtl:rotate-180" />
+                {gettext("Log out")}
+              </.link>
+            </li>
+          </ul>
+        </div>
+
+        <div
+          :if={@social_links != []}
+          class="flex shrink-0 flex-wrap justify-center gap-2 border-t border-base-300/70 px-4 py-4 pb-[calc(1rem+env(safe-area-inset-bottom))]"
+        >
+          <a
+            :for={{network, url} <- @social_links}
+            href={url}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label={TaamolWeb.SocialIcons.name(network)}
+            class="grid size-9 place-items-center rounded-full border border-base-300 text-base-content/65 transition hover:border-primary hover:bg-primary hover:text-primary-content"
+          >
+            <TaamolWeb.SocialIcons.social_icon network={network} class="size-4" />
+          </a>
+        </div>
+      </nav>
+    </div>
+    """
+  end
+
+  attr :to, :string, required: true
+  attr :icon, :string, required: true
+  attr :active, :boolean, default: false
+  slot :inner_block, required: true
+
+  defp drawer_tile(assigns) do
+    ~H"""
+    <.link
+      navigate={@to}
+      phx-click={close_drawer()}
+      aria-current={if(@active, do: "page")}
+      class="flex flex-col gap-2 rounded-2xl border border-base-300 p-3 text-sm font-medium transition hover:border-primary/40 hover:bg-base-200/60 active:scale-[0.98] aria-[current=page]:border-primary/50 aria-[current=page]:bg-primary/10 aria-[current=page]:text-primary"
+    >
+      <.icon name={@icon} class="size-5" />
+      {render_slot(@inner_block)}
+    </.link>
+    """
+  end
+
   attr :current_scope, :map, default: nil
   attr :categories, :list, required: true
 
   # Site footer: brand, category and site links, and the copyright line.
   # Extra bottom padding on phones keeps it clear of the bottom tab bar.
   defp site_footer(assigns) do
-    assigns = assign(assigns, :year, Date.utc_today().year)
+    assigns =
+      assigns
+      |> assign(:year, Date.utc_today().year)
+      |> assign(:social_links, Taamol.Settings.social_links())
 
     ~H"""
     <footer
@@ -389,6 +727,21 @@ defmodule TaamolWeb.Layouts do
                 "News, the Shia calendar, prayer times and community activities, in one place."
               )}
             </p>
+            <ul :if={@social_links != []} id="social-links" class="mt-5 flex flex-wrap gap-2">
+              <li :for={{network, url} <- @social_links}>
+                <a
+                  href={url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  id={"social-#{network}"}
+                  aria-label={TaamolWeb.SocialIcons.name(network)}
+                  title={TaamolWeb.SocialIcons.name(network)}
+                  class="grid size-9 place-items-center rounded-full border border-base-300 text-base-content/65 transition hover:-translate-y-0.5 hover:border-primary hover:bg-primary hover:text-primary-content"
+                >
+                  <TaamolWeb.SocialIcons.social_icon network={network} class="size-4" />
+                </a>
+              </li>
+            </ul>
             <.link
               :if={is_nil(@current_scope)}
               navigate={~p"/users/register"}
@@ -431,6 +784,9 @@ defmodule TaamolWeb.Layouts do
               </li>
               <li>
                 <.footer_link to={~p"/calendar"}>{gettext("Calendar")}</.footer_link>
+              </li>
+              <li>
+                <.footer_link to={~p"/gallery"}>{gettext("Gallery")}</.footer_link>
               </li>
               <li>
                 <.footer_link to={~p"/categories"}>{gettext("All categories")}</.footer_link>
@@ -502,23 +858,9 @@ defmodule TaamolWeb.Layouts do
     <.link
       navigate={@to}
       aria-current={if(@active, do: "page")}
-      class="-mb-px flex items-center whitespace-nowrap border-b-2 border-transparent transition-colors hover:text-primary aria-[current=page]:border-primary aria-[current=page]:text-primary"
-    >
-      {render_slot(@inner_block)}
-    </.link>
-    """
-  end
-
-  attr :to, :string, required: true
-  attr :active, :boolean, default: false
-  slot :inner_block, required: true
-
-  defp tab_nav_link(assigns) do
-    ~H"""
-    <.link
-      navigate={@to}
-      aria-current={if(@active, do: "page")}
-      class="inline-block whitespace-nowrap border-b-2 border-transparent py-3 text-base-content/60 transition-colors aria-[current=page]:border-primary aria-[current=page]:font-semibold aria-[current=page]:text-primary"
+      data-nav-item
+      data-active={@active}
+      class="relative z-10 flex h-9 items-center whitespace-nowrap rounded-full px-3.5 transition-colors duration-300 hover:text-primary aria-[current=page]:text-primary"
     >
       {render_slot(@inner_block)}
     </.link>
@@ -527,6 +869,8 @@ defmodule TaamolWeb.Layouts do
 
   attr :to, :string, required: true
   attr :icon, :string, required: true
+  # written out in full (not built from :icon) so Tailwind generates its CSS
+  attr :active_icon, :string, required: true
   attr :active, :boolean, default: false
   slot :inner_block, required: true
 
@@ -537,7 +881,7 @@ defmodule TaamolWeb.Layouts do
       aria-current={if(@active, do: "page")}
       class="flex flex-col items-center gap-1 py-2.5 text-[11px] text-base-content/55 transition-colors aria-[current=page]:text-primary"
     >
-      <.icon name={if(@active, do: "#{@icon}-solid", else: @icon)} class="size-6" />
+      <.icon name={if(@active, do: @active_icon, else: @icon)} class="size-6" />
       {render_slot(@inner_block)}
     </.link>
     """
@@ -672,34 +1016,6 @@ defmodule TaamolWeb.Layouts do
     """
   end
 
-  attr :class, :string, default: nil
-
-  @doc "One-button light/dark switch (the full system/light/dark toggle is on /menu)."
-  def theme_button(assigns) do
-    ~H"""
-    <span class={["size-9 place-items-center", @class]}>
-      <button
-        type="button"
-        phx-click={JS.dispatch("phx:set-theme")}
-        data-phx-theme="dark"
-        aria-label={gettext("Dark mode")}
-        class="grid size-9 place-items-center rounded-full text-base-content/70 transition hover:bg-base-200 hover:text-base-content [[data-theme=dark]_&]:hidden"
-      >
-        <.icon name="hero-moon" class="size-5" />
-      </button>
-      <button
-        type="button"
-        phx-click={JS.dispatch("phx:set-theme")}
-        data-phx-theme="light"
-        aria-label={gettext("Light mode")}
-        class="hidden size-9 place-items-center rounded-full text-base-content/70 transition hover:bg-base-200 hover:text-base-content [[data-theme=dark]_&]:grid"
-      >
-        <.icon name="hero-sun" class="size-5" />
-      </button>
-    </span>
-    """
-  end
-
   @doc """
   Shows the flash group with standard titles and content.
 
@@ -749,84 +1065,92 @@ defmodule TaamolWeb.Layouts do
     """
   end
 
-  @doc """
-  Language picker: a pill showing the current language that opens a menu on
-  hover/focus. Each option submits the form to `/locale`, so it works on both
-  controller and LiveView pages without JavaScript.
-  """
-  attr :id, :string, default: "locale-switcher"
+  attr :id, :string, default: "locale-toggle"
 
-  def locale_switcher(assigns) do
+  @doc """
+  Language switch, styled like the day/night switch: a pill with a globe
+  knob and the language it switches to ("SV" on Persian pages, "فا" on
+  Swedish ones). It posts that
+  language to `/locale`, which saves it and returns to the same page.
+  """
+  def locale_toggle(assigns) do
     current = Gettext.get_locale(TaamolWeb.Gettext)
 
-    languages = [
-      %{code: "en", native: "English", name: gettext("English")},
-      %{code: "fa", native: "فارسی", name: gettext("Persian")},
-      %{code: "sv", native: "Svenska", name: gettext("Swedish")}
-    ]
+    current =
+      if current in TaamolWeb.Locale.locales(), do: current, else: TaamolWeb.Locale.default()
 
-    assigns =
-      assigns
-      |> assign(:form, to_form(%{}))
-      |> assign(:languages, languages)
-      |> assign(:current, current)
+    {target, code, label} =
+      if current == "sv",
+        do: {"fa", "فا", gettext("Switch to Persian")},
+        else: {"sv", "SV", gettext("Switch to Swedish")}
+
+    assigns = assign(assigns, form: to_form(%{}), target: target, code: code, label: label)
 
     ~H"""
-    <div class="group/locale relative">
+    <.form for={@form} id={@id} action={~p"/locale"} method="post" class="inline-flex">
       <button
-        type="button"
-        id={"#{@id}-trigger"}
-        aria-haspopup="true"
-        aria-controls={@id}
-        class="inline-flex items-center gap-1.5 rounded-full border border-base-300 bg-base-100 px-3 py-1.5 text-xs transition hover:border-primary/40 hover:bg-base-200 focus-visible:outline-2 focus-visible:outline-primary"
+        type="submit"
+        name="locale"
+        value={@target}
+        id={"#{@id}-button"}
+        aria-label={@label}
+        title={@label}
+        dir="ltr"
+        class="inline-flex h-9 shrink-0 items-center gap-2 rounded-full bg-neutral-200 p-1 pe-3.5 text-neutral-800 shadow-inner ring-1 ring-black/5 transition-colors duration-300 hover:bg-neutral-300/80 active:scale-95 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary [[data-theme=dark]_&]:bg-neutral-800 [[data-theme=dark]_&]:text-white [[data-theme=dark]_&]:ring-white/10 [[data-theme=dark]_&]:hover:bg-neutral-700"
       >
-        <.icon name="hero-language-micro" class="size-4 text-base-content/60" />
-        <span class="font-semibold uppercase tracking-wide">{@current}</span>
-        <.icon
-          name="hero-chevron-down-micro"
-          class="size-3.5 text-base-content/50 transition-transform duration-200 group-hover/locale:rotate-180 group-focus-within/locale:rotate-180"
-        />
-        <span class="sr-only">{gettext("Language")}</span>
+        <%!-- white knob with the globe, like the day/night switch --%>
+        <span class="grid size-7 place-items-center rounded-full bg-white shadow-md">
+          <.icon name="hero-globe-alt" class="size-4 text-neutral-800" />
+        </span>
+        <span lang={@target} class="text-[13px] font-bold tracking-wider">{@code}</span>
       </button>
+    </.form>
+    """
+  end
 
-      <div class="invisible absolute end-0 top-full z-50 w-52 translate-y-1 pt-2 opacity-0 transition duration-200 ease-out group-hover/locale:visible group-hover/locale:translate-y-0 group-hover/locale:opacity-100 group-focus-within/locale:visible group-focus-within/locale:translate-y-0 group-focus-within/locale:opacity-100">
-        <.form
-          for={@form}
-          action={~p"/locale"}
-          method="post"
-          id={@id}
-          aria-label={gettext("Language")}
-          class="rounded-2xl border border-base-300 bg-base-100 p-1 shadow-xl shadow-base-content/10"
-        >
-          <p class="px-3 pb-1 pt-2 text-[11px] font-medium uppercase tracking-wider text-base-content/50">
-            {gettext("Language")}
-          </p>
-          <button
-            :for={lang <- @languages}
-            type="submit"
-            name="locale"
-            value={lang.code}
-            id={"#{@id}-option-#{lang.code}"}
-            aria-current={if(@current == lang.code, do: "true")}
-            class="group/option flex w-full items-center gap-3 rounded-xl px-3 py-2 text-start transition hover:bg-base-200 focus-visible:bg-base-200 focus-visible:outline-none aria-[current=true]:bg-primary/10"
-          >
-            <span class="grid size-8 shrink-0 place-items-center rounded-lg bg-base-200 text-[11px] font-bold uppercase tracking-wide text-base-content/70 transition group-hover/option:bg-base-300 group-aria-[current=true]/option:bg-primary group-aria-[current=true]/option:text-primary-content">
-              {lang.code}
-            </span>
-            <span class="min-w-0 flex-1">
-              <span lang={lang.code} class="block text-sm font-semibold leading-tight">
-                {lang.native}
-              </span>
-              <span class="block text-xs leading-tight text-base-content/55">{lang.name}</span>
-            </span>
-            <.icon
-              name="hero-check-micro"
-              class="size-4 text-primary opacity-0 group-aria-[current=true]/option:opacity-100"
-            />
-          </button>
-        </.form>
-      </div>
-    </div>
+  attr :id, :string, default: "theme-switch"
+  attr :class, :string, default: nil
+
+  @doc """
+  Day/night switch: a light pill reading "Day mode" with a sun knob on the
+  right, or a dark pill with a moon knob on the left reading "Night mode".
+  Styled from `[data-theme]` on <html>, so it is right before any JavaScript
+  runs; the toggle itself lives in root.html.heex.
+  """
+  def theme_switch(assigns) do
+    ~H"""
+    <button
+      type="button"
+      id={@id}
+      phx-click={JS.dispatch("phx:toggle-theme")}
+      aria-label={gettext("Dark mode")}
+      title={gettext("Dark mode")}
+      dir="ltr"
+      class={[
+        "inline-flex h-9 shrink-0 items-center rounded-full bg-neutral-200 p-1 text-neutral-800 shadow-inner ring-1 ring-black/5 transition-colors duration-300 hover:bg-neutral-300/80 active:scale-95 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary",
+        "[[data-theme=dark]_&]:bg-neutral-800 [[data-theme=dark]_&]:text-white [[data-theme=dark]_&]:ring-white/10 [[data-theme=dark]_&]:hover:bg-neutral-700",
+        @class
+      ]}
+    >
+      <%!-- day: label, then the sun knob on the right --%>
+      <span class="flex items-center gap-2 [[data-theme=dark]_&]:hidden">
+        <span class="whitespace-nowrap ps-2.5 text-[11px] font-semibold uppercase tracking-wider">
+          {gettext("Day mode")}
+        </span>
+        <span class="grid size-7 place-items-center rounded-full bg-white shadow-md">
+          <.icon name="hero-sun-solid" class="size-4 text-neutral-800" />
+        </span>
+      </span>
+      <%!-- night: the moon knob on the left, then the label --%>
+      <span class="hidden items-center gap-2 [[data-theme=dark]_&]:flex">
+        <span class="grid size-7 place-items-center rounded-full bg-white shadow-md">
+          <.icon name="hero-moon-solid" class="size-4 text-neutral-800" />
+        </span>
+        <span class="whitespace-nowrap pe-2.5 text-[11px] font-semibold uppercase tracking-wider">
+          {gettext("Night mode")}
+        </span>
+      </span>
+    </button>
     """
   end
 
@@ -869,10 +1193,10 @@ defmodule TaamolWeb.Layouts do
           id={"#{@id}-trigger"}
           data-role="trigger"
           aria-describedby={"#{@id}-popover"}
-          class="inline-flex items-center gap-2 rounded-full border border-base-300 bg-base-100 px-3 py-1.5 text-xs transition hover:border-primary/40 hover:bg-base-200 focus-visible:outline-2 focus-visible:outline-primary"
+          class="inline-flex h-9 items-center gap-2 rounded-full border border-base-300 bg-base-100 pe-3 ps-1.5 text-xs transition hover:border-primary/40 hover:bg-base-200 focus-visible:outline-2 focus-visible:outline-primary"
         >
-          <span class="relative grid size-5 place-items-center rounded-full bg-primary/10 text-primary">
-            <.icon name="hero-moon-micro" class="size-3.5" />
+          <span class="relative grid size-6 place-items-center rounded-full bg-primary/10 text-primary">
+            <.icon name="hero-moon-micro" class="size-4" />
             <span class="absolute -end-0.5 -top-0.5 hidden size-2 rounded-full bg-primary group-data-[state=ready]/prayer:block group-data-[state=ready]/prayer:motion-safe:animate-pulse" />
           </span>
           <span data-role="next-label" class="text-base-content/70">
@@ -994,7 +1318,7 @@ defmodule TaamolWeb.Layouts do
               stroke-width="2"
               stroke-linecap="round"
               stroke-dasharray="0 1"
-              class="text-primary transition-[stroke-dasharray] duration-700"
+              class="text-primary"
             />
             <circle
               :for={{key, _label, _icon} <- @prayers}
@@ -1003,12 +1327,24 @@ defmodule TaamolWeb.Layouts do
               cx="12"
               cy="104"
               stroke-width="1.5"
-              class="fill-base-100 stroke-base-content/30"
+              class="fill-base-100 stroke-base-content/30 transition-colors duration-500 data-[past]:fill-base-content/25 data-[past]:stroke-transparent data-[active]:fill-primary data-[active]:stroke-primary"
             />
           </svg>
+          <%!-- each prayer's icon, just inside the arc by its point; they rise
+               into place when the panel appears (prayer_times.js) --%>
+          <span
+            :for={{key, _label, icon} <- @prayers}
+            data-marker-icon={key}
+            class="group/mark pointer-events-none absolute -translate-x-1/2 -translate-y-1/2"
+            style="left: 6%; top: 93%"
+          >
+            <span class="block translate-y-2 scale-[0.7] text-base-content/45 opacity-0 transition duration-500 ease-out group-data-[shown]/mark:translate-y-0 group-data-[shown]/mark:opacity-100 group-data-[past]/mark:text-base-content/25 group-data-[active]/mark:scale-[0.85] group-data-[active]/mark:text-primary">
+              <.prayer_icon type={icon} />
+            </span>
+          </span>
           <span
             data-role="sun"
-            class="absolute grid size-6 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full bg-base-100 shadow-md ring-1 ring-base-300 transition-[left,top] duration-700"
+            class="absolute z-10 grid size-6 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full bg-base-100 shadow-md ring-1 ring-base-300"
             style="left: 6%; top: 93%"
           >
             <.icon
@@ -1094,43 +1430,6 @@ defmodule TaamolWeb.Layouts do
 
     ~H"""
     <.icon name={@name} class="size-5" />
-    """
-  end
-
-  @doc """
-  Provides dark vs light theme toggle based on themes defined in app.css.
-
-  See <head> in root.html.heex which applies the theme before page load.
-  """
-  def theme_toggle(assigns) do
-    ~H"""
-    <div class="card relative flex flex-row items-center border-2 border-base-300 bg-base-300 rounded-full">
-      <div class="absolute w-1/3 h-full rounded-full border-1 border-base-200 bg-base-100 brightness-200 left-0 [[data-theme=light]_&]:left-1/3 [[data-theme=dark]_&]:left-2/3 [[data-theme-source=system]_&]:!left-0 transition-[left]" />
-
-      <button
-        class="flex p-2 cursor-pointer w-1/3"
-        phx-click={JS.dispatch("phx:set-theme")}
-        data-phx-theme="system"
-      >
-        <.icon name="hero-computer-desktop-micro" class="size-4 opacity-75 hover:opacity-100" />
-      </button>
-
-      <button
-        class="flex p-2 cursor-pointer w-1/3"
-        phx-click={JS.dispatch("phx:set-theme")}
-        data-phx-theme="light"
-      >
-        <.icon name="hero-sun-micro" class="size-4 opacity-75 hover:opacity-100" />
-      </button>
-
-      <button
-        class="flex p-2 cursor-pointer w-1/3"
-        phx-click={JS.dispatch("phx:set-theme")}
-        data-phx-theme="dark"
-      >
-        <.icon name="hero-moon-micro" class="size-4 opacity-75 hover:opacity-100" />
-      </button>
-    </div>
     """
   end
 end

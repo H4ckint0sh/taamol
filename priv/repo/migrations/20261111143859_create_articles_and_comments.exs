@@ -5,8 +5,15 @@ defmodule Taamol.Repo.Migrations.CreateArticlesAndComments do
     create table(:articles, primary_key: false) do
       add :id, :binary_id, primary_key: true
       add :title, :string, null: false, size: 100
+      add :summary, :text
+      # Markdown
       add :body, :text
-      add :published, :date
+      add :category, :string, null: false, default: "community"
+      add :cover_image_url, :string, size: 2048
+      add :featured, :boolean, null: false, default: false
+      add :view_count, :integer, null: false, default: 0
+      # publish time; nil = draft
+      add :published, :utc_datetime
       add :author, :string
       add :creator_id, references(:users, type: :binary_id, on_delete: :restrict), null: false
 
@@ -14,6 +21,9 @@ defmodule Taamol.Repo.Migrations.CreateArticlesAndComments do
     end
 
     create index(:articles, [:creator_id])
+    create index(:articles, [:published])
+    create index(:articles, [:category, :published])
+    create index(:articles, [:view_count])
 
     create table(:comments, primary_key: false) do
       add :id, :binary_id, primary_key: true

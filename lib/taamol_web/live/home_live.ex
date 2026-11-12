@@ -19,6 +19,7 @@ defmodule TaamolWeb.HomeLive do
      socket
      |> assign(page_title: gettext("Home"), lead: lead)
      |> assign(:upcoming, Taamol.Events.upcoming(limit: 5))
+     |> assign(:gallery, Taamol.Gallery.list_images(limit: 4))
      |> stream(:latest, Tracking.list_public_articles(limit: 5, exclude: lead && lead.id))
      |> stream(:most_read, Tracking.list_most_read_articles(limit: 5))}
   end
@@ -185,6 +186,35 @@ defmodule TaamolWeb.HomeLive do
                 >
                   {gettext("Show more")}
                 </button>
+              </div>
+            </section>
+
+            <section :if={@gallery != []} id="home-gallery" aria-labelledby="home-gallery-title">
+              <div class="mb-4 flex items-center justify-between gap-3">
+                <h2 id="home-gallery-title" class="text-xl font-bold tracking-tight">
+                  {gettext("From the gallery")}
+                </h2>
+                <.link
+                  navigate={~p"/gallery"}
+                  class="text-sm font-medium text-primary hover:underline"
+                >
+                  {gettext("View all")}
+                </.link>
+              </div>
+              <div class="grid grid-cols-2 gap-3 sm:grid-cols-4 sm:gap-4">
+                <.link
+                  :for={image <- @gallery}
+                  id={"home-gallery-#{image.id}"}
+                  navigate={~p"/gallery?#{[photo: image.id]}"}
+                  class="group overflow-hidden rounded-lg bg-base-200"
+                >
+                  <img
+                    src={image.image_url}
+                    alt={image.caption || ""}
+                    loading="lazy"
+                    class="aspect-[11/10] w-full object-cover transition duration-500 group-hover:scale-[1.04]"
+                  />
+                </.link>
               </div>
             </section>
           </div>

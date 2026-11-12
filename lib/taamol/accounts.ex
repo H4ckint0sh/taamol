@@ -23,14 +23,21 @@ defmodule Taamol.Accounts do
 
     * `:use_dashboard` - any logged-in user (own overview and settings)
     * `:view_statistics` - administrators with dashboard access
-    * `:manage_news`, `:manage_users`, `:manage_events`, `:manage_settings` -
+    * `:manage_news`, `:manage_users`, `:manage_events`, `:manage_gallery`,
+      `:manage_settings` -
       administrators
   """
   def can?(%Scope{user: %User{}}, :use_dashboard), do: true
   def can?(scope, :view_statistics), do: allowed?(scope, :view_dashboard)
 
   def can?(scope, action)
-      when action in [:manage_news, :manage_users, :manage_events, :manage_settings],
+      when action in [
+             :manage_news,
+             :manage_users,
+             :manage_events,
+             :manage_gallery,
+             :manage_settings
+           ],
       do: admin?(scope)
 
   def can?(_scope, _action), do: false

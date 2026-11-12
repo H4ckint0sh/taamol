@@ -39,4 +39,28 @@ defmodule TaamolWeb.SiteSettingsLiveTest do
     assert {:error, changeset} = Settings.update(admin_scope, %{"hijri_adjustment_days" => 5})
     assert %{hijri_adjustment_days: [_]} = Taamol.DataCase.errors_on(changeset)
   end
+
+  test "social links appear in the footer", %{conn: conn} do
+    admin = user_fixture() |> Ecto.Changeset.change(role: :admin) |> Taamol.Repo.update!()
+    conn = log_in_user(conn, admin)
+
+    {:ok, home, _html} = live(conn, ~p"/")
+    refute has_element?(home, "#social-links")
+
+    {:ok, view, _html} = live(conn, ~p"/dashboard/settings")
+
+    assert view
+           |> form("#site-settings-form", site_setting: %{instagram_url: "not a url"})
+           |> render_submit() =~ "must start with https://"
+
+    view
+    |> form("#site-settings-form",
+      site_setting: %{instagram_url: "https://instagram.com/taamol", youtube_url: ""}
+    )
+    |> render_submit()
+
+    {:ok, home, _html} = live(conn, ~p"/")
+    assert has_element?(home, "#social-instagram[href='https://instagram.com/taamol']")
+    refute has_element?(home, "#social-youtube")
+  end
 end

@@ -82,3 +82,7 @@ if (process.env.NODE_ENV === "development") {
   })
 }
 
+
+// The mobile menu locks page scrolling (class on <body>, outside LiveView).
+// Always unlock when a navigation starts, e.g. after following a menu link.
+window.addEventListener("phx:page-loading-start", () => document.body.classList.remove("overflow-hidden"))

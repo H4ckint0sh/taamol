@@ -19,6 +19,8 @@ const localDate = (d = new Date()) => `${d.getFullYear()}-${pad(d.getMonth() + 1
 // ~1 km precision is plenty for prayer times and avoids storing an exact position
 const round = n => Math.round(n * 100) / 100
 const clamp = (n, min, max) => Math.min(max, Math.max(min, n))
+const arcPoint = f => ({x: 100 - 88 * Math.cos(Math.PI * f), y: 104 - 88 * Math.sin(Math.PI * f)})
+const reducedMotion = () => window.matchMedia("(prefers-reduced-motion: reduce)").matches
 
 function cachedLocation() {
   try {
@@ -91,10 +93,28 @@ class PrayerTimes extends HTMLElement {
     // the chip (popover) or the whole card retries after a failure
     this.root.addEventListener("click", this.onTrigger)
 
+    // the header popover replays the arc animation each time it opens
+    if (this.$("trigger")) {
+      this.onOpen = () => {
+        if (this.popoverOpen) return
+        this.popoverOpen = true
+        this.playArcIntro()
+      }
+      this.onClose = (e) => {
+        if (!this.root.contains(e.relatedTarget)) this.popoverOpen = false
+      }
+      this.root.addEventListener("mouseenter", this.onOpen)
+      this.root.addEventListener("focusin", this.onOpen)
+      this.root.addEventListener("mouseleave", this.onClose)
+      this.root.addEventListener("focusout", this.onClose)
+    }
+
     this.start()
   }
 
   disconnectedCallback() {
+    cancelAnimationFrame(this.raf)
+    this.revealTimers?.forEach(clearTimeout)
     this.stopTimers()
     this.root?.removeEventListener("click", this.onTrigger)
   }
@@ -174,37 +194,85 @@ class PrayerTimes extends HTMLElement {
     this.set("next-at", this.nextAt ? format(this.nextAt) : "")
     this.set("hijri", this.hijriFormat ? this.hijriFormat.format(now) : "")
 
-    this.renderArc(now, times)
+    this.renderArc(now, times, next)
     this.renderRamadan(now, times, format)
     this.renderCountdowns()
   }
 
   // Sun path: a half circle from Fajr (left) to Isha (right).
-  renderArc(now, times) {
+  // The SVG arc has its centre at (100, 104) and radius 88 in a 200x112 box.
+  renderArc(now, times, next) {
     const start = times.fajr
     const end = times.isha
     if (!start || !end) return
 
-    const point = ts => {
-      const f = clamp((ts - start) / (end - start), 0, 1)
-      // matches the SVG arc: centre (100, 104), radius 88, viewBox 200x112
-      return {f, x: 100 - 88 * Math.cos(Math.PI * f), y: 104 - 88 * Math.sin(Math.PI * f)}
-    }
+    this.arcFraction = ts => clamp((ts - start) / (end - start), 0, 1)
 
     ARC_PRAYERS.forEach(key => {
       const marker = this.querySelector(`[data-marker=${key}]`)
+      const icon = this.querySelector(`[data-marker-icon=${key}]`)
       if (!marker || !times[key]) return
-      const {x, y} = point(times[key])
+
+      const {x, y} = arcPoint(this.arcFraction(times[key]))
       marker.setAttribute("cx", x.toFixed(2))
       marker.setAttribute("cy", y.toFixed(2))
+
+      // the icon sits just inside the arc, towards its centre
+      const dx = 100 - x, dy = 104 - y, len = Math.hypot(dx, dy) || 1
+      Object.assign(icon.style, {left: `${(x + dx / len * 17) / 2}%`, top: `${((y + dy / len * 17) / 112) * 100}%`})
+
+      const active = key === next
+      const past = !active && times[key] <= now
+      for (const el of [marker, icon]) {
+        el.toggleAttribute("data-active", active)
+        el.toggleAttribute("data-past", past)
+      }
+      marker.setAttribute("r", active ? "3.5" : "2.5")
     })
 
-    const {f, x, y} = point(now)
-    this.$("arc-progress").setAttribute("stroke-dasharray", `${f.toFixed(4)} 1`)
-    Object.assign(this.$("sun").style, {left: `${x / 2}%`, top: `${(y / 112) * 100}%`})
+    this.targetFraction = this.arcFraction(now)
+
+    if (this.drawnFraction === undefined) this.playArcIntro()
+    else this.animateArc(this.targetFraction, 900)
 
     const night = !times.sunrise || !times.maghrib || now < times.sunrise || now >= times.maghrib
     this.root.toggleAttribute("data-night", night)
+  }
+
+  // the badge travels from Fajr to "now" and the icons rise in one by one
+  playArcIntro() {
+    if (this.targetFraction === undefined) return
+    const icons = [...this.querySelectorAll("[data-marker-icon]")]
+    this.revealTimers?.forEach(clearTimeout)
+    icons.forEach(icon => icon.removeAttribute("data-shown"))
+
+    this.drawnFraction = 0
+    this.animateArc(this.targetFraction, 1600)
+    this.revealTimers = icons.map((icon, i) =>
+      setTimeout(() => icon.setAttribute("data-shown", ""), reducedMotion() ? 0 : 250 + i * 140))
+  }
+
+  // moves the badge along the curve (not straight across) and fills the line
+  animateArc(target, duration) {
+    cancelAnimationFrame(this.raf)
+    const from = this.drawnFraction ?? 0
+    const ms = reducedMotion() ? 0 : duration
+    const started = performance.now()
+    const ease = t => 1 - Math.pow(1 - t, 3)
+
+    const step = (time) => {
+      const progress = ms ? Math.min(1, (time - started) / ms) : 1
+      this.drawArc(from + (target - from) * ease(progress))
+      if (progress < 1) this.raf = requestAnimationFrame(step)
+    }
+    this.raf = requestAnimationFrame(step)
+  }
+
+  drawArc(fraction) {
+    this.drawnFraction = fraction
+    const {x, y} = arcPoint(fraction)
+    this.$("arc-progress").setAttribute("stroke-dasharray", `${fraction.toFixed(4)} 1`)
+    Object.assign(this.$("sun").style, {left: `${x / 2}%`, top: `${(y / 112) * 100}%`})
   }
 
   renderRamadan(now, times, format) {

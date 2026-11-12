@@ -9,10 +9,7 @@ defmodule TaamolWeb.MenuLive do
   def mount(_params, _session, socket) do
     {:ok,
      assign(socket,
-       page_title: gettext("Profile"),
-       locale_form: to_form(%{}),
-       current_locale: Gettext.get_locale(TaamolWeb.Gettext),
-       languages: [{"en", "English"}, {"fa", "فارسی"}, {"sv", "Svenska"}]
+       page_title: gettext("Profile")
      )}
   end
 
@@ -77,6 +74,15 @@ defmodule TaamolWeb.MenuLive do
           </div>
         <% end %>
 
+        <ul class="divide-y divide-base-300/70 rounded-2xl border border-base-300 bg-base-100">
+          <.menu_item id="menu-calendar" to={~p"/calendar"} icon="hero-calendar-days">
+            {gettext("Calendar")}
+          </.menu_item>
+          <.menu_item id="menu-gallery" to={~p"/gallery"} icon="hero-photo">
+            {gettext("Gallery")}
+          </.menu_item>
+        </ul>
+
         <section>
           <h2 class="mb-2 px-1 text-[11px] font-semibold uppercase tracking-wider text-base-content/50">
             {gettext("Preferences")}
@@ -87,34 +93,15 @@ defmodule TaamolWeb.MenuLive do
                 <.icon name="hero-swatch" class="size-5 text-base-content/50" />
                 {gettext("Theme")}
               </span>
-              <Layouts.theme_toggle />
+              <Layouts.theme_switch id="menu-theme" />
             </div>
-            <.form
-              for={@locale_form}
-              id="menu-locale"
-              action={~p"/locale"}
-              method="post"
-              class="px-4 py-3"
-            >
-              <p class="flex items-center gap-3 text-sm">
+            <div class="flex items-center justify-between gap-4 px-4 py-3">
+              <span class="flex items-center gap-3 text-sm">
                 <.icon name="hero-language" class="size-5 text-base-content/50" />
                 {gettext("Language")}
-              </p>
-              <div class="mt-3 grid grid-cols-3 gap-2">
-                <button
-                  :for={{code, label} <- @languages}
-                  type="submit"
-                  name="locale"
-                  value={code}
-                  lang={code}
-                  id={"menu-locale-#{code}"}
-                  aria-current={if(@current_locale == code, do: "true")}
-                  class="rounded-xl border border-base-300 py-2 text-sm transition hover:bg-base-200 aria-[current=true]:border-primary aria-[current=true]:bg-primary/10 aria-[current=true]:font-semibold aria-[current=true]:text-primary"
-                >
-                  {label}
-                </button>
-              </div>
-            </.form>
+              </span>
+              <Layouts.locale_toggle id="menu-locale" />
+            </div>
           </div>
         </section>
 

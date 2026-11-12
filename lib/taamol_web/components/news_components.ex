@@ -286,42 +286,90 @@ defmodule TaamolWeb.NewsComponents do
   attr :path, :any, required: true, doc: "fun category -> path"
   attr :patch, :boolean, default: true
 
-  @doc "Underlined tab row (\"All · Community · World …\"), horizontally scrollable."
+  @doc """
+  Category filter as chips ("All · Community · World …"), horizontally
+  scrollable, e.g. the News section on the start page.
+  """
   def category_tabs(assigns) do
     assigns = assign_new(assigns, :items, fn -> assigns.categories || categories() end)
 
     ~H"""
+    <.chip_row id={@id} class="-mx-4 px-4 sm:mx-0 sm:px-0">
+      <li>
+        <.chip patch={@patch} to={@all_path} icon="hero-squares-2x2" active={is_nil(@active)}>
+          {gettext("All")}
+        </.chip>
+      </li>
+      <li :for={category <- @items}>
+        <.chip
+          patch={@patch}
+          to={@path.(category)}
+          icon={category_icon(category)}
+          active={@active == category}
+        >
+          {category_name(category)}
+        </.chip>
+      </li>
+    </.chip_row>
+    """
+  end
+
+  attr :id, :string, required: true
+  attr :class, :string, default: nil
+  slot :inner_block, required: true
+
+  @doc """
+  A horizontally scrolling row of `chip/1`s with faded edges. The active chip
+  is scrolled into view (e.g. "Sport" at the far end of the list).
+  """
+  def chip_row(assigns) do
+    ~H"""
     <nav
       id={@id}
-      class="-mx-4 overflow-x-auto px-4 [scrollbar-width:none] sm:mx-0 sm:px-0 [&::-webkit-scrollbar]:hidden"
+      phx-hook=".ScrollActiveIntoView"
+      class={[
+        "overflow-x-auto py-1 [mask-image:linear-gradient(to_right,transparent,black_0.75rem,black_calc(100%-1.5rem),transparent)] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden",
+        @class
+      ]}
     >
-      <ul class="flex min-w-max gap-6 border-b border-base-300 text-sm">
-        <li>
-          <.tab_link patch={@patch} to={@all_path} active={is_nil(@active)}>{gettext("All")}</.tab_link>
-        </li>
-        <li :for={category <- @items}>
-          <.tab_link patch={@patch} to={@path.(category)} active={@active == category}>
-            {category_name(category)}
-          </.tab_link>
-        </li>
+      <ul class="flex min-w-max gap-1.5 pe-4">
+        {render_slot(@inner_block)}
       </ul>
+      <script :type={Phoenix.LiveView.ColocatedHook} name=".ScrollActiveIntoView">
+        export default {
+          mounted() { this.reveal("instant") },
+          updated() { this.reveal("smooth") },
+          reveal(behavior) {
+            const active = this.el.querySelector("[aria-current=page]")
+            if (active) active.scrollIntoView({behavior, block: "nearest", inline: "center"})
+          },
+        }
+      </script>
     </nav>
     """
   end
 
   attr :to, :string, required: true
+  attr :icon, :string, required: true
   attr :active, :boolean, default: false
-  attr :patch, :boolean, default: true
+  attr :patch, :boolean, default: false, doc: "patch the current LiveView instead of navigating"
   slot :inner_block, required: true
 
-  defp tab_link(assigns) do
+  @doc "A compact pill with an icon; filled with the primary colour when active."
+  def chip(assigns) do
     ~H"""
     <.link
       patch={@patch && @to}
       navigate={!@patch && @to}
       aria-current={if(@active, do: "page")}
-      class="-mb-px inline-block border-b-2 border-transparent pb-3 text-base-content/60 transition-colors hover:text-base-content aria-[current=page]:border-primary aria-[current=page]:font-semibold aria-[current=page]:text-primary"
+      class="flex items-center gap-1.5 whitespace-nowrap rounded-full border border-base-300 bg-base-100 py-1 pe-3 ps-1 text-sm font-medium text-base-content/75 transition hover:border-primary/40 active:scale-95 aria-[current=page]:border-primary aria-[current=page]:bg-primary aria-[current=page]:text-primary-content"
     >
+      <span class={[
+        "grid size-6 place-items-center rounded-full",
+        if(@active, do: "bg-primary-content/20", else: "bg-primary/10 text-primary")
+      ]}>
+        <.icon name={@icon} class="size-3.5" />
+      </span>
       {render_slot(@inner_block)}
     </.link>
     """

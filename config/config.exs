@@ -20,6 +20,13 @@ config :taamol, :scopes,
     test_setup_helper: :register_and_log_in_user
   ]
 
+# The first administrator, created by the users migration (see
+# priv/repo/migrations/20261110211109_create_users_auth_tables.exs).
+# The site is in Persian and Swedish; Persian is the default (see TaamolWeb.Locale)
+config :taamol, :default_locale, "fa"
+
+config :taamol, :initial_admin, email: "alijan.adeli@icloud.com", name: "Alijan Adeli"
+
 config :taamol,
   ecto_repos: [Taamol.Repo],
   generators: [timestamp_type: :utc_datetime, binary_id: true]

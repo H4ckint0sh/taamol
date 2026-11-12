@@ -47,3 +47,9 @@ config :phoenix,
 
 # Uploaded images go to a temp folder in tests
 config :taamol, :uploads_dir, Path.join(System.tmp_dir!(), "taamol-test-uploads")
+
+# No pre-made administrator in the test database
+config :taamol, :initial_admin, nil
+
+# Tests compare against the English source strings (the msgids)
+config :taamol, :default_locale, "en"

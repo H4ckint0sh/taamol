@@ -76,18 +76,33 @@ defmodule TaamolWeb.LocaleTest do
     end)
   end
 
-  test "the language menu marks the current language", %{conn: conn} do
+  test "the language switch offers the other language", %{conn: conn} do
     conn = conn |> post(~p"/locale", %{"locale" => "sv"}) |> recycle() |> get(~p"/")
     document = conn |> html_response(200) |> LazyHTML.from_document()
 
-    assert document |> LazyHTML.query("#locale-switcher button[name=locale]") |> Enum.count() == 3
-
+    # on a Swedish page the header button switches to Persian
     assert document
-           |> LazyHTML.query(~s(#locale-switcher-option-sv[aria-current="true"]))
-           |> Enum.count() ==
-             1
+           |> LazyHTML.query(~s(#header-locale-button[name="locale"][value="fa"]))
+           |> Enum.count() == 1
+  end
 
-    assert document |> LazyHTML.query("#locale-switcher-option-en[aria-current]") |> Enum.count() ==
-             0
+  test "English is no longer offered" do
+    conn = post(build_conn(), ~p"/locale", %{"locale" => "en"})
+    assert response(conn, 400)
+  end
+
+  test "first visits follow the browser's language, Persian otherwise" do
+    sv =
+      build_conn() |> put_req_header("accept-language", "sv-SE,sv;q=0.9,en;q=0.8") |> get(~p"/")
+
+    assert html_response(sv, 200) =~ ~s(lang="sv")
+    assert get_session(sv, :locale) == "sv"
+
+    fa = build_conn() |> put_req_header("accept-language", "fa-IR,fa;q=0.9") |> get(~p"/")
+    assert html_response(fa, 200) =~ ~s(lang="fa")
+
+    other = build_conn() |> put_req_header("accept-language", "de-DE,de;q=0.9") |> get(~p"/")
+    # the test config uses the English source strings as the default
+    assert get_session(other, :locale) == TaamolWeb.Locale.default()
   end
 end

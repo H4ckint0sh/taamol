@@ -1,7 +1,7 @@
 defmodule TaamolWeb.LocaleController do
   use TaamolWeb, :controller
 
-  def update(conn, %{"locale" => locale}) when locale in ~w(en fa sv) do
+  def update(conn, %{"locale" => locale}) when locale in ~w(fa sv) do
     conn
     |> put_session(:locale, locale)
     |> redirect(to: return_path(conn))

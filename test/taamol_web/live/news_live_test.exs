@@ -16,6 +16,10 @@ defmodule TaamolWeb.NewsLiveTest do
       assert has_element?(view, "#bottom-nav")
       assert has_element?(view, "#site-footer a[href='/categories/world']")
       refute has_element?(view, "#sidebar-categories")
+      assert has_element?(view, "#mobile-menu-open")
+      assert has_element?(view, "#mobile-drawer a[href='/calendar']")
+      assert has_element?(view, "#mobile-drawer a[href='/categories/religion']")
+      assert has_element?(view, "#drawer-locale-button")
     end
 
     test "shows the lead story, latest list and feed", %{conn: conn, creator: creator} do
@@ -105,7 +109,7 @@ defmodule TaamolWeb.NewsLiveTest do
     test "guests see log in and register", %{conn: conn} do
       {:ok, view, _html} = live(conn, ~p"/menu")
       assert has_element?(view, "#menu-log-in")
-      assert has_element?(view, "#menu-locale-sv")
+      assert has_element?(view, "#menu-locale-button")
       refute has_element?(view, "#menu-log-out")
     end
 

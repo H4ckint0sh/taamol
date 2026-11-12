@@ -213,7 +213,8 @@ defmodule TaamolWeb.CoreComponents do
 
     ~H"""
     <div class="fieldset mb-2">
-      <label for={@id}>
+      <%!-- a real checkbox, drawn as a toggle switch --%>
+      <label for={@id} class="inline-flex cursor-pointer items-center gap-3 py-1">
         <input
           type="hidden"
           name={@name}
@@ -221,17 +222,21 @@ defmodule TaamolWeb.CoreComponents do
           disabled={@rest[:disabled]}
           form={@rest[:form]}
         />
-        <span class="label">
-          <input
-            type="checkbox"
-            id={@id}
-            name={@name}
-            value="true"
-            checked={@checked}
-            class={@class || "checkbox checkbox-sm"}
-            {@rest}
-          />{@label}
-        </span>
+        <input
+          type="checkbox"
+          id={@id}
+          name={@name}
+          value="true"
+          checked={@checked}
+          role="switch"
+          class={@class || "peer sr-only"}
+          {@rest}
+        />
+        <span
+          aria-hidden="true"
+          class="relative h-6 w-11 shrink-0 rounded-full border border-base-300 bg-base-300 shadow-inner transition-colors duration-200 after:absolute after:start-0.5 after:top-0.5 after:size-[1.125rem] after:rounded-full after:bg-base-100 after:shadow-md after:transition-transform after:duration-200 peer-checked:border-primary peer-checked:bg-primary peer-checked:after:translate-x-5 peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-primary peer-disabled:opacity-50 rtl:peer-checked:after:-translate-x-5"
+        />
+        <span :if={@label} class="text-sm">{@label}</span>
       </label>
       <.error :for={msg <- @errors}>{msg}</.error>
     </div>
