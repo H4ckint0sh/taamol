@@ -7,7 +7,7 @@ defmodule Taamol.Settings.SiteSetting do
 
   schema "site_settings" do
     field :hijri_adjustment_days, :integer, default: 0
-    field :prayer_method, :string, default: "MWL"
+    field :prayer_method, :string, default: "Tehran"
 
     # social media links shown in the footer (empty = hidden)
     field :instagram_url, :string

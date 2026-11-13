@@ -4,7 +4,7 @@ defmodule TaamolWeb.DashboardNotifications do
   import Phoenix.Component, only: [assign: 3]
   import Phoenix.LiveView, only: [attach_hook: 4, connected?: 1]
 
-  alias Taamol.{Accounts, Contact}
+  alias Taamol.{Accounts, Bookings, Contact}
 
   def on_mount(:default, _params, _session, socket) do
     scope = socket.assigns.current_scope
@@ -22,8 +22,30 @@ defmodule TaamolWeb.DashboardNotifications do
         socket
       end
 
-    {:cont, assign(socket, :unread_messages, Contact.unread_count(scope))}
+    socket =
+      if connected?(socket) do
+        :ok = Bookings.subscribe_changes(scope)
+        attach_hook(socket, :booking_notifications, :handle_info, &handle_booking_change/2)
+      else
+        socket
+      end
+
+    {:cont,
+     socket
+     |> assign(:unread_messages, Contact.unread_count(scope))
+     |> assign(:pending_bookings, Bookings.pending_count(scope))}
   end
+
+  defp handle_booking_change(:bookings_changed, socket) do
+    socket =
+      assign(socket, :pending_bookings, Bookings.pending_count(socket.assigns.current_scope))
+
+    if socket.view == TaamolWeb.DashboardLive.Bookings,
+      do: {:cont, socket},
+      else: {:halt, socket}
+  end
+
+  defp handle_booking_change(_, socket), do: {:cont, socket}
 
   defp handle_message_change(:contact_messages_changed, socket) do
     socket = assign(socket, :unread_messages, Contact.unread_count(socket.assigns.current_scope))

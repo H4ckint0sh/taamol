@@ -1,6 +1,6 @@
 // <prayer-times> custom element.
 //
-// Asks the browser for the visitor's location, fetches the day's prayer times
+// Fetches the day's prayer times for the site's default location
 // (computed server-side by Taamol.PrayTime) and fills in the header chip and
 // the popover: a live countdown on a sun-path arc, the day's prayer grid and,
 // during Ramadan, a suhoor/iftar banner.
@@ -8,56 +8,20 @@
 // A custom element is used instead of a LiveView hook so it also works on
 // controller-rendered pages (e.g. the home page).
 
-const LOCATION_KEY = "taamol:prayer-location"
-const LOCATION_MAX_AGE = 24 * 60 * 60 * 1000
 const DAY = 24 * 60 * 60 * 1000
 const PRAYERS = ["fajr", "dhuhr", "asr", "maghrib", "isha"]
 const ARC_PRAYERS = ["fajr", "sunrise", "dhuhr", "asr", "maghrib", "isha"]
 
-const pad = n => String(n).padStart(2, "0")
-const localDate = (d = new Date()) => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`
-// ~1 km precision is plenty for prayer times and avoids storing an exact position
-const round = n => Math.round(n * 100) / 100
 const clamp = (n, min, max) => Math.min(max, Math.max(min, n))
 const arcPoint = f => ({x: 100 - 88 * Math.cos(Math.PI * f), y: 104 - 88 * Math.sin(Math.PI * f)})
 const reducedMotion = () => window.matchMedia("(prefers-reduced-motion: reduce)").matches
 
-function cachedLocation() {
-  try {
-    const loc = JSON.parse(localStorage.getItem(LOCATION_KEY))
-    if (loc && Date.now() - loc.at < LOCATION_MAX_AGE) return loc
-  } catch (_e) { /* ignore broken cache */ }
-  return null
-}
-
-function requestLocation() {
-  return new Promise((resolve, reject) => {
-    if (!("geolocation" in navigator)) return reject(new Error("geolocation unsupported"))
-
-    navigator.geolocation.getCurrentPosition(
-      ({coords}) => {
-        const loc = {lat: round(coords.latitude), lng: round(coords.longitude), at: Date.now()}
-        try { localStorage.setItem(LOCATION_KEY, JSON.stringify(loc)) } catch (_e) { /* storage full/disabled */ }
-        resolve(loc)
-      },
-      reject,
-      {enableHighAccuracy: false, timeout: 15000, maximumAge: 60 * 60 * 1000}
-    )
-  })
-}
-
 async function fetchTimes({lat, lng}, date) {
-  const cacheKey = `taamol:prayer-times:${lat},${lng},${date}`
-  const cached = sessionStorage.getItem(cacheKey)
-  if (cached) return JSON.parse(cached)
-
   const params = new URLSearchParams({lat, lng, date})
   const res = await fetch(`/api/prayer-times?${params}`, {headers: {accept: "application/json"}})
   if (!res.ok) throw new Error(`prayer times request failed: ${res.status}`)
 
-  const data = await res.json()
-  try { sessionStorage.setItem(cacheKey, JSON.stringify(data)) } catch (_e) { /* ignore */ }
-  return data
+  return res.json()
 }
 
 class PrayerTimes extends HTMLElement {
@@ -66,9 +30,12 @@ class PrayerTimes extends HTMLElement {
     // of the phx-update="ignore" host element, but leaves its children alone
     this.root = this.querySelector("[data-role=root]")
     const locale = document.documentElement.lang || navigator.language
+    const timezone = this.dataset.timezone
     const unit = (unit, unitDisplay) => new Intl.NumberFormat(locale, {style: "unit", unit, unitDisplay})
 
-    this.timeFormat = new Intl.DateTimeFormat(locale, {hour: "numeric", minute: "2-digit"})
+    this.location = {lat: this.dataset.latitude, lng: this.dataset.longitude}
+    this.dateFormat = new Intl.DateTimeFormat("en-CA", {timeZone: timezone, year: "numeric", month: "2-digit", day: "2-digit"})
+    this.timeFormat = new Intl.DateTimeFormat(locale, {timeZone: timezone, hour: "numeric", minute: "2-digit"})
     this.two = new Intl.NumberFormat(locale, {minimumIntegerDigits: 2, useGrouping: false})
     this.number = new Intl.NumberFormat(locale)
     // "5h 15m"; Persian narrow units fall back to Latin letters, so use words
@@ -77,18 +44,15 @@ class PrayerTimes extends HTMLElement {
     this.minutes = unit("minute", display)
     try {
       const calendar = `${locale}-u-ca-islamic-umalqura`
-      this.hijriFormat = new Intl.DateTimeFormat(calendar, {day: "numeric", month: "long", year: "numeric"})
-      this.hijriParts = new Intl.DateTimeFormat(calendar, {day: "numeric", month: "numeric"})
+      this.hijriFormat = new Intl.DateTimeFormat(calendar, {timeZone: timezone, day: "numeric", month: "long", year: "numeric"})
+      this.hijriParts = new Intl.DateTimeFormat(calendar, {timeZone: timezone, day: "numeric", month: "numeric"})
     } catch (_e) { /* calendar unsupported: hide Hijri date and Ramadan banner */ }
 
-    // City from the device timezone ("Europe/Stockholm" -> "Stockholm"). No
-    // network lookup, so it names the timezone's city, not the exact town.
-    const zone = Intl.DateTimeFormat().resolvedOptions().timeZone || ""
-    this.set("place", zone.split("/").pop().replace(/_/g, " "))
+    this.set("place", this.dataset.city)
 
     this.onTrigger = () => {
       const state = this.root.dataset.state
-      if (state === "denied" || state === "error") this.start({retry: true})
+      if (state === "error") this.start()
     }
     // the chip (popover) or the whole card retries after a failure
     this.root.addEventListener("click", this.onTrigger)
@@ -133,24 +97,24 @@ class PrayerTimes extends HTMLElement {
     this.secondTimer = null
   }
 
-  async start({retry = false} = {}) {
+  async start() {
     this.stopTimers()
     this.root.dataset.state = "loading"
 
     try {
-      this.location = (!retry && cachedLocation()) || await requestLocation()
       this.date = null
       await this.tick()
     } catch (error) {
       this.stopTimers()
-      // GeolocationPositionError.PERMISSION_DENIED === 1
-      this.root.dataset.state = error && error.code === 1 ? "denied" : "error"
+      console.error("Could not load prayer times", error)
+      this.root.dataset.state = "error"
     }
   }
 
   // full re-render at the start of every minute
   async tick() {
-    const today = localDate()
+    const parts = Object.fromEntries(this.dateFormat.formatToParts(new Date()).map(part => [part.type, part.value]))
+    const today = `${parts.year}-${parts.month}-${parts.day}`
 
     if (this.date !== today) {
       this.data = await fetchTimes(this.location, today)

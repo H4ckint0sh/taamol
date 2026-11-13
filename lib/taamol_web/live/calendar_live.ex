@@ -1,11 +1,7 @@
 defmodule TaamolWeb.CalendarLive do
   @moduledoc """
-  The calendar, in two modes:
-
-    * **Calendar** (default): Shia holidays, historical days, Taamol events and
-      confirmed bookings (shown without personal details).
-    * **Book**: select a day to choose a service and time in a booking dialog.
-      An administrator accepts the request, offers another time or declines it.
+  Browse holidays, events and visible bookings, or book an available day.
+  An administrator accepts each request, offers another time or declines it.
 
   `?month=2026-11` picks the month and `?date=2026-11-13` the selected day.
   """
@@ -42,13 +38,7 @@ defmodule TaamolWeb.CalendarLive do
      )}
   end
 
-  defp handle_calendar_info(:events_changed, %{assigns: %{mode: :events}} = socket) do
-    month = socket.assigns.month
-    {grid_start, grid_end} = grid_range(month)
-    {:halt, assign_events(socket, grid_start, grid_end, month, Date.end_of_month(month))}
-  end
-
-  defp handle_calendar_info(:events_changed, socket), do: {:halt, socket}
+  defp handle_calendar_info(:events_changed, socket), do: {:halt, refresh_events(socket)}
 
   defp handle_calendar_info(:booking_availability_changed, socket) do
     socket =
@@ -56,21 +46,7 @@ defmodule TaamolWeb.CalendarLive do
       |> assign(:services, Bookings.list_services())
       |> assign_availability()
       |> refresh_booking_selection()
-
-    socket =
-      if socket.assigns.mode == :events do
-        {grid_start, grid_end} = grid_range(socket.assigns.month)
-
-        assign_events(
-          socket,
-          grid_start,
-          grid_end,
-          socket.assigns.month,
-          Date.end_of_month(socket.assigns.month)
-        )
-      else
-        socket
-      end
+      |> refresh_events()
 
     {:halt, socket}
   end
@@ -88,7 +64,7 @@ defmodule TaamolWeb.CalendarLive do
      socket
      |> assign(:event_editor, nil)
      |> put_flash(:info, message)
-     |> push_patch(to: cal_path(:events, nil, date, date))}
+     |> push_patch(to: cal_path(nil, date, date))}
   end
 
   defp handle_calendar_info({:event_editor, :error, message}, socket),
@@ -109,17 +85,16 @@ defmodule TaamolWeb.CalendarLive do
         true -> month
       end
 
-    mode = if params["mode"] == "book", do: :book, else: :events
     {grid_start, grid_end} = grid_range(month)
     last_of_month = Date.end_of_month(month)
 
     socket =
       socket
       |> assign(
-        mode: mode,
         month: month,
         selected: selected,
-        booking_open?: mode == :book and (params["open"] == "1" or is_binary(params["slot"])),
+        service_hint: params["service"],
+        booking_open?: params["open"] == "1" or is_binary(params["slot"]),
         requested: nil,
         booking_error: nil,
         event_editor: nil,
@@ -127,18 +102,22 @@ defmodule TaamolWeb.CalendarLive do
         hijri_span: hijri_span(month, last_of_month)
       )
       |> assign_availability()
-
-    socket =
-      case mode do
-        :events -> assign_events(socket, grid_start, grid_end, month, last_of_month)
-        :book -> assign_booking(socket, params)
-      end
+      |> assign_events(grid_start, grid_end, month, last_of_month)
+      |> assign_booking(params)
 
     {:noreply, socket}
   end
 
+  defp refresh_events(socket) do
+    month = socket.assigns.month
+    {grid_start, grid_end} = grid_range(month)
+    assign_events(socket, grid_start, grid_end, month, Date.end_of_month(month))
+  end
+
   defp assign_events(socket, grid_start, grid_end, month, last_of_month) do
-    bookings = Bookings.confirmed_between(grid_start, grid_end) |> Enum.map(&booking_entry/1)
+    bookings =
+      Bookings.confirmed_between(socket.assigns.current_scope, grid_start, grid_end)
+      |> Enum.map(&booking_entry/1)
 
     by_day =
       Enum.reduce(bookings, Events.entries_by_day(grid_start, grid_end), fn entry, acc ->
@@ -154,9 +133,6 @@ defmodule TaamolWeb.CalendarLive do
       )
 
     assign(socket,
-      service: nil,
-      slots: [],
-      slot: nil,
       by_day: by_day,
       month_entries: month_entries,
       selected_entries: Map.get(by_day, socket.assigns.selected, [])
@@ -177,13 +153,12 @@ defmodule TaamolWeb.CalendarLive do
 
     assign(socket,
       service: service,
-      by_day: %{},
-      month_entries: [],
-      selected_entries: [],
       slots: slots,
       slot: slot,
       request_form:
-        to_form(Bookings.change_request(%{"contact_name" => user && user.name}), as: :booking)
+        to_form(Bookings.change_request(%{"contact_name" => user && user.name}, service),
+          as: :booking
+        )
     )
   end
 
@@ -197,7 +172,7 @@ defmodule TaamolWeb.CalendarLive do
       if(length(slots) == 1, do: hd(slots))
   end
 
-  defp refresh_booking_selection(%{assigns: %{mode: :book}} = socket) do
+  defp refresh_booking_selection(socket) do
     service = socket.assigns.service
     service = service && Enum.find(socket.assigns.services, &(&1.id == service.id))
     slots = if service, do: Bookings.available_slots(service, socket.assigns.selected), else: []
@@ -211,8 +186,6 @@ defmodule TaamolWeb.CalendarLive do
 
     assign(socket, service: service, slots: slots, slot: slot, booking_error: error)
   end
-
-  defp refresh_booking_selection(socket), do: socket
 
   defp booking_entry(booking) do
     %{
@@ -231,7 +204,7 @@ defmodule TaamolWeb.CalendarLive do
   end
 
   @impl true
-  def handle_event("new-event", _params, %{assigns: %{admin?: true, mode: :events}} = socket) do
+  def handle_event("new-event", _params, %{assigns: %{admin?: true}} = socket) do
     event = %Event{starts_at: NaiveDateTime.new!(socket.assigns.selected, ~T[18:00:00])}
     {:noreply, assign(socket, event_editor: event, event_focus: "#calendar-add-event")}
   end
@@ -239,7 +212,7 @@ defmodule TaamolWeb.CalendarLive do
   def handle_event(
         "edit-event",
         %{"id" => id},
-        %{assigns: %{admin?: true, mode: :events}} = socket
+        %{assigns: %{admin?: true}} = socket
       ) do
     case Events.get_event(id) do
       nil ->
@@ -268,14 +241,15 @@ defmodule TaamolWeb.CalendarLive do
        slots: slots,
        slot: slot,
        booking_error: nil,
-       request_form: to_form(Bookings.change_request(params["booking"] || %{}), as: :booking)
+       request_form:
+         to_form(Bookings.change_request(params["booking"] || %{}, service), as: :booking)
      )}
   end
 
   def handle_event("close-booking", _params, socket) do
     {:noreply,
      push_patch(socket,
-       to: cal_path(:book, socket.assigns.service, socket.assigns.month, socket.assigns.selected)
+       to: cal_path(nil, socket.assigns.month, socket.assigns.selected)
      )}
   end
 
@@ -311,7 +285,7 @@ defmodule TaamolWeb.CalendarLive do
          |> assign_availability()
          |> refresh_booking_selection()
          |> assign(
-           request_form: to_form(Bookings.change_request(params), as: :booking),
+           request_form: to_form(Bookings.change_request(params, service), as: :booking),
            booking_error: gettext("That time is no longer available. Please choose another time.")
          )}
 
@@ -322,11 +296,10 @@ defmodule TaamolWeb.CalendarLive do
 
   # --- paths -----------------------------------------------------------------
 
-  defp cal_path(mode, service, month, date, opts \\ []) do
+  defp cal_path(service, month, date, opts \\ []) do
     query =
       [
-        mode: if(mode == :book, do: "book"),
-        service: if(mode == :book && service, do: service.id),
+        service: service && service.id,
         month: month_param(month),
         date: date && Date.to_iso8601(date),
         open: if(Keyword.get(opts, :open, false), do: "1")
@@ -395,7 +368,7 @@ defmodule TaamolWeb.CalendarLive do
           </:subtitle>
         </Layouts.page_hero>
 
-        <div class={["mt-6 grid gap-6", @mode == :events && "xl:grid-cols-[minmax(0,1fr)_22rem]"]}>
+        <div class="mt-6 grid gap-6 xl:grid-cols-[minmax(0,1fr)_22rem]">
           <%!-- month grid --%>
           <div
             id="calendar-grid"
@@ -413,33 +386,9 @@ defmodule TaamolWeb.CalendarLive do
                   </p>
                 </div>
                 <div class="flex flex-wrap items-center gap-2">
-                  <.segmented_control
-                    id="calendar-mode"
-                    role="group"
-                    aria-label={gettext("Calendar")}
-                  >
-                    <.link
-                      id="mode-events"
-                      patch={cal_path(:events, nil, @month, @selected)}
-                      aria-current={if(@mode == :events, do: "page")}
-                      class={segmented_option_class()}
-                    >
-                      <.icon name="hero-calendar-days-micro" class="size-4" />{gettext("Calendar")}
-                    </.link>
-                    <.link
-                      :if={@services != []}
-                      id="mode-book"
-                      patch={cal_path(:book, nil, @month, @selected)}
-                      aria-current={if(@mode == :book, do: "page")}
-                      class={segmented_option_class()}
-                    >
-                      <.icon name="hero-bookmark-square-micro" class="size-4" />{gettext("Book")}
-                    </.link>
-                  </.segmented_control>
-
                   <.link
                     id="calendar-today"
-                    patch={cal_path(@mode, @service, @today, @today)}
+                    patch={cal_path(nil, @today, @today)}
                     class="inline-flex h-8 items-center gap-2 rounded-full border border-base-300 bg-base-100 pe-3 ps-1 text-xs font-semibold transition hover:border-primary/40 hover:bg-base-200 active:scale-95 focus-visible:outline-2 focus-visible:outline-primary"
                   >
                     <span class="grid size-6 place-items-center rounded-full bg-primary/10 text-primary">
@@ -450,7 +399,7 @@ defmodule TaamolWeb.CalendarLive do
                   <div class="inline-flex h-8 items-center gap-1 rounded-full bg-neutral-200 p-1 shadow-inner ring-1 ring-inset ring-black/5 dark:bg-neutral-800 dark:ring-white/10">
                     <.link
                       id="calendar-prev"
-                      patch={cal_path(@mode, @service, shift_month(@month, -1), nil)}
+                      patch={cal_path(nil, shift_month(@month, -1), nil)}
                       aria-label={gettext("Previous month")}
                       class="grid size-6 place-items-center rounded-full bg-white text-neutral-800 shadow-md transition hover:bg-primary/10 active:scale-95 focus-visible:outline-2 focus-visible:outline-primary"
                     >
@@ -458,7 +407,7 @@ defmodule TaamolWeb.CalendarLive do
                     </.link>
                     <.link
                       id="calendar-next"
-                      patch={cal_path(@mode, @service, shift_month(@month, 1), nil)}
+                      patch={cal_path(nil, shift_month(@month, 1), nil)}
                       aria-label={gettext("Next month")}
                       class="grid size-6 place-items-center rounded-full bg-white text-neutral-800 shadow-md transition hover:bg-primary/10 active:scale-95 focus-visible:outline-2 focus-visible:outline-primary"
                     >
@@ -466,7 +415,7 @@ defmodule TaamolWeb.CalendarLive do
                     </.link>
                   </div>
                   <button
-                    :if={@admin? and @mode == :events}
+                    :if={@admin?}
                     type="button"
                     id="calendar-add-event"
                     phx-click="new-event"
@@ -478,14 +427,6 @@ defmodule TaamolWeb.CalendarLive do
                   </button>
                 </div>
               </div>
-              <p
-                :if={@mode == :book}
-                id="booking-instructions"
-                class="mt-4 flex items-center gap-2 text-sm text-base-content/65"
-              >
-                <.icon name="hero-cursor-arrow-rays" class="size-4 shrink-0 text-primary" />
-                {gettext("Choose a day to request a booking.")}
-              </p>
               <p id="availability-help" class="mt-2 text-xs leading-relaxed text-base-content/55">
                 {gettext("A day is available when at least one service has a free time.")}
               </p>
@@ -506,15 +447,23 @@ defmodule TaamolWeb.CalendarLive do
                 in_month={same_month?(day, @month)}
                 today={day == @today}
                 selected={day == @selected}
-                path={cal_path(@mode, @service, first_of_month(day), day, open: @mode == :book)}
-                entries={if(@mode == :events, do: Map.get(@by_day, day, []), else: [])}
+                path={cal_path(nil, first_of_month(day), day)}
+                book_path={
+                  cal_path(
+                    if(@service_hint, do: @service),
+                    first_of_month(day),
+                    day,
+                    open: true
+                  )
+                }
+                entries={Map.get(@by_day, day, [])}
                 availability={Map.get(@availability, day, false)}
               />
             </div>
           </div>
 
           <%!-- side panel --%>
-          <div :if={@mode == :events} class="space-y-4">
+          <div class="space-y-4">
             <section
               id="calendar-day"
               class="rounded-2xl border border-base-300 bg-base-100 p-4"
@@ -602,7 +551,7 @@ defmodule TaamolWeb.CalendarLive do
               <ol class="mt-2 divide-y divide-base-300/70">
                 <li :for={entry <- @month_entries} id={"month-#{entry.id}"}>
                   <.link
-                    patch={cal_path(:events, nil, @month, entry.first_day)}
+                    patch={cal_path(nil, first_of_month(entry.first_day), entry.first_day)}
                     class="group flex items-start gap-3 py-2"
                   >
                     <span class="w-7 shrink-0 pt-0.5 text-end text-sm font-bold tabular-nums">
@@ -828,6 +777,32 @@ defmodule TaamolWeb.CalendarLive do
               </p>
 
               <%= if @current_scope do %>
+                <.input
+                  :if={@service && @service.resource == :imam}
+                  field={@request_form[:location_type]}
+                  type="select"
+                  label={gettext("Where will the ceremony take place?")}
+                  icon="hero-map-pin"
+                  prompt={gettext("Choose a location")}
+                  options={[
+                    {gettext("Association premises"), "association"},
+                    {gettext("Another address"), "other"}
+                  ]}
+                  required
+                />
+                <.input
+                  :if={
+                    @service && @service.resource == :imam &&
+                      @request_form[:location_type].value in [:other, "other"]
+                  }
+                  field={@request_form[:address]}
+                  type="text"
+                  label={gettext("Address")}
+                  icon="hero-map-pin"
+                  dir="auto"
+                  maxlength="255"
+                  required
+                />
                 <div class="grid gap-x-4 sm:grid-cols-2">
                   <.input
                     field={@request_form[:contact_name]}
@@ -891,6 +866,7 @@ defmodule TaamolWeb.CalendarLive do
   attr :today, :boolean, required: true
   attr :selected, :boolean, required: true
   attr :path, :string, required: true
+  attr :book_path, :string, required: true
   attr :entries, :list, default: []
   attr :availability, :boolean, required: true
 
@@ -899,66 +875,70 @@ defmodule TaamolWeb.CalendarLive do
     assigns = assign(assigns, hijri_day: hijri_day, hijri_month: hijri_month)
 
     ~H"""
-    <.link
-      id={"day-cell-#{Date.to_iso8601(@day)}"}
-      patch={@path}
-      aria-current={if(@selected, do: "date")}
-      class={[
-        "group relative flex min-h-16 flex-col gap-1 border-e border-base-300 p-1.5 text-start transition last:border-e-0 hover:bg-base-200/60 sm:min-h-24 sm:p-2 lg:min-h-28",
-        !@in_month && "bg-base-200/30 text-base-content/40",
-        @selected && "bg-primary/5 ring-2 ring-inset ring-primary/60"
-      ]}
-    >
-      <span class="flex items-start justify-between gap-1">
-        <span class={[
-          "grid size-6 place-items-center rounded-full text-xs font-semibold tabular-nums sm:size-7 sm:text-sm",
-          @today && "bg-primary text-primary-content"
-        ]}>
-          {@day.day}
-        </span>
-        <span class="pt-0.5 text-[10px] leading-tight tabular-nums text-base-content/45 sm:text-[11px]">
-          <span :if={@hijri_day == 1} class="hidden font-semibold text-primary/80 lg:inline">
-            {hijri_month_name(@hijri_month)}
-          </span>
-          {@hijri_day}
-        </span>
-      </span>
-
-      <span
-        id={"day-availability-#{Date.to_iso8601(@day)}"}
-        class={[
-          "mt-auto flex items-center gap-1 text-[10px] font-semibold leading-tight sm:text-[11px]",
-          if(@availability, do: "text-success", else: "text-base-content/50")
-        ]}
+    <div class={[
+      "relative flex min-h-16 min-w-0 flex-col gap-1 border-e border-base-300 p-1.5 text-start transition last:border-e-0 hover:bg-base-200/60 sm:min-h-24 sm:p-2 lg:min-h-28",
+      !@in_month && "bg-base-200/30 text-base-content/40",
+      @selected && "bg-primary/5 ring-2 ring-inset ring-primary/60"
+    ]}>
+      <.link
+        id={"day-cell-#{Date.to_iso8601(@day)}"}
+        patch={@path}
+        aria-current={if(@selected, do: "date")}
+        class="flex min-w-0 flex-1 flex-col gap-1 rounded-sm focus-visible:outline-2 focus-visible:outline-primary"
       >
-        <.icon
-          name={if(@availability, do: "hero-check-circle-micro", else: "hero-minus-circle-micro")}
-          class="size-3.5 shrink-0"
-        />
-        <span class="sm:hidden">{if(@availability, do: gettext("Free"), else: gettext("No slots"))}</span>
-        <span class="hidden sm:inline">{if(@availability,
-          do: gettext("Available"),
-          else: gettext("Unavailable")
-        )}</span>
-      </span>
+        <span class="flex items-start justify-between gap-1">
+          <span class={[
+            "grid size-6 place-items-center rounded-full text-xs font-semibold tabular-nums sm:size-7 sm:text-sm",
+            @today && "bg-primary text-primary-content"
+          ]}>
+            {@day.day}
+          </span>
+          <span class="pt-0.5 text-[10px] leading-tight tabular-nums text-base-content/45 sm:text-[11px]">
+            <span :if={@hijri_day == 1} class="hidden font-semibold text-primary/80 lg:inline">
+              {hijri_month_name(@hijri_month)}
+            </span>
+            {@hijri_day}
+          </span>
+        </span>
 
-      <%!-- calendar mode: chips on larger screens, dots on phones --%>
-      <span :if={@entries != []} class="hidden flex-col gap-1 sm:flex">
-        <span
-          :for={entry <- Enum.take(@entries, 2)}
-          dir="auto"
-          class={["truncate rounded-md px-1.5 py-0.5 text-[11px] font-medium", kind_chip(entry.kind)]}
+        <%!-- chips on larger screens, dots on phones --%>
+        <span :if={@entries != []} class="hidden flex-col gap-1 sm:flex">
+          <span
+            :for={entry <- Enum.take(@entries, 2)}
+            dir="auto"
+            class={[
+              "truncate rounded-md px-1.5 py-0.5 text-[11px] font-medium",
+              kind_chip(entry.kind)
+            ]}
+          >
+            {entry_title(entry)}
+          </span>
+          <span :if={length(@entries) > 2} class="px-1.5 text-[11px] text-base-content/55">
+            {gettext("+%{count} more", count: length(@entries) - 2)}
+          </span>
+        </span>
+        <span :if={@entries != []} class="mt-auto flex flex-wrap gap-1 sm:hidden">
+          <.kind_dot_badge :for={entry <- Enum.take(@entries, 4)} kind={entry.kind} class="size-1.5" />
+        </span>
+      </.link>
+      <div id={"day-availability-#{Date.to_iso8601(@day)}"} class="mt-auto">
+        <.link
+          :if={@availability}
+          id={"book-day-#{Date.to_iso8601(@day)}"}
+          patch={@book_path}
+          aria-label={gettext("Book %{date}", date: Date.to_iso8601(@day))}
+          class="inline-flex max-w-full items-center justify-center rounded-full bg-emerald-600 px-2 py-1 text-[10px] font-semibold leading-none text-white transition hover:bg-emerald-700 active:scale-95 focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-emerald-700 sm:px-3 sm:text-xs"
         >
-          {entry_title(entry)}
+          {gettext("Book")}
+        </.link>
+        <span
+          :if={!@availability}
+          class="block text-[10px] font-medium leading-tight text-base-content/50 sm:text-[11px]"
+        >
+          {gettext("Not bookable")}
         </span>
-        <span :if={length(@entries) > 2} class="px-1.5 text-[11px] text-base-content/55">
-          {gettext("+%{count} more", count: length(@entries) - 2)}
-        </span>
-      </span>
-      <span :if={@entries != []} class="mt-auto flex flex-wrap gap-1 sm:hidden">
-        <.kind_dot_badge :for={entry <- Enum.take(@entries, 4)} kind={entry.kind} class="size-1.5" />
-      </span>
-    </.link>
+      </div>
+    </div>
     """
   end
 end

@@ -39,6 +39,12 @@ defmodule TaamolWeb.NewsLiveTest do
       assert has_element?(view, "#feed-#{lead.id}")
       assert has_element?(view, "#feed-#{other.id}")
       assert has_element?(view, "#rail-prayer-times")
+
+      assert has_element?(
+               view,
+               "#rail-prayer-times[data-latitude='56.879'][data-longitude='14.8059'][data-timezone='Europe/Stockholm'][data-city='Växjö']"
+             )
+
       assert has_element?(view, "#rail-prayer-card .hero-moon")
       assert has_element?(view, "#rail-prayer-card h2", "Prayer times")
 

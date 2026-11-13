@@ -12,6 +12,7 @@ defmodule Taamol.Bookings.Notifier do
     #{booking.contact_name} (#{booking.user.email}, #{booking.contact_phone}) asks to book
     #{booking.service.name_sv} on #{when_text(booking.starts_at, booking.ends_at)}.
     Guests: #{booking.guests || "-"}
+    #{location_text(booking)}
 
     #{booking.notes}
 
@@ -60,6 +61,10 @@ defmodule Taamol.Bookings.Notifier do
   defp when_text(starts_at, ends_at) do
     "#{Calendar.strftime(starts_at, "%Y-%m-%d %H:%M")}–#{Calendar.strftime(ends_at, "%H:%M")}"
   end
+
+  defp location_text(%{location_type: :association}), do: "Location: association premises"
+  defp location_text(%{location_type: :other, address: address}), do: "Location: #{address}"
+  defp location_text(_booking), do: ""
 
   defp deliver(to, subject, body) do
     new()

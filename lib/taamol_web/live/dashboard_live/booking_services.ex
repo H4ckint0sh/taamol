@@ -15,15 +15,26 @@ defmodule TaamolWeb.DashboardLive.BookingServices do
 
   @impl true
   def mount(_params, _session, socket) do
+    if connected?(socket), do: :ok = Bookings.subscribe_availability()
+
     {:ok,
      socket
+     |> attach_hook(:service_updates, :handle_info, &handle_service_update/2)
+     |> stream_configure(:services, dom_id: &"service-#{&1.id}")
      |> assign(page_title: gettext("Booking services"))
      |> assign_services()
      |> edit(%Service{})}
   end
 
-  defp assign_services(socket),
-    do: assign(socket, services: Bookings.list_services(active_only: false))
+  defp handle_service_update(:booking_availability_changed, socket),
+    do: {:halt, assign_services(socket)}
+
+  defp handle_service_update(_message, socket), do: {:cont, socket}
+
+  defp assign_services(socket) do
+    services = Bookings.list_services(active_only: false)
+    socket |> assign(services_empty?: services == []) |> stream(:services, services, reset: true)
+  end
 
   defp edit(socket, service),
     do: assign(socket, editing: service, form: to_form(Bookings.change_service(service)))
@@ -72,6 +83,7 @@ defmodule TaamolWeb.DashboardLive.BookingServices do
       flash={@flash}
       current_scope={@current_scope}
       unread_messages={@unread_messages}
+      pending_bookings={@pending_bookings}
       active={:booking_services}
       title={gettext("Booking services")}
     >
@@ -81,10 +93,10 @@ defmodule TaamolWeb.DashboardLive.BookingServices do
       />
 
       <div class="grid gap-6 lg:grid-cols-[minmax(0,1fr)_24rem]">
-        <ul id="services" class="space-y-3">
+        <ul id="services" phx-update="stream" class="space-y-3">
           <li
-            :for={service <- @services}
-            id={"service-#{service.id}"}
+            :for={{dom_id, service} <- @streams.services}
+            id={dom_id}
             class="flex items-start gap-3 rounded-2xl border border-base-300 bg-base-100 p-4"
           >
             <span class={[
@@ -123,7 +135,8 @@ defmodule TaamolWeb.DashboardLive.BookingServices do
             </button>
           </li>
           <li
-            :if={@services == []}
+            :if={@services_empty?}
+            id="services-empty"
             class="rounded-2xl border border-dashed border-base-300 p-8 text-center text-sm text-base-content/55"
           >
             {gettext("No services yet.")}

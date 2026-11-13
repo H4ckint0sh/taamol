@@ -382,7 +382,7 @@ defmodule TaamolWeb.PrayerTimesLive do
               <.input field={@form[:timezone]} type="hidden" />
               <p class="mt-2 text-xs text-base-content/55">
                 {gettext(
-                  "These preferences apply to this calculator. The site prayer widget uses your device location and the site method."
+                  "These preferences apply to this calculator. The site prayer widget uses Växjö and the site method."
                 )}
               </p>
               <div class="mt-4 grid gap-x-4 sm:grid-cols-2">
@@ -569,6 +569,7 @@ defmodule TaamolWeb.PrayerTimesLive do
                   :for={{field, label} <- tune_fields()}
                   field={@form[field]}
                   type="number"
+                  step="any"
                   icon="hero-clock"
                   min="-180"
                   max="180"

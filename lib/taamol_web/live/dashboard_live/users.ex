@@ -137,6 +137,7 @@ defmodule TaamolWeb.DashboardLive.Users do
       flash={@flash}
       current_scope={@current_scope}
       unread_messages={@unread_messages}
+      pending_bookings={@pending_bookings}
       active={:users}
       title={gettext("Users")}
     >

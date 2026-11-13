@@ -308,8 +308,8 @@ defaults = %{
   # Swish's own test number: replace with the community's real number
   swish_number: "1231181189",
   swish_message: "کمک به جامعه امامیه",
-  # Shia Ithna Ashari (Jafari) prayer times
-  prayer_method: "Jafari",
+  # Tehran prayer times
+  prayer_method: "Tehran",
   # placeholders: replace with the community's real accounts
   instagram_url: "https://instagram.com/taamol",
   facebook_url: "https://facebook.com/taamol",
@@ -375,16 +375,6 @@ else
             position: 2
           },
           %{
-            name_fa: "سالن برای جشن",
-            name_sv: "Lokal för firande",
-            description_fa: "سالن برای جشن عروسی، عقیقه یا تولد.",
-            description_sv: "Lokalen för till exempel bröllopsfest, aqiqa eller födelsedag.",
-            resource: :premises,
-            duration_minutes: 240,
-            icon: "hero-sparkles",
-            position: 3
-          },
-          %{
             name_fa: "امام برای مراسم دیگر",
             name_sv: "Imam för andra ceremonier",
             description_fa: "برای نمونه قرآن‌خوانی در خانه، گفت‌وگو یا مشاوره.",
@@ -398,7 +388,7 @@ else
       %Service{} |> Service.changeset(attrs) |> Repo.insert!()
     end
 
-  [khatm, nikah, party, _other] = services
+  [khatm, nikah, _other] = services
   at = fn days, time -> NaiveDateTime.new!(Date.add(today, days), time) end
 
   bookings = [
@@ -417,32 +407,17 @@ else
     # confirmed
     %Booking{
       service_id: nikah.id,
+      private_calendar: true,
       user_id: maryam.id,
       status: :confirmed,
       starts_at: at.(10, ~T[14:00:00]),
       ends_at: at.(10, ~T[15:00:00]),
       contact_name: "مریم احمدی",
       contact_phone: "073 444 55 66",
+      location_type: :association,
       guests: 12,
       notes: "عقد ساده خانوادگی.",
       admin_message: "مبارک باشد! لطفاً ده دقیقه زودتر حاضر شوید.",
-      decided_by_id: admin.id,
-      decided_at: now
-    },
-    # another time offered
-    %Booking{
-      service_id: party.id,
-      user_id: ali.id,
-      status: :proposed,
-      starts_at: at.(14, ~T[12:00:00]),
-      ends_at: at.(14, ~T[16:00:00]),
-      proposed_starts_at: at.(15, ~T[13:00:00]),
-      proposed_ends_at: at.(15, ~T[17:00:00]),
-      contact_name: "علی رضایی",
-      contact_phone: "076 777 88 99",
-      guests: 60,
-      notes: "جشن عقیقه پسرمان.",
-      admin_message: "سالن در آن روز رزرو است، روز بعد را پیشنهاد می‌کنیم.",
       decided_by_id: admin.id,
       decided_at: now
     }

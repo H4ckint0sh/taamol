@@ -8,9 +8,9 @@ defmodule Taamol.PrayerSettings do
 
   @primary_key false
   embedded_schema do
-    field :method, :string, default: "MWL"
-    field :latitude, :float, default: 0.0
-    field :longitude, :float, default: 0.0
+    field :method, :string, default: "Tehran"
+    field :latitude, :float, default: 56.8790
+    field :longitude, :float, default: 14.8059
     field :city, :string
     field :timezone, :string
     field :utc_offset, :float, default: 0.0
@@ -20,19 +20,19 @@ defmodule Taamol.PrayerSettings do
     field :maghrib, :string
     field :dhuhr, :integer, default: 0
     field :asr, :string, default: "Standard"
-    field :high_lats, :string, default: "NightMiddle"
+    field :high_lats, :string, default: "None"
     field :midnight, :string
     field :format, :string, default: "24h"
-    field :rounding, :string, default: "nearest"
+    field :rounding, :string, default: "down"
     field :iterations, :integer, default: 1
-    field :tune_fajr, :integer, default: 0
-    field :tune_sunrise, :integer, default: 0
-    field :tune_dhuhr, :integer, default: 0
-    field :tune_asr, :integer, default: 0
-    field :tune_sunset, :integer, default: 0
-    field :tune_maghrib, :integer, default: 0
-    field :tune_isha, :integer, default: 0
-    field :tune_midnight, :integer, default: 0
+    field :tune_fajr, :float, default: 0.0
+    field :tune_sunrise, :float, default: 0.07
+    field :tune_dhuhr, :float, default: 0.15
+    field :tune_asr, :float, default: 0.0
+    field :tune_sunset, :float, default: 1.15
+    field :tune_maghrib, :float, default: 1.08
+    field :tune_isha, :float, default: 0.0
+    field :tune_midnight, :float, default: 0.0
   end
 
   @tune_fields ~w(tune_fajr tune_sunrise tune_dhuhr tune_asr tune_sunset tune_maghrib tune_isha tune_midnight)a
@@ -41,10 +41,12 @@ defmodule Taamol.PrayerSettings do
   @required ~w(method latitude longitude utc_offset date dhuhr asr high_lats format rounding iterations)a ++
               @tune_fields
 
-  def changeset(attrs \\ %{}) do
-    defaults = %__MODULE__{date: Date.utc_today()}
+  def defaults do
+    %__MODULE__{city: "Växjö", timezone: "Europe/Stockholm", date: Date.utc_today()}
+  end
 
-    defaults
+  def changeset(attrs \\ %{}) do
+    defaults()
     |> cast(attrs, @fields)
     |> validate_required(@required)
     |> validate_inclusion(:method, Map.keys(PrayTime.methods()))

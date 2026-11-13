@@ -281,6 +281,7 @@ defmodule TaamolWeb.Layouts do
   attr :active, :atom, default: nil, doc: "the current sidebar item"
   attr :title, :string, required: true, doc: "shown in the breadcrumb"
   attr :unread_messages, :integer, required: true
+  attr :pending_bookings, :integer, required: true
   slot :inner_block, required: true
 
   def dashboard(assigns) do
@@ -321,10 +322,7 @@ defmodule TaamolWeb.Layouts do
       |> Enum.map(fn {label, items} -> {label, Enum.filter(items, &elem(&1, 4))} end)
       |> Enum.reject(fn {_label, items} -> items == [] end)
 
-    assigns =
-      assigns
-      |> assign(:groups, groups)
-      |> assign(:pending_bookings, Taamol.Bookings.pending_count(scope))
+    assigns = assign(assigns, :groups, groups)
 
     ~H"""
     <div id="dashboard-shell" class="group/shell min-h-screen bg-base-200/40">
@@ -1098,10 +1096,8 @@ defmodule TaamolWeb.Layouts do
   attr :class, :string, default: nil
 
   @doc """
-  Language switch, styled like the day/night switch: a pill with a globe
-  knob and the language it switches to ("SV" on Persian pages, "فا" on
-  Swedish ones). It posts that
-  language to `/locale`, which saves it and returns to the same page.
+  Language switch showing the current language and the language it switches to.
+  It posts the target language to `/locale` and returns to the same page.
   """
   def locale_toggle(assigns) do
     current = Gettext.get_locale(TaamolWeb.Gettext)
@@ -1114,7 +1110,17 @@ defmodule TaamolWeb.Layouts do
         do: {"fa", "فا", gettext("Switch to Persian")},
         else: {"sv", "SV", gettext("Switch to Swedish")}
 
-    assigns = assign(assigns, form: to_form(%{}), target: target, code: code, label: label)
+    current_code = if current == "fa", do: "فا", else: String.upcase(current)
+
+    assigns =
+      assign(assigns,
+        form: to_form(%{}),
+        current: current,
+        current_code: current_code,
+        target: target,
+        code: code,
+        label: label
+      )
 
     ~H"""
     <.form for={@form} id={@id} action={~p"/locale"} method="post" class="inline-flex">
@@ -1123,7 +1129,7 @@ defmodule TaamolWeb.Layouts do
         name="locale"
         value={@target}
         id={"#{@id}-button"}
-        aria-label={@label}
+        aria-label={"#{@current_code} · #{@label}"}
         title={@label}
         dir="ltr"
         class={[
@@ -1131,9 +1137,12 @@ defmodule TaamolWeb.Layouts do
           @class
         ]}
       >
-        <%!-- white knob with the globe, like the day/night switch --%>
-        <span class="grid size-6 place-items-center rounded-full bg-white shadow-md">
-          <.icon name="hero-globe-alt" class="size-3.5 text-neutral-800" />
+        <span
+          id={"#{@id}-current"}
+          lang={@current}
+          class="flex size-6 items-center justify-center rounded-full bg-white text-[10px] font-bold leading-none text-neutral-800 shadow-md"
+        >
+          <span class={if(@current == "fa", do: "translate-y-px")}>{@current_code}</span>
         </span>
         <span lang={@target} class="text-xs font-bold tracking-wider">{@code}</span>
       </button>
@@ -1209,8 +1218,8 @@ defmodule TaamolWeb.Layouts do
   containing a countdown on a sun-path arc, the day's prayer times and, during
   Ramadan, a suhoor/iftar banner.
 
-  The `<prayer-times>` custom element (see `assets/js/prayer_times.js`) asks
-  the browser for the visitor's location, fetches the times computed by
+  The `<prayer-times>` custom element (see `assets/js/prayer_times.js`) fetches
+  the default location's times computed by
   `Taamol.PrayTime` from `/api/prayer-times`, and fills in this markup.
   `phx-update="ignore"` keeps LiveView patches from wiping what it renders.
   The state attributes (`data-state`, `data-night`, `data-ramadan`) live on
@@ -1226,17 +1235,29 @@ defmodule TaamolWeb.Layouts do
 
   def prayer_times(assigns) do
     assigns =
-      assign(assigns, :prayers, [
-        {"fajr", gettext("Fajr"), :cloud},
-        {"sunrise", gettext("Sunrise"), :cloud_sun},
-        {"dhuhr", gettext("Dhuhr"), :sun},
-        {"asr", gettext("Asr"), :sun_soft},
-        {"maghrib", gettext("Maghrib"), :cloud_sun},
-        {"isha", gettext("Isha"), :moon}
-      ])
+      assign(assigns,
+        defaults: Taamol.PrayerSettings.defaults(),
+        prayers: [
+          {"fajr", gettext("Fajr"), :cloud},
+          {"sunrise", gettext("Sunrise"), :cloud_sun},
+          {"dhuhr", gettext("Dhuhr"), :sun},
+          {"asr", gettext("Asr"), :sun_soft},
+          {"maghrib", gettext("Maghrib"), :cloud_sun},
+          {"isha", gettext("Isha"), :moon}
+        ]
+      )
 
     ~H"""
-    <prayer-times :if={@variant == :popover} id={@id} phx-update="ignore" class="block">
+    <prayer-times
+      :if={@variant == :popover}
+      id={@id}
+      phx-update="ignore"
+      data-latitude={@defaults.latitude}
+      data-longitude={@defaults.longitude}
+      data-timezone={@defaults.timezone}
+      data-city={@defaults.city}
+      class="block"
+    >
       <div data-role="root" data-state="loading" class="group/prayer relative">
         <button
           type="button"
@@ -1289,7 +1310,16 @@ defmodule TaamolWeb.Layouts do
       </div>
     </prayer-times>
 
-    <prayer-times :if={@variant == :card} id={@id} phx-update="ignore" class="block">
+    <prayer-times
+      :if={@variant == :card}
+      id={@id}
+      phx-update="ignore"
+      data-latitude={@defaults.latitude}
+      data-longitude={@defaults.longitude}
+      data-timezone={@defaults.timezone}
+      data-city={@defaults.city}
+      class="block"
+    >
       <div data-role="root" data-state="loading" class="group/prayer cursor-default">
         <.prayer_panel id={@id} prayers={@prayers} />
       </div>
@@ -1437,7 +1467,7 @@ defmodule TaamolWeb.Layouts do
 
         <ul
           id={"#{@id}-grid"}
-          class="mt-3 grid grid-cols-3 gap-1 group-data-[state=denied]/prayer:hidden group-data-[state=error]/prayer:hidden"
+          class="mt-3 grid grid-cols-3 gap-1 group-data-[state=error]/prayer:hidden"
         >
           <li
             :for={{key, label, icon} <- @prayers}
@@ -1459,9 +1489,6 @@ defmodule TaamolWeb.Layouts do
           </li>
         </ul>
 
-        <p class="mt-3 hidden rounded-xl bg-base-200 px-3 py-2 text-center text-xs text-base-content/70 group-data-[state=denied]/prayer:block">
-          {gettext("Allow location access in your browser to see prayer times for where you are.")}
-        </p>
         <p class="mt-3 hidden rounded-xl bg-base-200 px-3 py-2 text-center text-xs text-base-content/70 group-data-[state=error]/prayer:block">
           {gettext("Prayer times could not be loaded. Click to try again.")}
         </p>

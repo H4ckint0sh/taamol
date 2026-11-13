@@ -26,6 +26,26 @@ defmodule Taamol.Bookings do
   @doc "Subscribes to changes that affect calendar availability."
   def subscribe_availability, do: Phoenix.PubSub.subscribe(Taamol.PubSub, "bookings:availability")
 
+  @doc "Subscribes a signed-in user to their booking changes, or all changes for administrators."
+  def subscribe_changes(%Scope{user: %User{id: user_id}} = scope) do
+    topic =
+      if Accounts.admin?(scope) and match?(%User{role: :admin}, Repo.get(User, user_id)),
+        do: "bookings:admins",
+        else: "bookings:user:#{user_id}"
+
+    Phoenix.PubSub.subscribe(Taamol.PubSub, topic)
+  end
+
+  def subscribe_changes(_scope), do: {:error, :forbidden}
+
+  defp notify_bookings({:ok, %Booking{user_id: user_id}} = result) do
+    :ok = Phoenix.PubSub.broadcast(Taamol.PubSub, "bookings:admins", :bookings_changed)
+    :ok = Phoenix.PubSub.broadcast(Taamol.PubSub, "bookings:user:#{user_id}", :bookings_changed)
+    result
+  end
+
+  defp notify_bookings(result), do: result
+
   defp notify_availability({:ok, _} = result) do
     :ok =
       Phoenix.PubSub.broadcast_from(
@@ -187,7 +207,8 @@ defmodule Taamol.Bookings do
   ## Members
 
   @doc "A changeset for the request form."
-  def change_request(attrs \\ %{}), do: Booking.request_changeset(%Booking{}, attrs)
+  def change_request(attrs \\ %{}, service \\ nil),
+    do: Booking.request_changeset(%Booking{}, attrs, service)
 
   @doc """
   Requests a booking. The start time must be one of `available_slots/2`.
@@ -199,27 +220,32 @@ defmodule Taamol.Bookings do
         %NaiveDateTime{} = starts_at,
         attrs
       ) do
+    service = get_service(service.id)
+
     slot =
-      Enum.find(
-        available_slots(service, NaiveDateTime.to_date(starts_at)),
-        &(&1.starts_at == starts_at)
-      )
+      if service && service.active do
+        Enum.find(
+          available_slots(service, NaiveDateTime.to_date(starts_at)),
+          &(&1.starts_at == starts_at)
+        )
+      end
 
     if slot do
       result =
         %Booking{
           user_id: user_id,
           service_id: service.id,
+          private_calendar: service.resource == :imam,
           starts_at: slot.starts_at,
           ends_at: slot.ends_at
         }
-        |> Booking.request_changeset(attrs)
+        |> Booking.request_changeset(attrs, service)
         |> Repo.insert()
 
       with {:ok, booking} <- result do
         booking = Repo.preload(booking, [:service, :user])
         Notifier.new_request(admin_emails(), booking)
-        {:ok, booking}
+        notify_bookings({:ok, booking})
       end
     else
       {:error, :unavailable}
@@ -257,6 +283,7 @@ defmodule Taamol.Bookings do
       )
       |> Repo.update()
       |> notify_admins(:accepted_proposal)
+      |> notify_bookings()
       |> notify_availability()
     else
       {:error, :conflict}
@@ -272,6 +299,7 @@ defmodule Taamol.Bookings do
     |> Ecto.Changeset.change(status: :cancelled)
     |> Repo.update()
     |> notify_admins(:declined_proposal)
+    |> notify_bookings()
   end
 
   def respond_to_proposal(_scope, _booking, _answer), do: {:error, :forbidden}
@@ -286,6 +314,7 @@ defmodule Taamol.Bookings do
     |> Ecto.Changeset.change(status: :cancelled)
     |> Repo.update()
     |> notify_admins(:cancelled)
+    |> notify_bookings()
     |> notify_availability()
   end
 
@@ -342,7 +371,9 @@ defmodule Taamol.Bookings do
   def get_booking(_scope, _id), do: {:error, :not_found}
 
   @doc "Confirms a request (refused if it would clash with a confirmed booking)."
-  def accept_booking(scope, %Booking{status: status} = booking, message \\ nil)
+  def accept_booking(scope, booking, message \\ nil)
+
+  def accept_booking(scope, %Booking{status: status} = booking, message)
       when status in [:pending, :proposed] do
     as_admin(scope, fn admin ->
       if conflicts(booking) == [] do
@@ -361,15 +392,20 @@ defmodule Taamol.Bookings do
         {:error, :conflict}
       end
     end)
+    |> notify_bookings()
     |> notify_availability()
   end
 
+  def accept_booking(_scope, %Booking{}, _message), do: {:error, :invalid_state}
+
   @doc "Offers the member another start time (must be free)."
+  def propose_time(scope, booking, starts_at, message \\ nil)
+
   def propose_time(
         scope,
         %Booking{status: status} = booking,
         %NaiveDateTime{} = starts_at,
-        message \\ nil
+        message
       )
       when status in [:pending, :proposed] do
     as_admin(scope, fn admin ->
@@ -400,10 +436,15 @@ defmodule Taamol.Bookings do
           |> notify_member(:proposed)
       end
     end)
+    |> notify_bookings()
   end
 
+  def propose_time(_scope, %Booking{}, %NaiveDateTime{}, _message), do: {:error, :invalid_state}
+
   @doc "Declines a request with an optional message."
-  def decline_booking(scope, %Booking{status: status} = booking, message \\ nil)
+  def decline_booking(scope, booking, message \\ nil)
+
+  def decline_booking(scope, %Booking{status: status} = booking, message)
       when status in [:pending, :proposed, :confirmed] do
     as_admin(scope, fn admin ->
       booking
@@ -413,20 +454,38 @@ defmodule Taamol.Bookings do
       |> Repo.update()
       |> notify_member(:declined)
     end)
+    |> notify_bookings()
     |> notify_availability()
   end
 
-  @doc "Confirmed bookings in a date range, for the calendar."
-  def confirmed_between(%Date{} = from, %Date{} = to) do
+  def decline_booking(_scope, %Booking{}, _message), do: {:error, :invalid_state}
+
+  @doc "Confirmed bookings visible to the scope in a date range, for the calendar."
+  def confirmed_between(scope, %Date{} = from, %Date{} = to) do
     from_dt = NaiveDateTime.new!(from, ~T[00:00:00])
     to_dt = NaiveDateTime.new!(Date.add(to, 1), ~T[00:00:00])
 
-    Repo.all(
+    query =
       from b in Booking,
         where: b.status == :confirmed and b.starts_at < ^to_dt and b.ends_at > ^from_dt,
         order_by: [asc: b.starts_at],
         preload: [:service, :user]
-    )
+
+    query =
+      case scope do
+        %Scope{user: %User{id: id, role: :admin}} ->
+          if match?(%User{role: :admin}, Repo.get(User, id)),
+            do: query,
+            else: where(query, [b], not b.private_calendar or b.user_id == ^id)
+
+        %Scope{user: %User{id: id}} ->
+          where(query, [b], not b.private_calendar or b.user_id == ^id)
+
+        _ ->
+          where(query, [b], not b.private_calendar)
+      end
+
+    Repo.all(query)
   end
 
   ## Helpers

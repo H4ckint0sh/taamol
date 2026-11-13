@@ -120,6 +120,7 @@ defmodule TaamolWeb.DashboardLive.Events do
       flash={@flash}
       current_scope={@current_scope}
       unread_messages={@unread_messages}
+      pending_bookings={@pending_bookings}
       active={:events}
       title={gettext("Calendar events")}
     >

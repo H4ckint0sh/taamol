@@ -159,6 +159,7 @@ defmodule TaamolWeb.DashboardLive.ArticleForm do
       flash={@flash}
       current_scope={@current_scope}
       unread_messages={@unread_messages}
+      pending_bookings={@pending_bookings}
       active={:news}
       title={@page_title}
     >

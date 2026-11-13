@@ -38,7 +38,9 @@ defmodule TaamolWeb.SiteSettingsLiveTest do
     calculator |> element("#site-prayer-preset") |> render_click()
     assert has_element?(calculator, "#prayer_method option[value=Jafari][selected]")
     assert has_element?(calculator, "#prayer_fajr:not([value='15'])")
-    assert has_element?(calculator, "#prayer_tune_fajr[value='0']")
+    assert has_element?(calculator, "#prayer_tune_fajr[value='0.0']")
+    assert has_element?(calculator, "#prayer_tune_sunset[value='1.15']")
+    assert has_element?(calculator, "#prayer_rounding option[value=down][selected]")
   end
 
   test "rejects out-of-range values and non-admins" do

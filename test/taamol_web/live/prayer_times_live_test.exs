@@ -24,6 +24,14 @@ defmodule TaamolWeb.PrayerTimesLiveTest do
     end
 
     assert has_element?(view, "#prayer-calculation #site-prayer-preset")
+    assert has_element?(view, "#selected-city", "Växjö")
+    assert has_element?(view, "#prayer_method option[value=Tehran][selected]")
+    assert has_element?(view, "#prayer_high_lats option[value=None][selected]")
+    assert has_element?(view, "#prayer_rounding option[value=down][selected]")
+    assert has_element?(view, "#prayer_tune_sunrise[value='0.07'][step=any]")
+    assert has_element?(view, "#prayer_tune_dhuhr[value='0.15']")
+    assert has_element?(view, "#prayer_tune_sunset[value='1.15']")
+    assert has_element?(view, "#prayer_tune_maghrib[value='1.08']")
     assert has_element?(view, "label[for='prayer_tune_fajr']")
     assert has_element?(view, "#prayer_tune_fajr.h-10[type=number]")
 
@@ -34,6 +42,8 @@ defmodule TaamolWeb.PrayerTimesLiveTest do
 
     assert has_element?(view, "#prayer-tuning .hero-clock")
     assert has_element?(view, "#city-search .hero-magnifying-glass")
+
+    view |> element("#manual-location") |> render_click()
 
     view
     |> form("#prayer-settings-form",
@@ -51,7 +61,12 @@ defmodule TaamolWeb.PrayerTimesLiveTest do
     expected =
       PrayTime.new("ISNA")
       |> PrayTime.location({59.33, 18.07})
-      |> PrayTime.adjust(utc_offset: 60, tune: %{fajr: 5})
+      |> PrayTime.adjust(
+        utc_offset: 60,
+        high_lats: "None",
+        rounding: "down",
+        tune: %{fajr: 5, sunrise: 0.07, dhuhr: 0.15, sunset: 1.15, maghrib: 1.08}
+      )
       |> PrayTime.times(~D[2026-11-12])
 
     assert has_element?(view, "#result-fajr", expected.fajr)
@@ -64,6 +79,7 @@ defmodule TaamolWeb.PrayerTimesLiveTest do
     other = user_fixture()
     conn = log_in_user(conn, user)
     {:ok, view, _} = live(conn, ~p"/prayer-times")
+    view |> element("#manual-location") |> render_click()
 
     view
     |> form("#prayer-settings-form",
@@ -77,7 +93,7 @@ defmodule TaamolWeb.PrayerTimesLiveTest do
         isha: "90 min",
         asr: "Hanafi",
         high_lats: "OneSeventh",
-        tune_fajr: "7"
+        tune_fajr: "7.25"
       }
     )
     |> render_submit()
@@ -86,14 +102,14 @@ defmodule TaamolWeb.PrayerTimesLiveTest do
     assert settings["method"] == "Tehran"
     assert settings["fajr"] == 17.0
     assert settings["isha"] == "90 min"
-    assert settings["tune_fajr"] == 7
+    assert settings["tune_fajr"] == 7.25
     refute Map.has_key?(settings, "date")
     assert Accounts.get_user!(other.id).prayer_settings == nil
 
     {:ok, restored, _} = live(conn, ~p"/prayer-times")
     assert has_element?(restored, "#prayer_method option[value=Tehran][selected]")
     assert has_element?(restored, "#prayer_latitude[value='35.7']")
-    assert has_element?(restored, "#prayer_tune_fajr[value='7']")
+    assert has_element?(restored, "#prayer_tune_fajr[value='7.25']")
     assert has_element?(restored, "#prayer_date[value='#{Date.utc_today()}']")
 
     {:ok, account, _} = live(conn, ~p"/users/settings")

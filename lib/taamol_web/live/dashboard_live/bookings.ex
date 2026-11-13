@@ -12,13 +12,18 @@ defmodule TaamolWeb.DashboardLive.Bookings do
 
   @impl true
   def mount(_params, _session, socket) do
+    if connected?(socket), do: :ok = Bookings.subscribe_availability()
+
     {:ok,
-     assign(socket,
+     socket
+     |> attach_hook(:booking_updates, :handle_info, &handle_booking_update/2)
+     |> assign(
        page_title: gettext("Bookings"),
        admin?: Accounts.can?(socket.assigns.current_scope, :manage_bookings),
        open: nil,
        offer_date: nil,
-       offer_slots: []
+       offer_slots: [],
+       decision_form: to_form(%{"message" => "", "date" => "", "slot" => ""})
      )}
   end
 
@@ -39,18 +44,68 @@ defmodule TaamolWeb.DashboardLive.Bookings do
   defp load(socket) do
     scope = socket.assigns.current_scope
 
-    bookings =
+    result =
       case socket.assigns.view do
-        :mine -> Bookings.list_my_bookings(scope)
-        :requests -> elem(Bookings.list_bookings(scope, :pending), 1)
-        :upcoming -> elem(Bookings.list_bookings(scope, :upcoming), 1)
-        :all -> elem(Bookings.list_bookings(scope, :all), 1)
+        :mine -> {:ok, Bookings.list_my_bookings(scope)}
+        :requests -> Bookings.list_bookings(scope, :pending)
+        :upcoming -> Bookings.list_bookings(scope, :upcoming)
+        :all -> Bookings.list_bookings(scope, :all)
       end
 
-    socket
-    |> assign(empty?: bookings == [])
-    |> stream(:bookings, bookings, reset: true)
+    case result do
+      {:ok, bookings} ->
+        open_booking =
+          Enum.find(
+            bookings,
+            &(&1.id == socket.assigns.open and &1.status in [:pending, :proposed])
+          )
+
+        socket
+        |> assign(empty?: bookings == [], open: open_booking && open_booking.id)
+        |> refresh_offer(open_booking)
+        |> stream(:bookings, bookings, reset: true)
+
+      {:error, :forbidden} ->
+        socket
+        |> assign(empty?: true, open: nil)
+        |> stream(:bookings, [], reset: true)
+        |> put_flash(:error, gettext("You are not allowed to do that."))
+        |> push_navigate(to: ~p"/dashboard")
+    end
   end
+
+  defp refresh_offer(socket, nil), do: assign(socket, offer_date: nil, offer_slots: [])
+
+  defp refresh_offer(socket, booking) do
+    params = socket.assigns.decision_form.params
+
+    date =
+      case Date.from_iso8601(params["date"] || "") do
+        {:ok, date} -> date
+        _ -> nil
+      end
+
+    slots = if date, do: Bookings.available_slots(booking.service, date), else: []
+    selected = params["slot"]
+
+    params =
+      if selected not in [nil, ""] and
+           not Enum.any?(slots, &(slot_value(&1) == selected)) do
+        Map.put(params, "slot", "")
+      else
+        params
+      end
+
+    assign(socket, offer_date: date, offer_slots: slots, decision_form: to_form(params))
+  end
+
+  defp slot_value(slot), do: slot.starts_at |> NaiveDateTime.to_iso8601() |> String.slice(0, 16)
+
+  defp handle_booking_update(message, socket)
+       when message in [:bookings_changed, :booking_availability_changed],
+       do: {:halt, load(socket)}
+
+  defp handle_booking_update(_message, socket), do: {:cont, socket}
 
   # --- members ---------------------------------------------------------------
 
@@ -93,19 +148,29 @@ defmodule TaamolWeb.DashboardLive.Bookings do
 
   def handle_event("open", %{"id" => id}, socket) do
     open = if socket.assigns.open == id, do: nil, else: id
-    {:noreply, socket |> assign(open: open, offer_date: nil, offer_slots: []) |> load()}
+
+    {:noreply,
+     socket
+     |> assign(
+       open: open,
+       offer_date: nil,
+       offer_slots: [],
+       decision_form: to_form(%{"message" => "", "date" => "", "slot" => ""})
+     )
+     |> load()}
   end
 
-  def handle_event("offer-date", %{"offer" => %{"date" => date}} = params, socket) do
+  def handle_event("decision-change", %{"booking_id" => id} = params, socket) do
     with {:ok, booking} <-
-           Bookings.get_booking(socket.assigns.current_scope, params["booking_id"]),
-         {:ok, date} <- Date.from_iso8601(date) do
+           Bookings.get_booking(socket.assigns.current_scope, id),
+         true <- socket.assigns.open == id do
       {:noreply,
        socket
-       |> assign(offer_date: date, offer_slots: Bookings.available_slots(booking.service, date))
+       |> assign(decision_form: to_form(Map.take(params, ~w(message date slot))))
+       |> refresh_offer(booking)
        |> stream_insert(:bookings, booking)}
     else
-      _ -> {:noreply, socket}
+      _ -> {:noreply, put_flash(socket, :error, gettext("The booking could not be updated."))}
     end
   end
 
@@ -127,6 +192,9 @@ defmodule TaamolWeb.DashboardLive.Bookings do
               {:ok, starts_at} -> Bookings.propose_time(scope, booking, starts_at, message)
               _ -> {:error, :no_time}
             end
+
+          _ ->
+            {:error, :invalid_state}
         end
       end
 
@@ -169,6 +237,7 @@ defmodule TaamolWeb.DashboardLive.Bookings do
       flash={@flash}
       current_scope={@current_scope}
       unread_messages={@unread_messages}
+      pending_bookings={@pending_bookings}
       active={:bookings}
       title={gettext("Bookings")}
     >
@@ -183,7 +252,7 @@ defmodule TaamolWeb.DashboardLive.Bookings do
       >
         <:actions>
           <.link
-            navigate={~p"/calendar?#{[mode: "book"]}"}
+            navigate={~p"/calendar"}
             class="inline-flex items-center gap-1.5 rounded-xl bg-primary px-4 py-2 text-sm font-semibold text-primary-content transition hover:opacity-85"
           >
             <.icon name="hero-plus" class="size-4" />{gettext("New booking")}
@@ -254,6 +323,18 @@ defmodule TaamolWeb.DashboardLive.Bookings do
 
           <p :if={booking.guests} class="mt-2 text-sm text-base-content/60">
             {ngettext("%{count} guest", "%{count} guests", booking.guests)}
+          </p>
+          <p
+            :if={booking.location_type}
+            id={"booking-location-#{booking.id}"}
+            dir="auto"
+            class="mt-2 flex items-center gap-1.5 text-sm text-base-content/70"
+          >
+            <.icon name="hero-map-pin-micro" class="size-4 shrink-0" />
+            {if(booking.location_type == :association,
+              do: gettext("Association premises"),
+              else: booking.address
+            )}
           </p>
           <p
             :if={booking.notes}
@@ -346,13 +427,18 @@ defmodule TaamolWeb.DashboardLive.Bookings do
             </button>
 
             <div :if={@open == booking.id} id={"decide-#{booking.id}"} class="mt-3 space-y-3">
-              <form id={"decide-form-#{booking.id}"} phx-submit="decide" class="space-y-3">
+              <.form
+                for={@decision_form}
+                id={"decide-form-#{booking.id}"}
+                phx-change="decision-change"
+                phx-submit="decide"
+                class="space-y-3"
+              >
                 <input type="hidden" name="booking_id" value={booking.id} />
                 <.input
                   type="textarea"
                   id={"decision-message-#{booking.id}"}
-                  name="message"
-                  value=""
+                  field={@decision_form[:message]}
                   rows="2"
                   dir="auto"
                   placeholder={gettext("Message to the member (optional)")}
@@ -386,26 +472,23 @@ defmodule TaamolWeb.DashboardLive.Bookings do
                     <.input
                       type="date"
                       id={"offer-date-#{booking.id}"}
-                      name="offer[date]"
-                      value={@offer_date && Date.to_iso8601(@offer_date)}
-                      phx-change="offer-date"
+                      field={@decision_form[:date]}
                       aria-label={gettext("Date")}
                       wrapper_class="mb-0"
                     />
                     <.input
                       :if={@offer_date}
                       type="select"
-                      name="slot"
+                      field={@decision_form[:slot]}
                       id={"offer-slot-#{booking.id}"}
-                      value={nil}
                       aria-label={gettext("Time")}
+                      prompt={gettext("Choose a time")}
                       options={
                         if @offer_slots == [] do
                           [{gettext("No free times"), ""}]
                         else
                           Enum.map(@offer_slots, fn slot ->
-                            {time_range(slot.starts_at, slot.ends_at),
-                             slot.starts_at |> NaiveDateTime.to_iso8601() |> String.slice(0, 16)}
+                            {time_range(slot.starts_at, slot.ends_at), slot_value(slot)}
                           end)
                         end
                       }
@@ -423,7 +506,7 @@ defmodule TaamolWeb.DashboardLive.Bookings do
                     </button>
                   </div>
                 </div>
-              </form>
+              </.form>
             </div>
           </div>
         </li>

@@ -76,6 +76,25 @@ login from localhost and contains sensitive login links; do not expose it throug
 a proxy or to other users. To deliver real emails, configure a production Swoosh
 adapter and its credentials.
 
+## Prayer times
+
+The site widget and calculator default to Växjö (Europe/Stockholm), the Tehran
+method, no high-latitude adjustment, downward rounding, and the site's fractional
+minute adjustments. Administrators can change the site method. Saved personal
+calculator preferences are retained; the widget always shows the site schedule.
+
+## Booking updates
+
+Booking requests and status changes update the member's bookings and the
+administrators' dashboard live. Calendar availability changes when a booking
+is confirmed or cancelled; pending requests do not reserve a time. The calendar
+shows holidays, events and visible bookings alongside each day's booking status;
+select a day to see its activities or use its Book button to request a time.
+Imam bookings are visible on the calendar only to their owner and
+administrators. They require a venue and, outside the association's
+premises, an address. The celebration-hall service is no longer bookable;
+existing requests remain in the booking history.
+
 ## Article comments
 
 After running `mix ecto.migrate`, administrators can create articles through the

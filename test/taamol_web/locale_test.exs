@@ -76,14 +76,26 @@ defmodule TaamolWeb.LocaleTest do
     end)
   end
 
-  test "the language switch offers the other language", %{conn: conn} do
-    conn = conn |> post(~p"/locale", %{"locale" => "sv"}) |> recycle() |> get(~p"/")
-    document = conn |> html_response(200) |> LazyHTML.from_document()
+  test "the language switch shows the selected language and offers the other", %{conn: conn} do
+    for {locale, current, target, target_code} <- [
+          {"sv", "SV", "fa", "فا"},
+          {"fa", "فا", "sv", "SV"}
+        ] do
+      conn = conn |> post(~p"/locale", %{"locale" => locale}) |> recycle()
+      {:ok, view, _} = live(conn, ~p"/")
 
-    # on a Swedish page the header button switches to Persian
-    assert document
-           |> LazyHTML.query(~s(#header-locale-button[name="locale"][value="fa"]))
-           |> Enum.count() == 1
+      for id <- ["header-locale", "drawer-locale"] do
+        assert has_element?(view, "##{id}-current[lang='#{locale}']", current)
+
+        assert has_element?(
+                 view,
+                 "##{id}-button[name=locale][value='#{target}'] span[lang='#{target}']",
+                 target_code
+               )
+
+        refute has_element?(view, "##{id}-button .hero-globe-alt")
+      end
+    end
   end
 
   test "English is no longer offered" do

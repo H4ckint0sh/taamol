@@ -45,6 +45,7 @@ defmodule TaamolWeb.DashboardLive.SiteSettings do
       flash={@flash}
       current_scope={@current_scope}
       unread_messages={@unread_messages}
+      pending_bookings={@pending_bookings}
       active={:site_settings}
       title={gettext("Site settings")}
     >

@@ -8,9 +8,8 @@ defmodule TaamolWeb.PrayerTimeController do
   """
   use TaamolWeb, :controller
 
-  alias Taamol.PrayTime
+  alias Taamol.{PrayTime, PrayerSettings}
 
-  @default_method "MWL"
   @keys ~w(fajr sunrise dhuhr asr maghrib isha)a
 
   def index(conn, params) do
@@ -20,9 +19,10 @@ defmodule TaamolWeb.PrayerTimeController do
       method = parse_method(params["method"])
 
       calculator =
-        method
-        |> PrayTime.new()
-        |> PrayTime.location({lat, lng})
+        %{"method" => method, "latitude" => lat, "longitude" => lng}
+        |> PrayerSettings.changeset()
+        |> Ecto.Changeset.apply_action!(:validate)
+        |> PrayerSettings.calculator()
         |> PrayTime.format("x")
 
       today = PrayTime.times(calculator, date)
@@ -44,7 +44,8 @@ defmodule TaamolWeb.PrayerTimeController do
 
   defp parse_coordinate(value, max) when is_binary(value) do
     case Float.parse(value) do
-      {number, ""} when abs(number) <= max -> {:ok, number}
+      {number, ""} when max == 90 and abs(number) < 90 -> {:ok, number}
+      {number, ""} when max == 180 and abs(number) <= 180 -> {:ok, number}
       _ -> {:error, if(max == 90, do: "lat", else: "lng")}
     end
   end
@@ -63,7 +64,7 @@ defmodule TaamolWeb.PrayerTimeController do
   defp parse_method(method) do
     if is_binary(method) and Map.has_key?(PrayTime.methods(), method),
       do: method,
-      else: Taamol.Settings.get(:prayer_method) || @default_method
+      else: Taamol.Settings.get(:prayer_method) || "Tehran"
   end
 
   defp timestamp(value) when is_integer(value), do: value

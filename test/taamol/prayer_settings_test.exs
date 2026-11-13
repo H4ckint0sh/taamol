@@ -20,7 +20,10 @@ defmodule Taamol.PrayerSettingsTest do
       "format" => "x",
       "rounding" => "down",
       "iterations" => "2",
+      "tune_sunrise" => "0",
+      "tune_dhuhr" => "0",
       "tune_sunset" => "-4",
+      "tune_maghrib" => "0",
       "tune_isha" => "8"
     }
 
@@ -49,6 +52,39 @@ defmodule Taamol.PrayerSettingsTest do
       |> PrayTime.times(~D[2026-03-10])
 
     assert actual == expected
+  end
+
+  test "defaults reproduce the Växjö Tehran schedule with fractional tuning" do
+    assert {:ok, settings} =
+             %{"date" => "2026-11-13"}
+             |> PrayerSettings.changeset()
+             |> Ecto.Changeset.apply_action(:validate)
+
+    times =
+      settings
+      |> PrayerSettings.calculator()
+      |> PrayTime.format("x")
+      |> PrayTime.times(settings.date)
+
+    for {prayer, expected} <- [
+          fajr: "05:24",
+          sunrise: "07:36",
+          dhuhr: "11:45",
+          sunset: "15:53",
+          maghrib: "16:24"
+        ] do
+      local =
+        times[prayer]
+        |> DateTime.from_unix!(:millisecond)
+        |> DateTime.add(3600, :second)
+        |> Calendar.strftime("%H:%M")
+
+      assert local == expected
+    end
+
+    assert settings.timezone == "Europe/Stockholm"
+    assert settings.high_lats == "None"
+    assert settings.rounding == "down"
   end
 
   test "invalid custom values are rejected before calculation" do
