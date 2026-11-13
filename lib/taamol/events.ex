@@ -7,6 +7,8 @@ defmodule Taamol.Events do
   import Ecto.Query
 
   alias Taamol.Accounts.{Helpers, Scope, User}
+  alias Taamol.Bookings
+  alias Taamol.Bookings.Lock
   alias Taamol.Events.{Event, Holidays, Hijri}
   alias Taamol.Repo
 
@@ -146,7 +148,7 @@ defmodule Taamol.Events do
     as_admin(scope, fn admin ->
       %Event{creator_id: admin.id}
       |> Event.changeset(attrs)
-      |> Repo.insert()
+      |> save_event(:insert)
     end)
     |> notify_change()
   end
@@ -154,9 +156,15 @@ defmodule Taamol.Events do
   @doc "Updates an event. Administrators only."
   def update_event(scope, %Event{} = event, attrs) do
     as_admin(scope, fn _admin ->
-      event
-      |> Event.changeset(attrs)
-      |> Repo.update(stale_error_field: :id)
+      case Repo.get(Event, event.id) do
+        nil ->
+          {:error, Ecto.Changeset.add_error(Ecto.Changeset.change(event), :id, "does not exist")}
+
+        current ->
+          current
+          |> Event.changeset(attrs)
+          |> save_event(:update)
+      end
     end)
     |> notify_change()
   end
@@ -167,12 +175,38 @@ defmodule Taamol.Events do
     |> notify_change()
   end
 
+  defp save_event(changeset, operation) do
+    with {:ok, event} <- Ecto.Changeset.apply_action(changeset, :validate) do
+      case Event.booking_interval(event) do
+        {starts_at, ends_at} ->
+          if Bookings.resource_conflict?(event.booking_resource, starts_at, ends_at, event.id) do
+            {:error,
+             Ecto.Changeset.add_error(
+               changeset,
+               :booking_resource,
+               "conflicts with a confirmed booking or another event"
+             )}
+          else
+            persist_event(changeset, operation)
+          end
+
+        nil ->
+          persist_event(changeset, operation)
+      end
+    end
+  end
+
+  defp persist_event(changeset, :insert), do: Repo.insert(changeset)
+  defp persist_event(changeset, :update), do: Repo.update(changeset, stale_error_field: :id)
+
   @doc "The Hijri date for a Gregorian date."
   defdelegate hijri(date), to: Hijri, as: :from_date
 
   # re-checks the role in the database so a revoked admin can't keep editing
   defp as_admin(%Scope{user: %User{id: user_id}}, fun) do
     Repo.transact(fn ->
+      Lock.acquire()
+
       case Helpers.find_admin_with_lock(user_id) do
         nil -> {:error, :forbidden}
         admin -> fun.(admin)

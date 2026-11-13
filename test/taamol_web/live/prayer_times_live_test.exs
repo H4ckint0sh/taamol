@@ -6,6 +6,72 @@ defmodule TaamolWeb.PrayerTimesLiveTest do
 
   alias Taamol.{Accounts, PrayTime}
 
+  test "the animated schedule follows the selected calculation and handles unavailable times", %{
+    conn: conn
+  } do
+    {:ok, view, _} = live(conn, ~p"/prayer-times")
+    assert has_element?(view, "#prayer-results #calculator-prayer-arc[phx-update=ignore]")
+
+    view |> element("#manual-location") |> render_click()
+
+    view
+    |> form("#prayer-settings-form",
+      prayer: %{
+        latitude: "59.33",
+        longitude: "18.07",
+        utc_offset: "1",
+        date: "2026-11-12",
+        method: "ISNA",
+        tune_fajr: "5"
+      }
+    )
+    |> render_change()
+
+    calculator =
+      PrayTime.new("ISNA")
+      |> PrayTime.location({59.33, 18.07})
+      |> PrayTime.adjust(
+        utc_offset: 60,
+        high_lats: "None",
+        rounding: "down",
+        tune: %{fajr: 5, sunrise: 0.07, dhuhr: 0.15, sunset: 1.15, maghrib: 1.08},
+        format: "x"
+      )
+
+    data = arc_data(view)
+    assert data["date"] == "2026-11-12"
+    assert data["timezone"] == nil
+    assert data["utc_offset"] == 1
+    assert data["times"]["fajr"] == PrayTime.times(calculator, ~D[2026-11-12]).fajr
+    assert data["next_fajr"] == PrayTime.times(calculator, ~D[2026-11-13]).fajr
+
+    view
+    |> form("#prayer-settings-form",
+      prayer: %{latitude: "89", date: "2026-06-21", high_lats: "None"}
+    )
+    |> render_change()
+
+    assert arc_data(view)["times"]["fajr"] == nil
+
+    view
+    |> form("#prayer-settings-form", prayer: %{latitude: "90"})
+    |> render_change()
+
+    refute has_element?(view, "#calculator-prayer-arc")
+    assert has_element?(view, "#prayer-invalid")
+  end
+
+  defp arc_data(view) do
+    [json] =
+      view
+      |> element("#calculator-prayer-arc")
+      |> render()
+      |> LazyHTML.from_fragment()
+      |> LazyHTML.attribute("data-calculation")
+
+    Jason.decode!(json)
+  end
+
   test "visitors can calculate using their own settings but cannot save", %{conn: conn} do
     {:ok, view, _} = live(conn, ~p"/prayer-times")
 
@@ -35,13 +101,18 @@ defmodule TaamolWeb.PrayerTimesLiveTest do
     assert has_element?(view, "label[for='prayer_tune_fajr']")
     assert has_element?(view, "#prayer_tune_fajr.h-10[type=number]")
 
-    assert has_element?(
-             view,
-             "#prayer_tune_fajr-stepper[phx-hook=NumberStepper] button[data-step='1']"
-           )
+    for field <- ~w(latitude longitude fajr dhuhr iterations tune_fajr) do
+      assert has_element?(
+               view,
+               "#prayer_#{field}-stepper[phx-hook=NumberStepper] button[data-step='1']"
+             )
 
-    assert has_element?(view, "#prayer-tuning .hero-clock")
-    assert has_element?(view, "#city-search .hero-magnifying-glass")
+      assert has_element?(view, "#prayer_#{field}.h-10")
+    end
+
+    refute has_element?(view, "#prayer-location .form-control > .hero-hashtag")
+    refute has_element?(view, "#prayer-location .form-control > .hero-calendar-days")
+    refute has_element?(view, "#city-search .hero-magnifying-glass")
 
     view |> element("#manual-location") |> render_click()
 
@@ -57,6 +128,12 @@ defmodule TaamolWeb.PrayerTimesLiveTest do
       }
     )
     |> render_change()
+
+    for field <- ~w(latitude longitude utc_offset) do
+      assert has_element?(view, "#prayer_#{field}.h-10")
+      assert has_element?(view, "#prayer_#{field}-stepper button[data-step='-1']")
+      assert has_element?(view, "#prayer_#{field}-stepper button[data-step='1']")
+    end
 
     expected =
       PrayTime.new("ISNA")
@@ -162,6 +239,7 @@ defmodule TaamolWeb.PrayerTimesLiveTest do
 
     view |> element("#select-city-2673730") |> render_click()
     assert has_element?(view, "#selected-city", "Europe/Stockholm")
+    assert arc_data(view)["timezone"] == "Europe/Stockholm"
     assert has_element?(view, "#prayer_latitude[value='59.32938']")
     assert has_element?(view, "#city-time-fajr[data-timezone='Europe/Stockholm']")
     refute has_element?(view, "#prayer_utc_offset[type=number]")

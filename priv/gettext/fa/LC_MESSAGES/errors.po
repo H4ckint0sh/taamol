@@ -26,6 +26,15 @@ msgstr "باید پس از ساعت شروع باشد"
 msgid "must fit within opening hours"
 msgstr "باید در بازه ساعات قابل رزرو بگنجد"
 
+msgid "must be after the start when reserving a resource"
+msgstr "هنگام رزرو منبع باید پس از زمان شروع باشد"
+
+msgid "conflicts with a confirmed booking or another event"
+msgstr "با یک رزرو تأییدشده یا رویداد دیگر تداخل دارد"
+
+msgid "conflicts with a booking or event"
+msgstr "با یک رزرو یا رویداد تداخل دارد"
+
 msgid "must be an angle or minutes, for example 18 or 90 min"
 msgstr "باید زاویه یا دقیقه باشد، برای مثال 18 یا 90 min"
 

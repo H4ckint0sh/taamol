@@ -239,7 +239,6 @@ defmodule TaamolWeb.CoreComponents do
   attr :class, :any, default: nil, doc: "the input class to use over defaults"
   attr :wrapper_class, :string, default: nil, doc: "additional classes for the field wrapper"
   attr :error_class, :any, default: nil, doc: "the input error class to use over defaults"
-  attr :icon, :string, default: nil, doc: "an optional field icon"
 
   attr :rest, :global,
     include: ~w(accept autocomplete capture cols disabled form list max maxlength min minlength
@@ -306,11 +305,7 @@ defmodule TaamolWeb.CoreComponents do
       <label :if={@label} for={@id} class="mb-1.5 block text-sm font-semibold text-base-content/75">
         {@label}
       </label>
-      <div class="form-control form-control-icon relative w-full max-w-lg min-w-0">
-        <.icon
-          name={@icon || "hero-list-bullet"}
-          class="pointer-events-none absolute start-4 top-1/2 size-5 -translate-y-1/2 text-base-content/40"
-        />
+      <div class="form-control relative w-full max-w-lg min-w-0">
         <select
           id={@id}
           name={@name}
@@ -344,11 +339,7 @@ defmodule TaamolWeb.CoreComponents do
       <label :if={@label} for={@id} class="mb-1.5 block text-sm font-semibold text-base-content/75">
         {@label}
       </label>
-      <div class="form-control form-control-icon relative w-full max-w-lg min-w-0">
-        <.icon
-          name={@icon || "hero-document-text"}
-          class="pointer-events-none absolute start-4 top-2.5 size-5 text-base-content/40"
-        />
+      <div class="form-control relative w-full max-w-lg min-w-0">
         <textarea
           id={@id}
           name={@name}
@@ -367,22 +358,12 @@ defmodule TaamolWeb.CoreComponents do
   end
 
   def input(assigns) do
-    assigns = assign(assigns, :field_icon, assigns.icon || input_icon(assigns.type))
-
     ~H"""
     <div class={["fieldset mb-2", @wrapper_class]}>
       <label :if={@label} for={@id} class="mb-1.5 block text-sm font-semibold text-base-content/75">
         {@label}
       </label>
-      <div class={[
-        "form-control relative w-full max-w-lg min-w-0",
-        @field_icon && "form-control-icon"
-      ]}>
-        <.icon
-          :if={@field_icon}
-          name={@field_icon}
-          class="pointer-events-none absolute start-4 top-1/2 size-5 -translate-y-1/2 text-base-content/40"
-        />
+      <div class="form-control relative w-full max-w-lg min-w-0">
         <input
           type={@type}
           name={@name}
@@ -426,17 +407,6 @@ defmodule TaamolWeb.CoreComponents do
     </div>
     """
   end
-
-  defp input_icon(type) when type in ~w(date datetime-local month week), do: "hero-calendar-days"
-  defp input_icon("time"), do: "hero-clock"
-  defp input_icon("number"), do: "hero-hashtag"
-  defp input_icon("email"), do: "hero-envelope"
-  defp input_icon("password"), do: "hero-lock-closed"
-  defp input_icon("search"), do: "hero-magnifying-glass"
-  defp input_icon("tel"), do: "hero-phone"
-  defp input_icon("url"), do: "hero-link"
-  defp input_icon("text"), do: "hero-pencil-square"
-  defp input_icon(_type), do: nil
 
   # Helper used by inputs to generate form errors
   defp error(assigns) do

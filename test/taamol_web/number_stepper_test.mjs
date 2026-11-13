@@ -41,6 +41,9 @@ test("number steppers update the input, respect bounds and disabled state, and n
 
     hook.mounted()
     assert.equal(el.dataset.ready, "true")
+    delete el.dataset.ready
+    hook.updated()
+    assert.equal(el.dataset.ready, "true")
     press(up)
     assert.equal(input.value, "3")
     press(up)

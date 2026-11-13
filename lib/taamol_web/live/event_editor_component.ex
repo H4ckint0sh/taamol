@@ -143,6 +143,16 @@ defmodule TaamolWeb.EventEditorComponent do
         options={Enum.map(Event.kinds(), &{kind_name(&1), &1})}
       />
       <.input field={@form[:all_day]} type="checkbox" label={gettext("All day")} />
+      <.input
+        field={@form[:booking_resource]}
+        type="select"
+        label={gettext("Resource reserved for bookings")}
+        options={[
+          {gettext("None"), ""},
+          {gettext("Association premises"), "premises"},
+          {gettext("Imam"), "imam"}
+        ]}
+      />
       <div class="grid gap-x-4 sm:grid-cols-2">
         <.input field={@form[:starts_at]} type="datetime-local" label={gettext("Starts")} required />
         <.input field={@form[:ends_at]} type="datetime-local" label={gettext("Ends (optional)")} />

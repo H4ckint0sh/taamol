@@ -59,6 +59,8 @@ defmodule TaamolWeb.CalendarLiveTest do
 
     view |> element("#calendar-add-event") |> render_click()
     assert has_element?(view, "#event-dialog[role=dialog] #event-form")
+    assert has_element?(view, "#event_booking_resource option[value='premises']")
+    assert has_element?(view, "#event_booking_resource option[value='imam']")
     assert has_element?(view, "#event_starts_at[value='2030-06-10T18:00']")
     view |> element("#event-dialog-close") |> render_click()
     refute has_element?(view, "#event-dialog")

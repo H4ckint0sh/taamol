@@ -9,10 +9,14 @@ defmodule TaamolWeb.DashboardLive.Bookings do
   import TaamolWeb.BookingComponents
 
   alias Taamol.{Accounts, Bookings}
+  alias Taamol.Bookings.Audit
 
   @impl true
   def mount(_params, _session, socket) do
-    if connected?(socket), do: :ok = Bookings.subscribe_availability()
+    if connected?(socket) do
+      :ok = Bookings.subscribe_availability()
+      :ok = Taamol.Events.subscribe()
+    end
 
     {:ok,
      socket
@@ -21,10 +25,12 @@ defmodule TaamolWeb.DashboardLive.Bookings do
        page_title: gettext("Bookings"),
        admin?: Accounts.can?(socket.assigns.current_scope, :manage_bookings),
        open: nil,
+       history_open: nil,
        offer_date: nil,
        offer_slots: [],
        decision_form: to_form(%{"message" => "", "date" => "", "slot" => ""})
-     )}
+     )
+     |> stream(:history, [])}
   end
 
   @impl true
@@ -38,7 +44,7 @@ defmodule TaamolWeb.DashboardLive.Bookings do
         {false, _} -> :mine
       end
 
-    {:noreply, socket |> assign(view: view, open: nil) |> load()}
+    {:noreply, socket |> assign(view: view, open: nil, history_open: nil) |> load()}
   end
 
   defp load(socket) do
@@ -63,6 +69,7 @@ defmodule TaamolWeb.DashboardLive.Bookings do
         socket
         |> assign(empty?: bookings == [], open: open_booking && open_booking.id)
         |> refresh_offer(open_booking)
+        |> refresh_history(bookings)
         |> stream(:bookings, bookings, reset: true)
 
       {:error, :forbidden} ->
@@ -71,6 +78,22 @@ defmodule TaamolWeb.DashboardLive.Bookings do
         |> stream(:bookings, [], reset: true)
         |> put_flash(:error, gettext("You are not allowed to do that."))
         |> push_navigate(to: ~p"/dashboard")
+    end
+  end
+
+  defp refresh_history(socket, bookings) do
+    booking = Enum.find(bookings, &(&1.id == socket.assigns.history_open))
+
+    case booking && Audit.list_for_booking(socket.assigns.current_scope, booking) do
+      {:ok, events} ->
+        socket
+        |> assign(history_empty?: events == [])
+        |> stream(:history, events, reset: true)
+
+      _ ->
+        socket
+        |> assign(history_open: nil, history_empty?: true)
+        |> stream(:history, [], reset: true)
     end
   end
 
@@ -102,7 +125,7 @@ defmodule TaamolWeb.DashboardLive.Bookings do
   defp slot_value(slot), do: slot.starts_at |> NaiveDateTime.to_iso8601() |> String.slice(0, 16)
 
   defp handle_booking_update(message, socket)
-       when message in [:bookings_changed, :booking_availability_changed],
+       when message in [:bookings_changed, :booking_availability_changed, :events_changed],
        do: {:halt, load(socket)}
 
   defp handle_booking_update(_message, socket), do: {:cont, socket}
@@ -130,6 +153,14 @@ defmodule TaamolWeb.DashboardLive.Bookings do
         {:noreply,
          put_flash(socket, :error, gettext("That time was just taken. Please contact us."))}
 
+      {:error, :unavailable} ->
+        {:noreply,
+         put_flash(
+           socket,
+           :error,
+           gettext("That time is no longer available. Please choose another time.")
+         )}
+
       _ ->
         {:noreply, put_flash(socket, :error, gettext("The booking could not be updated."))}
     end
@@ -145,6 +176,23 @@ defmodule TaamolWeb.DashboardLive.Bookings do
   end
 
   # --- administrators --------------------------------------------------------
+
+  def handle_event("history", %{"id" => id}, socket) do
+    scope = socket.assigns.current_scope
+
+    with true <- socket.assigns.admin?,
+         {:ok, booking} <- Bookings.get_booking(scope, id),
+         {:ok, _events} <- Audit.list_for_booking(scope, booking) do
+      opening? = socket.assigns.history_open != id
+
+      {:noreply,
+       socket
+       |> assign(history_open: if(opening?, do: id))
+       |> load()}
+    else
+      _ -> {:noreply, put_flash(socket, :error, gettext("You are not allowed to do that."))}
+    end
+  end
 
   def handle_event("open", %{"id" => id}, socket) do
     open = if socket.assigns.open == id, do: nil, else: id
@@ -168,7 +216,7 @@ defmodule TaamolWeb.DashboardLive.Bookings do
        socket
        |> assign(decision_form: to_form(Map.take(params, ~w(message date slot))))
        |> refresh_offer(booking)
-       |> stream_insert(:bookings, booking)}
+       |> load()}
     else
       _ -> {:noreply, put_flash(socket, :error, gettext("The booking could not be updated."))}
     end
@@ -208,7 +256,11 @@ defmodule TaamolWeb.DashboardLive.Bookings do
 
       {:error, :conflict} ->
         {:noreply,
-         put_flash(socket, :error, gettext("That time clashes with a confirmed booking."))}
+         put_flash(
+           socket,
+           :error,
+           gettext("That time clashes with a confirmed booking or event.")
+         )}
 
       {:error, :no_time} ->
         {:noreply, put_flash(socket, :error, gettext("Choose a date and a time to offer."))}
@@ -229,6 +281,33 @@ defmodule TaamolWeb.DashboardLive.Bookings do
   defp tab_path(view), do: ~p"/dashboard/bookings?#{[view: view]}"
 
   defp open?(booking), do: booking.status in [:pending, :proposed, :confirmed]
+
+  defp audit_action("requested"), do: gettext("Booking requested")
+  defp audit_action("confirmed"), do: gettext("Booking approved")
+  defp audit_action("declined"), do: gettext("Booking declined")
+  defp audit_action("proposed"), do: gettext("Another time proposed")
+  defp audit_action("proposal_accepted"), do: gettext("Proposed time accepted")
+  defp audit_action("proposal_declined"), do: gettext("Proposed time declined")
+  defp audit_action("cancelled"), do: gettext("Booking cancelled")
+  defp audit_action(_), do: gettext("Booking updated")
+
+  defp audit_time_label("starts_at"), do: gettext("Start")
+  defp audit_time_label("ends_at"), do: gettext("End")
+  defp audit_time_label("proposed_starts_at"), do: gettext("Proposed start")
+  defp audit_time_label("proposed_ends_at"), do: gettext("Proposed end")
+  defp audit_time_label("previous_starts_at"), do: gettext("Previous start")
+  defp audit_time_label("previous_ends_at"), do: gettext("Previous end")
+  defp audit_time_label("old_starts_at"), do: gettext("Previous start")
+  defp audit_time_label("old_ends_at"), do: gettext("Previous end")
+  defp audit_time_label("new_starts_at"), do: gettext("New start")
+  defp audit_time_label("new_ends_at"), do: gettext("New end")
+
+  defp audit_time(value) do
+    case NaiveDateTime.from_iso8601(value) do
+      {:ok, datetime} -> Calendar.strftime(datetime, "%Y-%m-%d %H:%M")
+      _ -> value
+    end
+  end
 
   @impl true
   def render(assigns) do
@@ -388,6 +467,50 @@ defmodule TaamolWeb.DashboardLive.Bookings do
             <span class="font-medium">{gettext("Message from us:")}</span> {booking.admin_message}
           </p>
 
+          <div :if={@admin?} class="mt-4 border-t border-base-300 pt-3">
+            <button
+              type="button"
+              id={"booking-history-toggle-#{booking.id}"}
+              phx-click="history"
+              phx-value-id={booking.id}
+              aria-expanded={to_string(@history_open == booking.id)}
+              class="inline-flex items-center gap-1.5 text-sm font-semibold text-primary transition hover:opacity-70"
+            >
+              <.icon name="hero-clock" class="size-4" />
+              {gettext("Booking history")}
+            </button>
+            <div :if={@history_open == booking.id} id={"booking-history-#{booking.id}"} class="mt-3">
+              <p :if={@history_empty?} class="text-sm text-base-content/60">
+                {gettext("No history recorded.")}
+              </p>
+              <ol id={"booking-history-events-#{booking.id}"} phx-update="stream" class="space-y-3">
+                <li
+                  :for={{event_id, event} <- @streams.history}
+                  id={event_id}
+                  class="rounded-xl bg-base-200/60 px-3 py-2 text-sm"
+                >
+                  <p class="font-semibold">{audit_action(event.action)}</p>
+                  <p class="mt-0.5 text-base-content/65" dir="auto">
+                    {event.actor_name || gettext("System")}
+                    <span :if={event.actor_email && event.actor_email != event.actor_name}>
+                      ({event.actor_email})
+                    </span>
+                    ·
+                    <time datetime={DateTime.to_iso8601(event.inserted_at)}>
+                      {Calendar.strftime(event.inserted_at, "%Y-%m-%d %H:%M:%S")} UTC
+                    </time>
+                  </p>
+                  <dl class="mt-1 text-base-content/70">
+                    <div :for={{key, value} <- event.details} class="flex flex-wrap gap-1">
+                      <dt>{audit_time_label(key)}:</dt>
+                      <dd class="tabular-nums">{audit_time(value)}</dd>
+                    </div>
+                  </dl>
+                </li>
+              </ol>
+            </div>
+          </div>
+
           <%!-- member: cancel --%>
           <div :if={@view == :mine and open?(booking)} class="mt-3">
             <button
@@ -414,7 +537,7 @@ defmodule TaamolWeb.DashboardLive.Bookings do
               class="mb-2 flex items-center gap-1.5 rounded-xl bg-warning/10 px-3 py-2 text-sm text-warning"
             >
               <.icon name="hero-exclamation-triangle" class="size-4" />
-              {gettext("Clashes with a confirmed booking at this time.")}
+              {gettext("Clashes with a confirmed booking or event at this time.")}
             </p>
             <button
               type="button"

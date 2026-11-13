@@ -170,23 +170,41 @@ defmodule TaamolWeb.PrayerTimesLive do
   defp current_params(socket), do: socket.assigns.form.source.params || %{}
 
   defp assign_calculation(socket, changeset, action \\ nil) do
-    {result, timezone, format} =
+    {result, timezone, format, arc_calculation} =
       case Ecto.Changeset.apply_action(changeset, :validate) do
         {:ok, settings} ->
           calculator = PrayerSettings.calculator(settings)
+          timestamp_calculator = PrayTime.format(calculator, "x")
+
+          timestamps =
+            timestamp_calculator
+            |> PrayTime.times(settings.date)
+            |> Map.new(fn {key, value} -> {key, if(is_number(value), do: value)} end)
+
+          tomorrow_fajr = PrayTime.times(timestamp_calculator, Date.add(settings.date, 1)).fajr
+
+          arc_calculation = %{
+            times: timestamps,
+            next_fajr: if(is_number(tomorrow_fajr), do: tomorrow_fajr),
+            date: Date.to_iso8601(settings.date),
+            timezone: settings.timezone,
+            utc_offset: settings.utc_offset
+          }
 
           calculator =
             if settings.timezone, do: PrayTime.format(calculator, "x"), else: calculator
 
-          {PrayTime.times(calculator, settings.date), settings.timezone, settings.format}
+          {PrayTime.times(calculator, settings.date), settings.timezone, settings.format,
+           arc_calculation}
 
         {:error, _} ->
-          {nil, nil, nil}
+          {nil, nil, nil, nil}
       end
 
     assign(socket,
       form: to_form(changeset, as: :prayer, action: action),
       times: result,
+      arc_calculation: arc_calculation,
       city_timezone: timezone,
       time_format: format,
       city_selected?: not is_nil(Ecto.Changeset.get_field(changeset, :timezone))
@@ -221,13 +239,6 @@ defmodule TaamolWeb.PrayerTimesLive do
 
   @impl true
   def render(assigns) do
-    assigns =
-      assign(
-        assigns,
-        :field_class,
-        "block h-10 w-full min-w-0 rounded-xl border border-base-300 bg-base-100 px-3 text-sm text-base-content shadow-sm outline-none transition focus:border-primary focus:ring-4 focus:ring-primary/10"
-      )
-
     ~H"""
     <Layouts.app flash={@flash} current_scope={@current_scope} wide>
       <div id="prayer-times-page" class="mx-auto max-w-7xl px-4 pt-6 sm:px-6 lg:px-8 lg:pt-10">
@@ -267,7 +278,6 @@ defmodule TaamolWeb.PrayerTimesLive do
                     type="search"
                     label={gettext("Find a city")}
                     placeholder={gettext("For example, Stockholm")}
-                    class={@field_class}
                     maxlength="100"
                     autocomplete="off"
                     phx-change="search-cities"
@@ -345,7 +355,6 @@ defmodule TaamolWeb.PrayerTimesLive do
                   field={@form[:date]}
                   type="date"
                   label={gettext("Date")}
-                  class={@field_class}
                   required
                 />
               </div>
@@ -393,7 +402,6 @@ defmodule TaamolWeb.PrayerTimesLive do
                   min="-89.999999"
                   max="89.999999"
                   label={gettext("Latitude")}
-                  class={@field_class}
                   required
                 />
                 <.input
@@ -403,7 +411,6 @@ defmodule TaamolWeb.PrayerTimesLive do
                   min="-180"
                   max="180"
                   label={gettext("Longitude")}
-                  class={@field_class}
                   required
                 />
                 <.input
@@ -414,7 +421,6 @@ defmodule TaamolWeb.PrayerTimesLive do
                   min="-12"
                   max="14"
                   label={gettext("UTC offset (hours)")}
-                  class={@field_class}
                   required
                 />
                 <.input :if={@city_selected?} field={@form[:utc_offset]} type="hidden" />
@@ -450,14 +456,12 @@ defmodule TaamolWeb.PrayerTimesLive do
                   field={@form[:method]}
                   type="select"
                   label={gettext("Calculation method")}
-                  class={@field_class}
                   options={Enum.map(Taamol.Settings.SiteSetting.prayer_methods(), &{&1, &1})}
                 />
                 <.input
                   field={@form[:high_lats]}
                   type="select"
                   label={gettext("High latitude adjustment")}
-                  class={@field_class}
                   options={[
                     {gettext("None"), "None"},
                     {gettext("Middle of the night"), "NightMiddle"},
@@ -473,21 +477,18 @@ defmodule TaamolWeb.PrayerTimesLive do
                   max="90"
                   label={gettext("Fajr angle")}
                   placeholder={gettext("Method default")}
-                  class={@field_class}
                 />
                 <.input
                   field={@form[:isha]}
                   type="text"
                   label={gettext("Isha angle or minutes")}
                   placeholder={gettext("Method default")}
-                  class={@field_class}
                 />
                 <.input
                   field={@form[:maghrib]}
                   type="text"
                   label={gettext("Maghrib angle or minutes")}
                   placeholder={gettext("Method default")}
-                  class={@field_class}
                 />
                 <.input
                   field={@form[:dhuhr]}
@@ -495,20 +496,17 @@ defmodule TaamolWeb.PrayerTimesLive do
                   min="-180"
                   max="180"
                   label={gettext("Dhuhr offset (minutes)")}
-                  class={@field_class}
                   required
                 />
                 <.input
                   field={@form[:asr]}
                   type="text"
                   label={gettext("Asr shadow factor")}
-                  class={@field_class}
                 />
                 <.input
                   field={@form[:midnight]}
                   type="select"
                   label={gettext("Midnight")}
-                  class={@field_class}
                   options={[
                     {gettext("Method default"), ""},
                     {gettext("Standard"), "Standard"},
@@ -521,14 +519,12 @@ defmodule TaamolWeb.PrayerTimesLive do
                   min="1"
                   max="10"
                   label={gettext("Calculation iterations")}
-                  class={@field_class}
                   required
                 />
                 <.input
                   field={@form[:rounding]}
                   type="select"
                   label={gettext("Rounding")}
-                  class={@field_class}
                   options={[
                     {gettext("Nearest minute"), "nearest"},
                     {gettext("Up"), "up"},
@@ -540,7 +536,6 @@ defmodule TaamolWeb.PrayerTimesLive do
                   field={@form[:format]}
                   type="select"
                   label={gettext("Time format")}
-                  class={@field_class}
                   options={[
                     {"24-hour", "24h"},
                     {"12-hour AM/PM", "12h"},
@@ -570,11 +565,9 @@ defmodule TaamolWeb.PrayerTimesLive do
                   field={@form[field]}
                   type="number"
                   step="any"
-                  icon="hero-clock"
                   min="-180"
                   max="180"
                   label={label}
-                  class={@field_class}
                   required
                 />
               </div>
@@ -591,6 +584,7 @@ defmodule TaamolWeb.PrayerTimesLive do
                 title={gettext("Prayer schedule")}
                 description={gettext("Times update as you edit")}
               />
+              <Layouts.calculated_prayer_arc :if={@arc_calculation} calculation={@arc_calculation} />
               <div :if={@times} class="mt-4 divide-y divide-base-300/70">
                 <div
                   :for={{key, label} <- prayers()}

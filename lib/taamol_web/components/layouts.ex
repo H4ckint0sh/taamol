@@ -1237,14 +1237,7 @@ defmodule TaamolWeb.Layouts do
     assigns =
       assign(assigns,
         defaults: Taamol.PrayerSettings.defaults(),
-        prayers: [
-          {"fajr", gettext("Fajr"), :cloud},
-          {"sunrise", gettext("Sunrise"), :cloud_sun},
-          {"dhuhr", gettext("Dhuhr"), :sun},
-          {"asr", gettext("Asr"), :sun_soft},
-          {"maghrib", gettext("Maghrib"), :cloud_sun},
-          {"isha", gettext("Isha"), :moon}
-        ]
+        prayers: prayer_arc_prayers()
       )
 
     ~H"""
@@ -1281,7 +1274,7 @@ defmodule TaamolWeb.Layouts do
             </span>
             <span class="absolute -end-0.5 -top-0.5 hidden size-2 rounded-full bg-primary group-data-[state=ready]/prayer:block group-data-[state=ready]/prayer:motion-safe:animate-pulse" />
           </span>
-          <span data-role="next-label" class="text-base-content/70">
+          <span data-role="next-label" class="text-base-content/70 max-[399px]:sr-only">
             {gettext("Prayer times")}
           </span>
           <span
@@ -1390,80 +1383,7 @@ defmodule TaamolWeb.Layouts do
           </span>
         </div>
 
-        <%!-- sun path from Fajr (left) to Isha (right) --%>
-        <div dir="ltr" class="relative mt-2 aspect-[200/112] w-full">
-          <svg
-            viewBox="0 0 200 112"
-            class="absolute inset-0 size-full overflow-visible"
-            aria-hidden="true"
-          >
-            <path
-              d="M 12 104 A 88 88 0 0 1 188 104"
-              pathLength="1"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="1.5"
-              class="text-base-300"
-            />
-            <path
-              data-role="arc-progress"
-              d="M 12 104 A 88 88 0 0 1 188 104"
-              pathLength="1"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-dasharray="0 1"
-              class="text-primary"
-            />
-            <circle
-              :for={{key, _label, _icon} <- @prayers}
-              data-marker={key}
-              r="2.5"
-              cx="12"
-              cy="104"
-              stroke-width="1.5"
-              class="fill-base-100 stroke-base-content/30 transition-colors duration-500 data-[past]:fill-base-content/25 data-[past]:stroke-transparent data-[active]:fill-primary data-[active]:stroke-primary"
-            />
-          </svg>
-          <%!-- each prayer's icon, just inside the arc by its point; they rise
-               into place when the panel appears (prayer_times.js) --%>
-          <span
-            :for={{key, _label, icon} <- @prayers}
-            data-marker-icon={key}
-            class="group/mark pointer-events-none absolute -translate-x-1/2 -translate-y-1/2"
-            style="left: 6%; top: 93%"
-          >
-            <span class="block translate-y-2 scale-[0.7] text-base-content/45 opacity-0 transition duration-500 ease-out group-data-[shown]/mark:translate-y-0 group-data-[shown]/mark:opacity-100 group-data-[past]/mark:text-base-content/25 group-data-[active]/mark:scale-[0.85] group-data-[active]/mark:text-primary">
-              <.prayer_icon type={icon} />
-            </span>
-          </span>
-          <span
-            data-role="sun"
-            class="absolute z-10 grid size-6 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full bg-base-100 shadow-md ring-1 ring-base-300"
-            style="left: 6%; top: 93%"
-          >
-            <.icon
-              name="hero-sun-solid"
-              class="size-4 text-primary group-data-[night]/prayer:hidden"
-            />
-            <.icon
-              name="hero-moon-solid"
-              class="hidden size-3.5 text-base-content/70 group-data-[night]/prayer:block"
-            />
-          </span>
-          <div class="absolute inset-x-0 bottom-0 text-center">
-            <p data-role="countdown" class="text-3xl font-bold tracking-tight tabular-nums">
-              --:--:--
-            </p>
-            <p
-              data-role="until"
-              data-template={gettext("until %{prayer}", prayer: "%{prayer}")}
-              class="text-[11px] text-base-content/60"
-            />
-            <p data-role="next-at" class="text-xs font-semibold tabular-nums text-base-content/60" />
-          </div>
-        </div>
+        <.prayer_arc prayers={@prayers} />
 
         <ul
           id={"#{@id}-grid"}
@@ -1501,6 +1421,115 @@ defmodule TaamolWeb.Layouts do
           <.icon name="hero-arrow-right" class="size-3.5 rtl:rotate-180" />
         </.link>
       </section>
+    </div>
+    """
+  end
+
+  attr :calculation, :map, required: true
+
+  def calculated_prayer_arc(assigns) do
+    assigns = assign(assigns, :prayers, prayer_arc_prayers())
+
+    ~H"""
+    <prayer-times
+      id="calculator-prayer-arc"
+      phx-update="ignore"
+      data-calculation={Jason.encode!(@calculation)}
+      class="block"
+    >
+      <div data-role="root" class="group/prayer" hidden>
+        <.prayer_arc prayers={@prayers} />
+      </div>
+    </prayer-times>
+    """
+  end
+
+  defp prayer_arc_prayers do
+    [
+      {"fajr", gettext("Fajr"), :cloud},
+      {"sunrise", gettext("Sunrise"), :cloud_sun},
+      {"dhuhr", gettext("Dhuhr"), :sun},
+      {"asr", gettext("Asr"), :sun_soft},
+      {"maghrib", gettext("Maghrib"), :cloud_sun},
+      {"isha", gettext("Isha"), :moon}
+    ]
+  end
+
+  attr :prayers, :list, required: true
+
+  defp prayer_arc(assigns) do
+    ~H"""
+    <p data-role="arc-unavailable" hidden class="mt-4 text-sm text-base-content/60">
+      {gettext("A dash means a time cannot be calculated for this location and date.")}
+    </p>
+    <div data-role="prayer-arc" dir="ltr" class="relative mt-2 aspect-[200/112] w-full">
+      <svg
+        viewBox="0 0 200 112"
+        class="absolute inset-0 size-full overflow-visible"
+        aria-hidden="true"
+      >
+        <path
+          d="M 12 104 A 88 88 0 0 1 188 104"
+          pathLength="1"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.5"
+          class="text-base-300"
+        />
+        <path
+          data-role="arc-progress"
+          d="M 12 104 A 88 88 0 0 1 188 104"
+          pathLength="1"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-dasharray="0 1"
+          class="text-primary"
+        />
+        <circle
+          :for={{key, _label, _icon} <- @prayers}
+          data-marker={key}
+          r="2.5"
+          cx="12"
+          cy="104"
+          stroke-width="1.5"
+          class="fill-base-100 stroke-base-content/30 transition-colors duration-500 data-[past]:fill-base-content/25 data-[past]:stroke-transparent data-[active]:fill-primary data-[active]:stroke-primary"
+        />
+      </svg>
+      <span
+        :for={{key, label, icon} <- @prayers}
+        data-marker-icon={key}
+        data-label={label}
+        class="group/mark pointer-events-none absolute -translate-x-1/2 -translate-y-1/2"
+        style="left: 6%; top: 93%"
+      >
+        <span class="block translate-y-2 scale-[0.7] text-base-content/45 opacity-0 transition duration-500 ease-out group-data-[shown]/mark:translate-y-0 group-data-[shown]/mark:opacity-100 group-data-[past]/mark:text-base-content/25 group-data-[active]/mark:scale-[0.85] group-data-[active]/mark:text-primary">
+          <.prayer_icon type={icon} />
+        </span>
+      </span>
+      <span
+        data-role="sun"
+        class="absolute z-10 grid size-6 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full bg-base-100 shadow-md ring-1 ring-base-300"
+        style="left: 6%; top: 93%"
+      >
+        <.icon name="hero-sun-solid" class="size-4 text-primary group-data-[night]/prayer:hidden" />
+        <.icon
+          name="hero-moon-solid"
+          class="hidden size-3.5 text-base-content/70 group-data-[night]/prayer:block"
+        />
+      </span>
+      <div class="absolute inset-x-0 bottom-0 text-center">
+        <p data-role="countdown" class="text-3xl font-bold tracking-tight tabular-nums">
+          --:--:--
+        </p>
+        <p
+          data-role="until"
+          data-template={gettext("until %{prayer}", prayer: "%{prayer}")}
+          class="text-[11px] text-base-content/60"
+        />
+        <p data-role="next-at" class="text-xs font-semibold tabular-nums text-base-content/60" />
+      </div>
     </div>
     """
   end

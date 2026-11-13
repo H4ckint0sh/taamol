@@ -16,22 +16,13 @@
   padding-right: 1rem;
 }
 
-.form-control-icon > [data-field-input] {
-  padding-left: 3rem;
-}
-
-.form-control-icon:dir(rtl) > [data-field-input] {
-  padding-left: 1rem;
-  padding-right: 3rem;
-}
-
 .form-control > select[data-field-input] {
   padding-right: 2.75rem;
 }
 
 .form-control:dir(rtl) > select[data-field-input] {
   padding-left: 2.75rem;
-  padding-right: 3rem;
+  padding-right: 1rem;
 }
 
 .form-control:has([data-number-stepper][data-ready="true"]) > input[type="number"] {
@@ -41,7 +32,7 @@
 
 .form-control:dir(rtl):has([data-number-stepper][data-ready="true"]) > input[type="number"] {
   padding-left: 5.25rem;
-  padding-right: 3rem;
+  padding-right: 1rem;
 }
 
 .form-control:has([data-number-stepper][data-ready="true"]) > input[type="number"]::-webkit-inner-spin-button,

@@ -26,6 +26,15 @@ msgstr "måste vara efter öppningstiden"
 msgid "must fit within opening hours"
 msgstr "måste rymmas inom öppettiderna"
 
+msgid "must be after the start when reserving a resource"
+msgstr "måste vara efter starttiden när en resurs reserveras"
+
+msgid "conflicts with a confirmed booking or another event"
+msgstr "krockar med en bekräftad bokning eller ett annat evenemang"
+
+msgid "conflicts with a booking or event"
+msgstr "krockar med en bokning eller ett evenemang"
+
 msgid "must be an angle or minutes, for example 18 or 90 min"
 msgstr "måste vara en vinkel eller minuter, till exempel 18 eller 90 min"
 

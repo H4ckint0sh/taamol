@@ -17,6 +17,7 @@ defmodule Taamol.Events.Event do
     field :location, :string
     field :kind, Ecto.Enum, values: @kinds, default: :community
     field :all_day, :boolean, default: false
+    field :booking_resource, Ecto.Enum, values: [:premises, :imam]
     field :starts_at, :naive_datetime
     field :ends_at, :naive_datetime
     belongs_to :creator, Taamol.Accounts.User
@@ -30,12 +31,45 @@ defmodule Taamol.Events.Event do
   @doc false
   def changeset(event, attrs) do
     event
-    |> cast(attrs, [:title, :description, :location, :kind, :all_day, :starts_at, :ends_at])
+    |> cast(attrs, [
+      :title,
+      :description,
+      :location,
+      :kind,
+      :all_day,
+      :starts_at,
+      :ends_at,
+      :booking_resource
+    ])
     |> validate_required([:title, :kind, :starts_at])
     |> validate_length(:title, max: 150)
     |> validate_length(:location, max: 255)
     |> validate_length(:description, max: 5000)
     |> validate_ends_after_start()
+    |> validate_resource_interval()
+  end
+
+  def booking_interval(%__MODULE__{booking_resource: nil}), do: nil
+
+  def booking_interval(%__MODULE__{all_day: true} = event) do
+    first = NaiveDateTime.to_date(event.starts_at)
+    last = NaiveDateTime.to_date(event.ends_at || event.starts_at)
+    {NaiveDateTime.new!(first, ~T[00:00:00]), NaiveDateTime.new!(Date.add(last, 1), ~T[00:00:00])}
+  end
+
+  def booking_interval(%__MODULE__{} = event), do: {event.starts_at, event.ends_at}
+
+  defp validate_resource_interval(changeset) do
+    resource = get_field(changeset, :booking_resource)
+    starts_at = get_field(changeset, :starts_at)
+    ends_at = get_field(changeset, :ends_at)
+
+    if resource && !get_field(changeset, :all_day) && starts_at &&
+         (is_nil(ends_at) || NaiveDateTime.compare(ends_at, starts_at) != :gt) do
+      add_error(changeset, :ends_at, "must be after the start when reserving a resource")
+    else
+      changeset
+    end
   end
 
   defp validate_ends_after_start(changeset) do

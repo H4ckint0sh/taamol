@@ -35,6 +35,11 @@ export const NumberStepper = {
     this.el.dataset.ready = "true"
   },
 
+  updated() {
+    this.el.dataset.ready = "true"
+    this.syncDisabled()
+  },
+
   destroyed() {
     this.observer.disconnect()
     this.el.removeEventListener("click", this.onClick)

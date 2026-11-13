@@ -78,18 +78,7 @@ defmodule TaamolWeb.DashboardLive.Overview do
       <Layouts.dashboard_heading
         title={gettext("Welcome, %{name}", name: @current_scope.user.name)}
         subtitle={gettext("Here is what is happening in the community.")}
-      >
-        <:actions>
-          <.link
-            :if={@can_manage_news?}
-            id="overview-new-article"
-            navigate={~p"/dashboard/news/new"}
-            class="inline-flex items-center gap-1.5 rounded-xl bg-primary px-4 py-2 text-sm font-semibold text-primary-content transition hover:opacity-85"
-          >
-            <.icon name="hero-plus" class="size-4" />{gettext("New article")}
-          </.link>
-        </:actions>
-      </Layouts.dashboard_heading>
+      />
 
       <div :if={@stats?} id="statistics" class="space-y-6">
         <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">

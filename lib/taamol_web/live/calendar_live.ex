@@ -38,7 +38,13 @@ defmodule TaamolWeb.CalendarLive do
      )}
   end
 
-  defp handle_calendar_info(:events_changed, socket), do: {:halt, refresh_events(socket)}
+  defp handle_calendar_info(:events_changed, socket) do
+    {:halt,
+     socket
+     |> assign_availability()
+     |> refresh_booking_selection()
+     |> refresh_events()}
+  end
 
   defp handle_calendar_info(:booking_availability_changed, socket) do
     socket =
@@ -73,6 +79,15 @@ defmodule TaamolWeb.CalendarLive do
   defp handle_calendar_info(_message, socket), do: {:cont, socket}
 
   @impl true
+  def handle_params(%{"open" => "1"}, _uri, %{assigns: %{current_scope: nil}} = socket) do
+    require_booking_login(socket)
+  end
+
+  def handle_params(%{"slot" => slot}, _uri, %{assigns: %{current_scope: nil}} = socket)
+      when is_binary(slot) do
+    require_booking_login(socket)
+  end
+
   def handle_params(params, _uri, socket) do
     today = socket.assigns.today
     selected = parse_date(params["date"])
@@ -106,6 +121,13 @@ defmodule TaamolWeb.CalendarLive do
       |> assign_booking(params)
 
     {:noreply, socket}
+  end
+
+  defp require_booking_login(socket) do
+    {:noreply,
+     socket
+     |> put_flash(:error, gettext("You must log in to access this page."))
+     |> redirect(to: ~p"/users/log-in")}
   end
 
   defp refresh_events(socket) do
@@ -253,6 +275,13 @@ defmodule TaamolWeb.CalendarLive do
      )}
   end
 
+  def handle_event("request", _params, %{assigns: %{current_scope: nil}} = socket) do
+    {:noreply,
+     socket
+     |> put_flash(:error, gettext("You must log in to access this page."))
+     |> push_navigate(to: ~p"/users/log-in")}
+  end
+
   def handle_event("request", %{"booking" => params} = submitted, socket) do
     %{current_scope: scope, selected: selected} = socket.assigns
     service = Enum.find(socket.assigns.services, &(&1.id == submitted["service"]))
@@ -266,7 +295,6 @@ defmodule TaamolWeb.CalendarLive do
 
     result =
       cond do
-        is_nil(scope) -> {:error, :forbidden}
         is_nil(slot) -> {:error, :unavailable}
         true -> Bookings.request_booking(scope, service, slot.starts_at, params)
       end
@@ -389,19 +417,19 @@ defmodule TaamolWeb.CalendarLive do
                   <.link
                     id="calendar-today"
                     patch={cal_path(nil, @today, @today)}
-                    class="inline-flex h-8 items-center gap-2 rounded-full border border-base-300 bg-base-100 pe-3 ps-1 text-xs font-semibold transition hover:border-primary/40 hover:bg-base-200 active:scale-95 focus-visible:outline-2 focus-visible:outline-primary"
+                    class="inline-flex h-10 items-center gap-2 rounded-full border border-base-300 bg-base-100 pe-3 ps-1 text-xs font-semibold transition hover:border-primary/40 hover:bg-base-200 active:scale-95 focus-visible:outline-2 focus-visible:outline-primary sm:h-8"
                   >
                     <span class="grid size-6 place-items-center rounded-full bg-primary/10 text-primary">
                       <.icon name="hero-calendar-days-micro" class="size-4" />
                     </span>
                     {gettext("Today")}
                   </.link>
-                  <div class="inline-flex h-8 items-center gap-1 rounded-full bg-neutral-200 p-1 shadow-inner ring-1 ring-inset ring-black/5 dark:bg-neutral-800 dark:ring-white/10">
+                  <div class="inline-flex h-10 items-center gap-1 rounded-full bg-neutral-200 p-1 shadow-inner ring-1 ring-inset ring-black/5 dark:bg-neutral-800 dark:ring-white/10 sm:h-8">
                     <.link
                       id="calendar-prev"
                       patch={cal_path(nil, shift_month(@month, -1), nil)}
                       aria-label={gettext("Previous month")}
-                      class="grid size-6 place-items-center rounded-full bg-white text-neutral-800 shadow-md transition hover:bg-primary/10 active:scale-95 focus-visible:outline-2 focus-visible:outline-primary"
+                      class="grid size-8 place-items-center rounded-full bg-white text-neutral-800 shadow-md transition hover:bg-primary/10 active:scale-95 focus-visible:outline-2 focus-visible:outline-primary sm:size-6"
                     >
                       <.icon name="hero-chevron-left" class="size-4 rtl:rotate-180" />
                     </.link>
@@ -409,7 +437,7 @@ defmodule TaamolWeb.CalendarLive do
                       id="calendar-next"
                       patch={cal_path(nil, shift_month(@month, 1), nil)}
                       aria-label={gettext("Next month")}
-                      class="grid size-6 place-items-center rounded-full bg-white text-neutral-800 shadow-md transition hover:bg-primary/10 active:scale-95 focus-visible:outline-2 focus-visible:outline-primary"
+                      class="grid size-8 place-items-center rounded-full bg-white text-neutral-800 shadow-md transition hover:bg-primary/10 active:scale-95 focus-visible:outline-2 focus-visible:outline-primary sm:size-6"
                     >
                       <.icon name="hero-chevron-right" class="size-4 rtl:rotate-180" />
                     </.link>
@@ -430,10 +458,26 @@ defmodule TaamolWeb.CalendarLive do
               <p id="availability-help" class="mt-2 text-xs leading-relaxed text-base-content/55">
                 {gettext("A day is available when at least one service has a free time.")}
               </p>
+              <div
+                id="mobile-availability-legend"
+                class="mt-3 flex flex-wrap gap-x-4 gap-y-1 text-[11px] text-base-content/65 sm:hidden"
+              >
+                <span class="inline-flex items-center gap-1.5">
+                  <span aria-hidden="true" class="h-1 w-4 rounded-full bg-emerald-600" />
+                  {gettext("Bookable")}
+                </span>
+                <span class="inline-flex items-center gap-1.5">
+                  <span aria-hidden="true" class="h-1 w-4 rounded-full bg-base-content/20" />
+                  {gettext("Not bookable")}
+                </span>
+              </div>
             </header>
             <div class="grid grid-cols-7 border-b border-base-300 bg-base-200/50 text-center text-[11px] font-semibold uppercase tracking-wider text-base-content/55">
               <div :for={weekday <- weekday_order()} class="truncate px-0.5 py-2.5">
-                {weekday_short(weekday)}
+                <span aria-hidden="true" class="sm:hidden">
+                  {String.slice(weekday_short(weekday), 0, 2)}
+                </span>
+                <span class="sr-only sm:not-sr-only">{weekday_short(weekday)}</span>
               </div>
             </div>
 
@@ -458,6 +502,7 @@ defmodule TaamolWeb.CalendarLive do
                 }
                 entries={Map.get(@by_day, day, [])}
                 availability={Map.get(@availability, day, false)}
+                signed_in={not is_nil(@current_scope)}
               />
             </div>
           </div>
@@ -469,6 +514,55 @@ defmodule TaamolWeb.CalendarLive do
               class="rounded-2xl border border-base-300 bg-base-100 p-4"
             >
               <.day_heading selected={@selected} today={@today} />
+
+              <div id="selected-day-availability" class="mt-4 sm:hidden">
+                <div
+                  :if={Map.get(@availability, @selected, false)}
+                  class="flex items-center justify-between gap-3 rounded-xl bg-base-200/70 px-4 py-2"
+                >
+                  <span class="inline-flex items-center gap-2 text-sm font-medium text-base-content/70">
+                    <span aria-hidden="true" class="h-1 w-4 rounded-full bg-emerald-600" />
+                    {gettext("Bookable")}
+                  </span>
+                  <.link
+                    id="selected-day-book"
+                    patch={
+                      if(@current_scope,
+                        do: cal_path(@service, @month, @selected, open: true)
+                      )
+                    }
+                    navigate={if(!@current_scope, do: ~p"/users/log-in")}
+                    aria-label={
+                      if(@current_scope, do: gettext("Book"), else: gettext("Log in to book"))
+                    }
+                    title={if(@current_scope, do: gettext("Book"), else: gettext("Log in to book"))}
+                    class={[
+                      "inline-flex size-11 shrink-0 items-center justify-center rounded-xl transition active:scale-95 focus-visible:outline-2 focus-visible:outline-offset-2",
+                      @current_scope &&
+                        "bg-emerald-600 text-white hover:bg-emerald-700 focus-visible:outline-emerald-700",
+                      !@current_scope &&
+                        "bg-primary text-primary-content hover:bg-primary/85 focus-visible:outline-primary"
+                    ]}
+                  >
+                    <.icon
+                      name={
+                        if(@current_scope,
+                          do: "hero-bookmark-square",
+                          else: "hero-arrow-right-end-on-rectangle"
+                        )
+                      }
+                      class="size-5"
+                    />
+                  </.link>
+                </div>
+                <p
+                  :if={!Map.get(@availability, @selected, false)}
+                  id="selected-day-unavailable"
+                  class="rounded-xl bg-base-200/70 px-4 py-3 text-sm text-base-content/65"
+                >
+                  {gettext("Not bookable")}
+                </p>
+              </div>
 
               <p :if={@selected_entries == []} class="mt-4 text-sm text-base-content/55">
                 {gettext("Nothing on this day.")}
@@ -733,7 +827,6 @@ defmodule TaamolWeb.CalendarLive do
                 id="booking-service"
                 name="service"
                 label={gettext("Service")}
-                icon="hero-squares-2x2"
                 value={@service && @service.id}
                 prompt={gettext("Choose a service")}
                 options={Enum.map(@services, &{service_name(&1), &1.id})}
@@ -760,7 +853,6 @@ defmodule TaamolWeb.CalendarLive do
                 id="booking-time"
                 name="slot"
                 label={gettext("Time")}
-                icon="hero-clock"
                 value={@slot && Calendar.strftime(@slot.starts_at, "%H:%M")}
                 prompt={gettext("Choose a time")}
                 options={
@@ -782,7 +874,6 @@ defmodule TaamolWeb.CalendarLive do
                   field={@request_form[:location_type]}
                   type="select"
                   label={gettext("Where will the ceremony take place?")}
-                  icon="hero-map-pin"
                   prompt={gettext("Choose a location")}
                   options={[
                     {gettext("Association premises"), "association"},
@@ -798,7 +889,6 @@ defmodule TaamolWeb.CalendarLive do
                   field={@request_form[:address]}
                   type="text"
                   label={gettext("Address")}
-                  icon="hero-map-pin"
                   dir="auto"
                   maxlength="255"
                   required
@@ -846,6 +936,7 @@ defmodule TaamolWeb.CalendarLive do
                 <div id="booking-login" class="mt-3 rounded-xl bg-base-200/70 p-3 text-sm">
                   <p class="text-base-content/70">{gettext("Log in to send a booking request.")}</p>
                   <.link
+                    id="booking-log-in"
                     navigate={~p"/users/log-in"}
                     class="mt-2 inline-block font-semibold text-primary hover:underline"
                   >
@@ -869,6 +960,7 @@ defmodule TaamolWeb.CalendarLive do
   attr :book_path, :string, required: true
   attr :entries, :list, default: []
   attr :availability, :boolean, required: true
+  attr :signed_in, :boolean, required: true
 
   defp day_cell(assigns) do
     {_, hijri_month, hijri_day} = Events.hijri(assigns.day)
@@ -876,7 +968,7 @@ defmodule TaamolWeb.CalendarLive do
 
     ~H"""
     <div class={[
-      "relative flex min-h-16 min-w-0 flex-col gap-1 border-e border-base-300 p-1.5 text-start transition last:border-e-0 hover:bg-base-200/60 sm:min-h-24 sm:p-2 lg:min-h-28",
+      "relative flex min-h-16 min-w-0 flex-col gap-1 border-e border-base-300 p-0.5 text-start transition last:border-e-0 hover:bg-base-200/60 sm:min-h-24 sm:p-2 lg:min-h-28",
       !@in_month && "bg-base-200/30 text-base-content/40",
       @selected && "bg-primary/5 ring-2 ring-inset ring-primary/60"
     ]}>
@@ -886,14 +978,17 @@ defmodule TaamolWeb.CalendarLive do
         aria-current={if(@selected, do: "date")}
         class="flex min-w-0 flex-1 flex-col gap-1 rounded-sm focus-visible:outline-2 focus-visible:outline-primary"
       >
-        <span class="flex items-start justify-between gap-1">
-          <span class={[
-            "grid size-6 place-items-center rounded-full text-xs font-semibold tabular-nums sm:size-7 sm:text-sm",
-            @today && "bg-primary text-primary-content"
-          ]}>
+        <span class="flex min-w-0 items-start justify-between gap-0 sm:gap-1">
+          <span
+            class={[
+              "grid size-6 shrink-0 place-items-center rounded-full text-xs font-semibold tabular-nums sm:size-7 sm:text-sm",
+              @today && "bg-primary text-primary-content"
+            ]}
+            id={"day-number-#{Date.to_iso8601(@day)}"}
+          >
             {@day.day}
           </span>
-          <span class="pt-0.5 text-[10px] leading-tight tabular-nums text-base-content/45 sm:text-[11px]">
+          <span class="min-w-0 pt-0.5 text-[9px] leading-tight tabular-nums text-base-content/45 sm:text-[11px]">
             <span :if={@hijri_day == 1} class="hidden font-semibold text-primary/80 lg:inline">
               {hijri_month_name(@hijri_month)}
             </span>
@@ -920,16 +1015,40 @@ defmodule TaamolWeb.CalendarLive do
         <span :if={@entries != []} class="mt-auto flex flex-wrap gap-1 sm:hidden">
           <.kind_dot_badge :for={entry <- Enum.take(@entries, 4)} kind={entry.kind} class="size-1.5" />
         </span>
+        <span
+          id={"day-status-#{Date.to_iso8601(@day)}"}
+          class={[
+            "mt-auto h-1 w-full rounded-full sm:hidden",
+            if(@availability, do: "bg-emerald-600", else: "bg-base-content/20")
+          ]}
+        >
+          <span class="sr-only">{if(@availability,
+            do: gettext("Bookable"),
+            else: gettext("Not bookable")
+          )}</span>
+        </span>
       </.link>
-      <div id={"day-availability-#{Date.to_iso8601(@day)}"} class="mt-auto">
+      <div id={"day-availability-#{Date.to_iso8601(@day)}"} class="mt-auto hidden sm:block">
         <.link
           :if={@availability}
           id={"book-day-#{Date.to_iso8601(@day)}"}
-          patch={@book_path}
-          aria-label={gettext("Book %{date}", date: Date.to_iso8601(@day))}
-          class="inline-flex max-w-full items-center justify-center rounded-full bg-emerald-600 px-2 py-1 text-[10px] font-semibold leading-none text-white transition hover:bg-emerald-700 active:scale-95 focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-emerald-700 sm:px-3 sm:text-xs"
+          patch={if(@signed_in, do: @book_path)}
+          navigate={if(!@signed_in, do: ~p"/users/log-in")}
+          aria-label={
+            if(@signed_in,
+              do: gettext("Book %{date}", date: Date.to_iso8601(@day)),
+              else: "#{gettext("Log in to send a booking request.")} #{Date.to_iso8601(@day)}"
+            )
+          }
+          class={[
+            "inline-flex max-w-full items-center justify-center rounded-full px-2 py-1 text-[10px] font-semibold leading-none transition active:scale-95 focus-visible:outline-2 focus-visible:outline-offset-1 sm:px-3 sm:text-xs",
+            @signed_in &&
+              "bg-emerald-600 text-white hover:bg-emerald-700 focus-visible:outline-emerald-700",
+            !@signed_in &&
+              "bg-primary text-primary-content hover:bg-primary/85 focus-visible:outline-primary"
+          ]}
         >
-          {gettext("Book")}
+          {if(@signed_in, do: gettext("Book"), else: gettext("Log in"))}
         </.link>
         <span
           :if={!@availability}

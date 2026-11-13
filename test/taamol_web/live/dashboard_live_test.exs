@@ -57,6 +57,7 @@ defmodule TaamolWeb.DashboardLiveTest do
 
       {:ok, view, _html} = conn |> log_in_user(admin) |> live(~p"/dashboard")
       assert has_element?(view, "#statistics")
+      refute has_element?(view, "#overview-new-article")
       assert has_element?(view, "#stat-views [data-value]", "40")
       assert has_element?(view, "#views-chart", "World")
       assert has_element?(view, "#signups-chart")

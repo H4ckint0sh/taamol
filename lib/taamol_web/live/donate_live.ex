@@ -166,7 +166,6 @@ defmodule TaamolWeb.DonateLive do
                     field={@custom_form[:amount]}
                     type="number"
                     id="custom-amount-input"
-                    icon="hero-banknotes"
                     label={"#{gettext("Or another amount")} (#{gettext("kr")})"}
                     min="1"
                     max="100000"

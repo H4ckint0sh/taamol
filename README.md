@@ -90,10 +90,23 @@ administrators' dashboard live. Calendar availability changes when a booking
 is confirmed or cancelled; pending requests do not reserve a time. The calendar
 shows holidays, events and visible bookings alongside each day's booking status;
 select a day to see its activities or use its Book button to request a time.
+Visitors can view availability and are directed to log in before booking.
+On mobile, availability indicators appear in the grid and the booking action
+appears below it for the selected day.
 Imam bookings are visible on the calendar only to their owner and
 administrators. They require a venue and, outside the association's
 premises, an address. The celebration-hall service is no longer bookable;
 existing requests remain in the booking history.
+
+Administrators can mark an event as reserving the premises or the imam; it
+then blocks overlapping bookings for that resource. Timed events must have an
+end time, while all-day events reserve each covered day. Existing events do
+not reserve a resource unless explicitly marked. Pending requests remain
+non-blocking, and approval rechecks availability. Booking notice uses
+Stockholm time, including daylight saving changes; intervals with nonexistent
+or ambiguous local times or altered elapsed durations are not offered.
+Administrators can view the audit history of new
+booking actions, including the actor and time.
 
 ## Article comments
 

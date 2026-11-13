@@ -4,17 +4,16 @@ defmodule Taamol.Bookings do
   calendar.
 
   Availability is "smart": a time is free when it is within opening hours, far
-  enough ahead, and doesn't overlap a **confirmed** booking of the same
-  resource (the premises, the imam; "other" services only clash with
-  themselves). Pending requests don't block a time; an administrator decides:
-  accept, offer another time, or decline.
+  enough ahead, and doesn't overlap a confirmed booking or a resource-reserving
+  event. Pending requests don't block a time; an administrator decides.
   """
 
   import Ecto.Query
 
   alias Taamol.Accounts
   alias Taamol.Accounts.{Scope, User}
-  alias Taamol.Bookings.{Booking, Notifier, Service}
+  alias Taamol.Bookings.{Audit, Booking, Lock, Notifier, Service, Timezone}
+  alias Taamol.Events.Event
   alias Taamol.Repo
 
   @opens ~T[09:00:00]
@@ -82,12 +81,45 @@ defmodule Taamol.Bookings do
   def change_service(%Service{} = service, attrs \\ %{}), do: Service.changeset(service, attrs)
 
   def create_service(scope, attrs) do
-    as_admin(scope, fn _ -> %Service{} |> Service.changeset(attrs) |> Repo.insert() end)
+    as_admin(scope, fn _ ->
+      Repo.transact(fn ->
+        Lock.acquire()
+        %Service{} |> Service.changeset(attrs) |> Repo.insert()
+      end)
+    end)
     |> notify_availability()
   end
 
   def update_service(scope, %Service{} = service, attrs) do
-    as_admin(scope, fn _ -> service |> Service.changeset(attrs) |> Repo.update() end)
+    as_admin(scope, fn _ ->
+      Repo.transact(fn ->
+        Lock.acquire()
+        service = Repo.get!(Service, service.id)
+        changeset = Service.changeset(service, attrs)
+
+        with {:ok, updated} <- Repo.update(changeset) do
+          resource_changed? = updated.resource != service.resource
+
+          conflict? =
+            resource_changed? and
+              from(b in Booking, where: b.service_id == ^updated.id and b.status == :confirmed)
+              |> Repo.all()
+              |> Enum.any?(fn booking -> conflicts(booking) != [] end)
+
+          if conflict? do
+            {:error,
+             Ecto.Changeset.add_error(changeset, :resource, "conflicts with a booking or event")}
+          else
+            if resource_changed? and updated.resource == :imam do
+              from(b in Booking, where: b.service_id == ^updated.id)
+              |> Repo.update_all(set: [private_calendar: true])
+            end
+
+            {:ok, updated}
+          end
+        end
+      end)
+    end)
     |> notify_availability()
   end
 
@@ -98,8 +130,7 @@ defmodule Taamol.Bookings do
 
   @doc "Free start times for a service on a date: `[%{starts_at:, ends_at:}]`."
   def available_slots(%Service{} = service, %Date{} = date) do
-    blocking = blocking_bookings(service, date, date)
-    slots_for_day(service, date, blocking, now())
+    availability_data(service, date, date)[date].slots
   end
 
   @doc """
@@ -107,12 +138,33 @@ defmodule Taamol.Bookings do
   `%{date => %{free: n, total: n}}`. Closed or past days have `total: 0`.
   """
   def availability(%Service{} = service, %Date{} = from, %Date{} = to) do
-    blocking = blocking_bookings(service, from, to)
-    now = now()
+    Map.new(availability_data(service, from, to), fn {date, data} ->
+      {date, %{free: length(data.slots), total: data.total}}
+    end)
+  end
 
-    Map.new(Date.range(from, to), fn date ->
-      total = if bookable_day?(date, now), do: length(day_starts(service, date)), else: 0
-      {date, %{free: length(slots_for_day(service, date, blocking, now)), total: total}}
+  defp availability_data(service, from, to) do
+    utc_now = NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second)
+    local_now = Timezone.local(utc_now)
+    earliest = NaiveDateTime.add(utc_now, @min_notice_hours * 3600)
+    earliest_local = Timezone.local(earliest)
+    latest = Date.add(NaiveDateTime.to_date(local_now), @max_days_ahead)
+    dates = Date.range(from, to)
+    starts = Map.new(dates, fn date -> {date, day_starts(service, date)} end)
+
+    eligible =
+      starts
+      |> Map.values()
+      |> List.flatten()
+      |> Timezone.eligible(earliest, service.duration_minutes * 60)
+
+    blocking = blocking_bookings(service, from, to) ++ blocking_events(service.resource, from, to)
+
+    Map.new(dates, fn date ->
+      day_starts = Map.fetch!(starts, date)
+      total = if bookable_day?(date, earliest_local, latest), do: length(day_starts), else: 0
+      slots = slots_for_day(service, date, day_starts, blocking, eligible, latest)
+      {date, %{slots: slots, total: total}}
     end)
   end
 
@@ -129,16 +181,11 @@ defmodule Taamol.Bookings do
     )
   end
 
-  defp slots_for_day(service, date, blocking, now) do
-    earliest = NaiveDateTime.add(now, @min_notice_hours * 3600)
-
-    latest =
-      NaiveDateTime.new!(Date.add(NaiveDateTime.to_date(now), @max_days_ahead), ~T[23:59:59])
-
-    for starts_at <- day_starts(service, date),
+  defp slots_for_day(service, date, starts, blocking, eligible, latest) do
+    for starts_at <- starts,
         ends_at = NaiveDateTime.add(starts_at, service.duration_minutes * 60),
-        NaiveDateTime.compare(starts_at, earliest) != :lt,
-        NaiveDateTime.compare(starts_at, latest) != :gt,
+        Date.compare(date, latest) != :gt,
+        MapSet.member?(eligible, starts_at),
         not Enum.any?(blocking, &overlaps?(&1, starts_at, ends_at)) do
       %{starts_at: starts_at, ends_at: ends_at}
     end
@@ -162,9 +209,9 @@ defmodule Taamol.Bookings do
     end
   end
 
-  defp bookable_day?(date, now) do
-    Date.compare(date, NaiveDateTime.to_date(NaiveDateTime.add(now, @min_notice_hours * 3600))) !=
-      :lt
+  defp bookable_day?(date, earliest_local, latest) do
+    Date.compare(date, NaiveDateTime.to_date(earliest_local)) != :lt and
+      Date.compare(date, latest) != :gt
   end
 
   defp overlaps?(%{starts_at: s, ends_at: e}, starts_at, ends_at),
@@ -190,19 +237,54 @@ defmodule Taamol.Bookings do
   defp same_resource(query, %Service{resource: resource}),
     do: where(query, [_b, s], s.resource == ^resource)
 
-  @doc "Confirmed bookings that overlap a time (for the admin's clash warning)."
+  defp blocking_events(:other, _from, _to), do: []
+
+  defp blocking_events(resource, from, to) do
+    from_dt = NaiveDateTime.new!(from, ~T[00:00:00])
+    to_dt = NaiveDateTime.new!(Date.add(to, 1), ~T[00:00:00])
+
+    from(e in Event,
+      where:
+        e.booking_resource == ^resource and e.starts_at < ^to_dt and
+          coalesce(e.ends_at, e.starts_at) >= ^from_dt
+    )
+    |> Repo.all()
+    |> Enum.map(fn event ->
+      {starts_at, ends_at} = Event.booking_interval(event)
+      %{id: event.id, starts_at: starts_at, ends_at: ends_at}
+    end)
+  end
+
+  @doc "Confirmed bookings and resource-reserving events overlapping a time."
   def conflicts(%Booking{} = booking, starts_at \\ nil, ends_at \\ nil) do
     booking = Repo.preload(booking, :service)
     starts_at = starts_at || booking.starts_at
     ends_at = ends_at || booking.ends_at
 
-    booking.service
-    |> blocking_bookings(NaiveDateTime.to_date(starts_at), NaiveDateTime.to_date(ends_at))
-    |> Enum.filter(&(&1.id != booking.id and overlaps?(&1, starts_at, ends_at)))
+    from = NaiveDateTime.to_date(starts_at)
+    to = NaiveDateTime.to_date(ends_at)
+
+    bookings =
+      booking.service
+      |> blocking_bookings(from, to)
+      |> Enum.reject(&(&1.id == booking.id))
+
+    (bookings ++ blocking_events(booking.service.resource, from, to))
+    |> Enum.filter(&overlaps?(&1, starts_at, ends_at))
   end
 
-  # community time; the server runs in UTC, the 24-hour notice absorbs the offset
-  defp now, do: NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second)
+  @doc "Whether a resource-reserving event conflicts with an existing booking or event."
+  def resource_conflict?(resource, starts_at, ends_at, event_id \\ nil) do
+    from = NaiveDateTime.to_date(starts_at)
+    to = NaiveDateTime.to_date(ends_at)
+    service = %Service{resource: resource}
+
+    entries =
+      blocking_bookings(service, from, to) ++
+        Enum.reject(blocking_events(resource, from, to), &(&1.id == event_id))
+
+    Enum.any?(entries, &overlaps?(&1, starts_at, ends_at))
+  end
 
   ## Members
 
@@ -215,40 +297,44 @@ defmodule Taamol.Bookings do
   Administrators are emailed.
   """
   def request_booking(
-        %Scope{user: %User{id: user_id}},
+        %Scope{user: %User{id: user_id}} = scope,
         %Service{} = service,
         %NaiveDateTime{} = starts_at,
         attrs
       ) do
-    service = get_service(service.id)
+    result =
+      Repo.transact(fn ->
+        Lock.acquire()
+        service = get_service(service.id)
 
-    slot =
-      if service && service.active do
-        Enum.find(
-          available_slots(service, NaiveDateTime.to_date(starts_at)),
-          &(&1.starts_at == starts_at)
-        )
-      end
+        slot =
+          if service && service.active do
+            Enum.find(
+              available_slots(service, NaiveDateTime.to_date(starts_at)),
+              &(&1.starts_at == starts_at)
+            )
+          end
 
-    if slot do
-      result =
-        %Booking{
-          user_id: user_id,
-          service_id: service.id,
-          private_calendar: service.resource == :imam,
-          starts_at: slot.starts_at,
-          ends_at: slot.ends_at
-        }
-        |> Booking.request_changeset(attrs, service)
-        |> Repo.insert()
+        if slot do
+          %Booking{
+            user_id: user_id,
+            service_id: service.id,
+            private_calendar: service.resource == :imam,
+            starts_at: slot.starts_at,
+            ends_at: slot.ends_at
+          }
+          |> Booking.request_changeset(attrs, service)
+          |> Repo.insert()
+          |> record_action(scope, "requested")
+        else
+          {:error, :unavailable}
+        end
+      end)
 
-      with {:ok, booking} <- result do
-        booking = Repo.preload(booking, [:service, :user])
-        Notifier.new_request(admin_emails(), booking)
-        notify_bookings({:ok, booking})
-      end
-    else
-      {:error, :unavailable}
+    with {:ok, booking} <- result do
+      booking = Repo.preload(booking, [:service, :user])
+      Notifier.new_request(admin_emails(), booking)
+      notify_bookings({:ok, booking})
     end
   end
 
@@ -268,36 +354,62 @@ defmodule Taamol.Bookings do
 
   @doc "Accepts or declines the other time an administrator offered."
   def respond_to_proposal(
-        %Scope{user: %User{id: user_id}},
+        %Scope{user: %User{id: user_id}} = scope,
         %Booking{status: :proposed, user_id: user_id} = booking,
         :accept
       ) do
-    if conflicts(booking, booking.proposed_starts_at, booking.proposed_ends_at) == [] do
-      booking
-      |> Ecto.Changeset.change(
-        status: :confirmed,
-        starts_at: booking.proposed_starts_at,
-        ends_at: booking.proposed_ends_at,
-        proposed_starts_at: nil,
-        proposed_ends_at: nil
-      )
-      |> Repo.update()
-      |> notify_admins(:accepted_proposal)
-      |> notify_bookings()
-      |> notify_availability()
-    else
-      {:error, :conflict}
-    end
+    mutate_booking(booking, fn current ->
+      cond do
+        current.user_id != user_id or current.status != :proposed ->
+          {:error, :invalid_state}
+
+        conflicts(current, current.proposed_starts_at, current.proposed_ends_at) != [] ->
+          {:error, :conflict}
+
+        not slot_still_valid?(current, current.proposed_starts_at, current.proposed_ends_at) ->
+          {:error, :unavailable}
+
+        true ->
+          details =
+            time_change(
+              current.starts_at,
+              current.ends_at,
+              current.proposed_starts_at,
+              current.proposed_ends_at
+            )
+
+          current
+          |> Ecto.Changeset.change(
+            status: :confirmed,
+            starts_at: current.proposed_starts_at,
+            ends_at: current.proposed_ends_at,
+            proposed_starts_at: nil,
+            proposed_ends_at: nil
+          )
+          |> Repo.update()
+          |> record_action(scope, "proposal_accepted", details)
+      end
+    end)
+    |> notify_admins(:accepted_proposal)
+    |> notify_bookings()
+    |> notify_availability()
   end
 
   def respond_to_proposal(
-        %Scope{user: %User{id: user_id}},
+        %Scope{user: %User{id: user_id}} = scope,
         %Booking{status: :proposed, user_id: user_id} = booking,
         :decline
       ) do
-    booking
-    |> Ecto.Changeset.change(status: :cancelled)
-    |> Repo.update()
+    mutate_booking(booking, fn current ->
+      if current.user_id == user_id and current.status == :proposed do
+        current
+        |> Ecto.Changeset.change(status: :cancelled)
+        |> Repo.update()
+        |> record_action(scope, "proposal_declined")
+      else
+        {:error, :invalid_state}
+      end
+    end)
     |> notify_admins(:declined_proposal)
     |> notify_bookings()
   end
@@ -306,13 +418,20 @@ defmodule Taamol.Bookings do
 
   @doc "Cancels the member's own open booking."
   def cancel_booking(
-        %Scope{user: %User{id: user_id}},
+        %Scope{user: %User{id: user_id}} = scope,
         %Booking{user_id: user_id, status: status} = booking
       )
       when status in [:pending, :proposed, :confirmed] do
-    booking
-    |> Ecto.Changeset.change(status: :cancelled)
-    |> Repo.update()
+    mutate_booking(booking, fn current ->
+      if current.user_id == user_id and current.status in [:pending, :proposed, :confirmed] do
+        current
+        |> Ecto.Changeset.change(status: :cancelled)
+        |> Repo.update()
+        |> record_action(scope, "cancelled")
+      else
+        {:error, :invalid_state}
+      end
+    end)
     |> notify_admins(:cancelled)
     |> notify_bookings()
     |> notify_availability()
@@ -376,22 +495,33 @@ defmodule Taamol.Bookings do
   def accept_booking(scope, %Booking{status: status} = booking, message)
       when status in [:pending, :proposed] do
     as_admin(scope, fn admin ->
-      if conflicts(booking) == [] do
-        booking
-        |> Ecto.Changeset.change(
-          decided(admin,
-            status: :confirmed,
-            admin_message: blank_to_nil(message),
-            proposed_starts_at: nil,
-            proposed_ends_at: nil
-          )
-        )
-        |> Repo.update()
-        |> notify_member(:confirmed)
-      else
-        {:error, :conflict}
-      end
+      mutate_booking(booking, fn current ->
+        cond do
+          current.status not in [:pending, :proposed] ->
+            {:error, :invalid_state}
+
+          conflicts(current) != [] ->
+            {:error, :conflict}
+
+          not slot_still_valid?(current, current.starts_at, current.ends_at) ->
+            {:error, :unavailable}
+
+          true ->
+            current
+            |> Ecto.Changeset.change(
+              decided(admin,
+                status: :confirmed,
+                admin_message: blank_to_nil(message),
+                proposed_starts_at: nil,
+                proposed_ends_at: nil
+              )
+            )
+            |> Repo.update()
+            |> record_action(scope, "confirmed")
+        end
+      end)
     end)
+    |> notify_member(:confirmed)
     |> notify_bookings()
     |> notify_availability()
   end
@@ -409,33 +539,40 @@ defmodule Taamol.Bookings do
       )
       when status in [:pending, :proposed] do
     as_admin(scope, fn admin ->
-      booking = Repo.preload(booking, :service, force: true)
-      ends_at = NaiveDateTime.add(starts_at, booking.service.duration_minutes * 60)
+      mutate_booking(booking, fn current ->
+        current = Repo.preload(current, :service)
+        ends_at = NaiveDateTime.add(starts_at, current.service.duration_minutes * 60)
 
-      cond do
-        conflicts(booking, starts_at, ends_at) != [] ->
-          {:error, :conflict}
+        cond do
+          current.status not in [:pending, :proposed] ->
+            {:error, :invalid_state}
 
-        not Enum.any?(
-          available_slots(booking.service, NaiveDateTime.to_date(starts_at)),
-          &(&1.starts_at == starts_at)
-        ) ->
-          {:error, :unavailable}
+          conflicts(current, starts_at, ends_at) != [] ->
+            {:error, :conflict}
 
-        true ->
-          booking
-          |> Ecto.Changeset.change(
-            decided(admin,
-              status: :proposed,
-              proposed_starts_at: starts_at,
-              proposed_ends_at: ends_at,
-              admin_message: blank_to_nil(message)
+          not slot_available?(current, starts_at, ends_at) ->
+            {:error, :unavailable}
+
+          true ->
+            current
+            |> Ecto.Changeset.change(
+              decided(admin,
+                status: :proposed,
+                proposed_starts_at: starts_at,
+                proposed_ends_at: ends_at,
+                admin_message: blank_to_nil(message)
+              )
             )
-          )
-          |> Repo.update()
-          |> notify_member(:proposed)
-      end
+            |> Repo.update()
+            |> record_action(
+              scope,
+              "proposed",
+              time_change(current.starts_at, current.ends_at, starts_at, ends_at)
+            )
+        end
+      end)
     end)
+    |> notify_member(:proposed)
     |> notify_bookings()
   end
 
@@ -447,13 +584,20 @@ defmodule Taamol.Bookings do
   def decline_booking(scope, %Booking{status: status} = booking, message)
       when status in [:pending, :proposed, :confirmed] do
     as_admin(scope, fn admin ->
-      booking
-      |> Ecto.Changeset.change(
-        decided(admin, status: :declined, admin_message: blank_to_nil(message))
-      )
-      |> Repo.update()
-      |> notify_member(:declined)
+      mutate_booking(booking, fn current ->
+        if current.status in [:pending, :proposed, :confirmed] do
+          current
+          |> Ecto.Changeset.change(
+            decided(admin, status: :declined, admin_message: blank_to_nil(message))
+          )
+          |> Repo.update()
+          |> record_action(scope, "declined")
+        else
+          {:error, :invalid_state}
+        end
+      end)
     end)
+    |> notify_member(:declined)
     |> notify_bookings()
     |> notify_availability()
   end
@@ -489,6 +633,68 @@ defmodule Taamol.Bookings do
   end
 
   ## Helpers
+
+  defp mutate_booking(booking, fun) do
+    Repo.transact(fn ->
+      Lock.acquire()
+
+      case Repo.get(Booking, booking.id) do
+        nil -> {:error, :not_found}
+        current -> fun.(current)
+      end
+    end)
+  end
+
+  defp record_action(result, scope, action, details \\ %{})
+
+  defp record_action({:ok, booking} = result, scope, action, details) do
+    details =
+      Map.merge(
+        %{
+          starts_at: booking.starts_at,
+          ends_at: booking.ends_at,
+          proposed_starts_at: booking.proposed_starts_at,
+          proposed_ends_at: booking.proposed_ends_at
+        },
+        details
+      )
+
+    Audit.record!(booking, scope, action, details)
+    result
+  end
+
+  defp record_action(error, _scope, _action, _details), do: error
+
+  defp slot_available?(booking, starts_at, ends_at) do
+    service = get_service(booking.service_id)
+
+    service && service.active &&
+      Enum.any?(available_slots(service, NaiveDateTime.to_date(starts_at)), fn slot ->
+        slot.starts_at == starts_at and slot.ends_at == ends_at
+      end)
+  end
+
+  defp slot_still_valid?(booking, starts_at, ends_at) do
+    service = get_service(booking.service_id)
+    utc_now = NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second)
+
+    service && service.active &&
+      ends_at == NaiveDateTime.add(starts_at, service.duration_minutes * 60) &&
+      starts_at in day_starts(service, NaiveDateTime.to_date(starts_at)) &&
+      MapSet.member?(
+        Timezone.eligible([starts_at], utc_now, service.duration_minutes * 60),
+        starts_at
+      )
+  end
+
+  defp time_change(old_start, old_end, new_start, new_end) do
+    %{
+      "old_starts_at" => NaiveDateTime.to_iso8601(old_start),
+      "old_ends_at" => NaiveDateTime.to_iso8601(old_end),
+      "new_starts_at" => NaiveDateTime.to_iso8601(new_start),
+      "new_ends_at" => NaiveDateTime.to_iso8601(new_end)
+    }
+  end
 
   defp decided(admin, changes),
     do: Keyword.merge(changes, decided_by_id: admin.id, decided_at: DateTime.utc_now(:second))

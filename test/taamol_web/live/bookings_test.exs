@@ -5,8 +5,9 @@ defmodule TaamolWeb.BookingsTest do
   import Taamol.AccountsFixtures
 
   alias Taamol.Accounts.Scope
-  alias Taamol.{Bookings, Repo}
-  alias Taamol.Bookings.Service
+  alias Taamol.{Bookings, Events, Repo}
+  alias Taamol.Bookings.{Booking, Service}
+  alias Taamol.Bookings.Audit
 
   setup do
     premises =
@@ -69,6 +70,56 @@ defmodule TaamolWeb.BookingsTest do
                  contact_phone: "0701234567",
                  location_type: "association"
                })
+    end
+
+    test "booking transitions record actors and times, but failed decisions do not", ctx do
+      %{premises: premises, member: member, admin: admin, day: day} = ctx
+      admin_scope = Scope.for_user(admin)
+      member_scope = Scope.for_user(member)
+      booking = request!(member, premises, at(day, ~T[10:00:00]))
+      proposed = at(day, ~T[14:00:00])
+
+      assert {:ok, offered} = Bookings.propose_time(admin_scope, booking, proposed, "Later")
+      assert {:error, :forbidden} = Bookings.respond_to_proposal(member_scope, booking, :accept)
+      assert {:ok, confirmed} = Bookings.respond_to_proposal(member_scope, offered, :accept)
+      assert {:error, :invalid_state} = Bookings.accept_booking(admin_scope, booking)
+      assert {:ok, _} = Bookings.cancel_booking(member_scope, confirmed)
+
+      assert {:ok, [cancelled, accepted, offer, request]} =
+               Audit.list_for_booking(admin_scope, booking)
+
+      assert Enum.map([request, offer, accepted, cancelled], & &1.action) ==
+               ~w(requested proposed proposal_accepted cancelled)
+
+      assert request.actor_id == member.id
+      assert request.actor_email == member.email
+      assert offer.actor_id == admin.id
+      assert offer.details["new_starts_at"] == NaiveDateTime.to_iso8601(proposed)
+      assert accepted.actor_id == member.id
+      assert accepted.details["old_starts_at"] == NaiveDateTime.to_iso8601(booking.starts_at)
+      assert cancelled.details["starts_at"] == NaiveDateTime.to_iso8601(proposed)
+    end
+
+    test "declining a booking or an offered time is recorded separately", ctx do
+      %{premises: premises, member: member, admin: admin, day: day} = ctx
+      admin_scope = Scope.for_user(admin)
+      member_scope = Scope.for_user(member)
+      first = request!(member, premises, at(day, ~T[10:00:00]))
+      assert {:ok, _} = Bookings.decline_booking(admin_scope, first)
+
+      assert {:ok, [%{action: "declined", actor_id: admin_id}, %{action: "requested"}]} =
+               Audit.list_for_booking(admin_scope, first)
+
+      assert admin_id == admin.id
+
+      second = request!(member, premises, at(day, ~T[12:00:00]))
+      assert {:ok, offered} = Bookings.propose_time(admin_scope, second, at(day, ~T[14:00:00]))
+      assert {:ok, _} = Bookings.respond_to_proposal(member_scope, offered, :decline)
+
+      assert {:ok, [%{action: "proposal_declined", actor_id: member_id} | _]} =
+               Audit.list_for_booking(admin_scope, second)
+
+      assert member_id == member.id
     end
 
     test "imam requests require a venue and an address outside the association", ctx do
@@ -184,6 +235,23 @@ defmodule TaamolWeb.BookingsTest do
       assert service.closes_at == ~T[20:00:00]
     end
 
+    test "changing a service resource rejects conflicts and keeps imam bookings private", ctx do
+      %{admin: admin, member: member, premises: premises, imam: imam, day: day} = ctx
+      scope = Scope.for_user(admin)
+      premises_booking = request!(member, premises, at(day, ~T[12:00:00]))
+      imam_booking = request!(member, imam, at(day, ~T[12:00:00]))
+      assert {:ok, _} = Bookings.accept_booking(scope, premises_booking)
+      assert {:ok, confirmed_imam} = Bookings.accept_booking(scope, imam_booking)
+
+      assert {:error, changeset} = Bookings.update_service(scope, premises, %{resource: :imam})
+      assert Keyword.has_key?(changeset.errors, :resource)
+      assert Bookings.get_service(premises.id).resource == :premises
+
+      assert {:ok, _} = Bookings.cancel_booking(Scope.for_user(member), confirmed_imam)
+      assert {:ok, _} = Bookings.update_service(scope, premises, %{resource: :imam})
+      assert Repo.reload!(premises_booking).private_calendar
+    end
+
     test "follows opening hours and needs a day's notice", %{premises: premises, day: day} do
       slots = Bookings.available_slots(premises, day)
       assert hd(slots).starts_at == at(day, ~T[09:00:00])
@@ -222,6 +290,129 @@ defmodule TaamolWeb.BookingsTest do
              )
     end
 
+    test "resource-reserving events block requests and approvals, and cannot clash with bookings",
+         ctx do
+      %{premises: premises, imam: imam, member: member, admin: admin, day: day} = ctx
+      scope = Scope.for_user(admin)
+      pending = request!(member, premises, at(day, ~T[12:00:00]))
+
+      attrs = %{
+        title: "Community event",
+        starts_at: at(day, ~T[12:30:00]),
+        ends_at: at(day, ~T[13:30:00]),
+        booking_resource: :premises
+      }
+
+      assert {:ok, event} = Events.create_event(scope, attrs)
+
+      refute Enum.any?(
+               Bookings.available_slots(premises, day),
+               &(&1.starts_at == pending.starts_at)
+             )
+
+      assert Enum.any?(Bookings.available_slots(imam, day), &(&1.starts_at == pending.starts_at))
+      assert {:error, :conflict} = Bookings.accept_booking(scope, pending)
+
+      assert {:error, :unavailable} =
+               Bookings.request_booking(Scope.for_user(member), premises, pending.starts_at, %{})
+
+      assert {:ok, _} = Events.delete_event(scope, event)
+      assert {:ok, _} = Bookings.accept_booking(scope, pending)
+      assert {:error, changeset} = Events.create_event(scope, attrs)
+      assert Keyword.has_key?(changeset.errors, :booking_resource)
+
+      assert {:ok, _} = Events.create_event(scope, %{attrs | booking_resource: nil})
+    end
+
+    test "all-day events reserve the selected resource for each covered day", ctx do
+      %{premises: premises, imam: imam, admin: admin, day: day} = ctx
+      tomorrow = Date.add(day, 1)
+
+      assert {:ok, event} =
+               Events.create_event(Scope.for_user(admin), %{
+                 title: "All day event",
+                 all_day: true,
+                 starts_at: at(day, ~T[00:00:00]),
+                 ends_at: at(tomorrow, ~T[00:00:00]),
+                 booking_resource: :premises
+               })
+
+      assert Bookings.available_slots(premises, day) == []
+      assert Bookings.available_slots(premises, tomorrow) == []
+      assert Bookings.available_slots(imam, day) != []
+      assert Bookings.available_slots(premises, Date.add(tomorrow, 1)) != []
+
+      assert {:ok, _} =
+               Events.update_event(Scope.for_user(admin), event, %{booking_resource: nil})
+
+      assert Bookings.available_slots(premises, day) != []
+    end
+
+    test "timed resource-reserving events need an ending time", %{admin: admin, day: day} do
+      assert {:error, changeset} =
+               Events.create_event(Scope.for_user(admin), %{
+                 title: "Missing end",
+                 starts_at: at(day, ~T[12:00:00]),
+                 booking_resource: :premises
+               })
+
+      assert Keyword.has_key?(changeset.errors, :ends_at)
+    end
+
+    test "event updates check the current resource even with a stale editor", ctx do
+      %{premises: premises, member: member, admin: admin, day: day} = ctx
+      scope = Scope.for_user(admin)
+      booking = request!(member, premises, at(day, ~T[12:00:00]))
+      assert {:ok, _} = Bookings.accept_booking(scope, booking)
+
+      assert {:ok, stale} =
+               Events.create_event(scope, %{
+                 title: "Later event",
+                 starts_at: at(day, ~T[16:00:00]),
+                 ends_at: at(day, ~T[17:00:00])
+               })
+
+      assert {:ok, _} = Events.update_event(scope, stale, %{booking_resource: :premises})
+
+      assert {:error, changeset} =
+               Events.update_event(scope, stale, %{
+                 starts_at: at(day, ~T[12:30:00]),
+                 ends_at: at(day, ~T[13:30:00])
+               })
+
+      assert Keyword.has_key?(changeset.errors, :booking_resource)
+    end
+
+    test "a valid pending request can still be approved within the notice period", ctx do
+      %{member: member, admin: admin} = ctx
+      local_now = Taamol.Bookings.Timezone.local(NaiveDateTime.utc_now())
+      day = local_now |> NaiveDateTime.to_date() |> Date.add(1)
+
+      service =
+        service_fixture(%{
+          name_sv: "Test service",
+          resource: :other,
+          opens_at: ~T[00:00:00],
+          closes_at: ~T[23:59:00],
+          duration_minutes: 30
+        })
+
+      starts_at = at(day, ~T[00:00:00])
+
+      booking =
+        Repo.insert!(%Booking{
+          user_id: member.id,
+          service_id: service.id,
+          starts_at: starts_at,
+          ends_at: NaiveDateTime.add(starts_at, 30 * 60),
+          contact_name: member.name,
+          contact_phone: "0701234567"
+        })
+
+      assert {:ok, %{status: :confirmed}} =
+               Bookings.accept_booking(Scope.for_user(admin), booking)
+    end
+
     test "requests must be for a free time", %{premises: premises, member: member, day: day} do
       assert {:error, :unavailable} =
                Bookings.request_booking(
@@ -242,8 +433,44 @@ defmodule TaamolWeb.BookingsTest do
   end
 
   describe "booking from the calendar" do
+    test "mobile calendar selects a day before showing its booking action", %{
+      conn: conn,
+      day: day,
+      member: member
+    } do
+      today = Date.utc_today()
+      path = ~p"/calendar?date=#{Date.to_iso8601(day)}"
+      {:ok, guest, _} = live(conn, path)
+
+      assert has_element?(guest, "#mobile-availability-legend.sm\\:hidden", "Bookable")
+      assert has_element?(guest, "#day-status-#{day}.bg-emerald-600", "Bookable")
+
+      assert has_element?(
+               guest,
+               "#selected-day-book[href='/users/log-in'][aria-label='Log in to book'] .hero-arrow-right-end-on-rectangle"
+             )
+
+      guest |> element("#calendar-today") |> render_click()
+      assert has_element?(guest, "#day-number-#{today}.shrink-0.rounded-full.bg-primary")
+      assert has_element?(guest, "#day-status-#{today}", "Not bookable")
+      assert has_element?(guest, "#selected-day-unavailable", "Not bookable")
+      refute has_element?(guest, "#selected-day-book")
+
+      {:ok, member_view, _} = conn |> log_in_user(member) |> live(path)
+
+      assert has_element?(
+               member_view,
+               "#selected-day-book.bg-emerald-600[aria-label='Book'] .hero-bookmark-square"
+             )
+
+      member_view |> element("#selected-day-book") |> render_click()
+      assert has_element?(member_view, "#booking-dialog")
+      assert has_element?(member_view, "#day-cell-#{day}[aria-current=date]")
+    end
+
     test "book button opens the selected day while unavailable dates cannot open a dialog", ctx do
-      %{conn: conn, day: day} = ctx
+      %{conn: conn, day: day, member: member} = ctx
+      conn = log_in_user(conn, member)
       today = Date.utc_today()
       {:ok, view, _} = live(conn, ~p"/calendar?month=#{Calendar.strftime(day, "%Y-%m")}")
 
@@ -498,10 +725,16 @@ defmodule TaamolWeb.BookingsTest do
       assert has_element?(view, "#day-cell-#{Date.utc_today()}[aria-current=date]")
     end
 
-    test "legacy booking links still open the selected time", %{conn: conn, imam: imam, day: day} do
+    test "legacy booking links still open the selected time", %{
+      conn: conn,
+      imam: imam,
+      day: day,
+      member: member
+    } do
       {:ok, view, _} =
-        live(
-          conn,
+        conn
+        |> log_in_user(member)
+        |> live(
           ~p"/calendar?mode=book&service=#{imam.id}&date=#{Date.to_iso8601(day)}&slot=10:00"
         )
 
@@ -549,7 +782,7 @@ defmodule TaamolWeb.BookingsTest do
       assert_received {:email, %{to: [{"", ^admin_email}]}}
     end
 
-    test "guests see free times but must log in to book", %{
+    test "guests see a login button instead of the booking dialog", %{
       conn: conn,
       premises: premises,
       day: day
@@ -560,10 +793,43 @@ defmodule TaamolWeb.BookingsTest do
           ~p"/calendar?service=#{premises.id}&date=#{Date.to_iso8601(day)}&month=#{Calendar.strftime(day, "%Y-%m")}"
         )
 
+      assert has_element?(view, "#book-day-#{day}.bg-primary[href='/users/log-in']", "Log in")
+      refute has_element?(view, "#booking-dialog")
       view |> element("#book-day-#{day}") |> render_click()
-      assert has_element?(view, "#booking-login")
-      assert has_element?(view, "#booking-time option", "09:00")
-      refute has_element?(view, "#send-booking")
+      assert_redirect(view, ~p"/users/log-in")
+    end
+
+    test "guest booking links require login", %{conn: conn, day: day} do
+      for params <- [
+            "date=#{Date.to_iso8601(day)}&open=1",
+            "date=#{Date.to_iso8601(day)}&slot=09:00"
+          ] do
+        assert {:error, {:redirect, %{to: "/users/log-in"}}} =
+                 live(conn, "/calendar?#{params}")
+      end
+    end
+
+    test "guests cannot submit a booking even with a forged event", %{
+      conn: conn,
+      premises: premises,
+      day: day
+    } do
+      attrs = %{"contact_name" => "Guest", "contact_phone" => "0701234567"}
+
+      assert {:error, :forbidden} =
+               Bookings.request_booking(nil, premises, at(day, ~T[09:00:00]), attrs)
+
+      {:ok, view, _} =
+        live(conn, ~p"/calendar?date=#{Date.to_iso8601(day)}")
+
+      render_hook(view, "request", %{
+        "service" => premises.id,
+        "slot" => "09:00",
+        "booking" => attrs
+      })
+
+      assert_redirect(view, ~p"/users/log-in")
+      assert Repo.aggregate(Booking, :count, :id) == 0
     end
 
     test "all calendar days show availability, independent of the selected service", ctx do
@@ -585,6 +851,7 @@ defmodule TaamolWeb.BookingsTest do
 
       booking = request!(member, premises, at(day, ~T[09:00:00]))
       {:ok, _} = Bookings.accept_booking(Scope.for_user(admin), booking)
+      conn = log_in_user(conn, member)
 
       {:ok, view, _} =
         live(
@@ -626,7 +893,12 @@ defmodule TaamolWeb.BookingsTest do
       assert has_element?(view, "#day-availability-#{day} #book-day-#{day}", "Book")
     end
 
-    test "a day in an adjacent month opens the correct date and the dialog closes", %{conn: conn} do
+    test "a day in an adjacent month opens the correct date and the dialog closes", %{
+      conn: conn,
+      member: member
+    } do
+      conn = log_in_user(conn, member)
+
       month =
         Enum.find_value(2..12, fn offset ->
           date = Date.utc_today() |> Date.shift(month: offset) |> Date.beginning_of_month()
@@ -716,6 +988,40 @@ defmodule TaamolWeb.BookingsTest do
       assert has_element?(view, "#day-availability-#{day} #book-day-#{day}", "Book")
       assert has_element?(view, "#booking-time option", "09:00")
       assert has_element?(view, "#booking_contact_name[value='Draft name']")
+    end
+
+    test "event changes update an open booking dialog", ctx do
+      %{conn: conn, premises: premises, member: member, admin: admin, day: day} = ctx
+
+      {:ok, view, _} =
+        conn
+        |> log_in_user(member)
+        |> live(~p"/calendar?date=#{Date.to_iso8601(day)}")
+
+      view |> element("#book-day-#{day}") |> render_click()
+
+      view
+      |> form("#booking-form",
+        service: premises.id,
+        slot: "12:00",
+        booking: %{contact_name: "Draft name", contact_phone: "0701234567"}
+      )
+      |> render_change()
+
+      assert {:ok, event} =
+               Events.create_event(Scope.for_user(admin), %{
+                 title: "Premises event",
+                 all_day: true,
+                 starts_at: at(day, ~T[00:00:00]),
+                 booking_resource: :premises
+               })
+
+      assert has_element?(view, "#booking-error", "Availability changed")
+      assert has_element?(view, "#booking-unavailable")
+      assert has_element?(view, "#booking_contact_name[value='Draft name']")
+
+      assert {:ok, _} = Events.delete_event(Scope.for_user(admin), event)
+      assert has_element?(view, "#booking-time option", "12:00")
     end
 
     test "rejects unavailable or deactivated services without losing the draft", ctx do

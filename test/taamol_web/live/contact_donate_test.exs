@@ -27,8 +27,10 @@ defmodule TaamolWeb.ContactDonateTest do
     test "sends a message to the inbox and emails the admins", %{conn: conn} do
       admin = admin_fixture()
       {:ok, view, _html} = live(conn, ~p"/contact")
-      assert has_element?(view, "#contact-form .hero-envelope")
+      assert has_element?(view, "#contact-form input[type=email]")
       assert has_element?(view, "#contact-form textarea[data-field-input]")
+      refute has_element?(view, "#contact-form .form-control > .hero-document-text")
+      refute has_element?(view, "#contact-form .form-control > .hero-list-bullet")
 
       view
       |> form("#contact-form",

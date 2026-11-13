@@ -29,6 +29,9 @@ import {CityPrayerTime, CityToday, CitySearch} from "./city_prayer_time"
 import {SegmentedIndicator} from "./segmented_indicator"
 import {NumberStepper} from "./number_stepper"
 import {ShareArticle} from "./share_article"
+import {openDateTimePicker} from "./date_time_picker"
+
+document.addEventListener("click", openDateTimePicker)
 
 const csrfToken = document.querySelector("meta[name='csrf-token']").getAttribute("content")
 const liveSocket = new LiveSocket("/live", Socket, {
