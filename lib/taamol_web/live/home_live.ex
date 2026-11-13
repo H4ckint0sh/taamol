@@ -21,6 +21,9 @@ defmodule TaamolWeb.HomeLive do
      |> assign(page_title: gettext("Home"), lead: lead)
      |> assign(:upcoming, Taamol.Events.upcoming(limit: 5))
      |> assign(:gallery, Taamol.Gallery.list_images(limit: 4))
+     |> assign(:highlights, highlights())
+     |> assign(:highlight, 0)
+     |> assign(:donations?, not is_nil(Taamol.Settings.swish()))
      |> stream(:latest, Tracking.list_public_articles(limit: 5, exclude: lead && lead.id))
      |> stream(:most_read, Tracking.list_most_read_articles(limit: 5))}
   end
@@ -33,7 +36,21 @@ defmodule TaamolWeb.HomeLive do
      |> load_feed(reset: true)}
   end
 
+  # recent stories with a picture, shown in the hero card
+  defp highlights do
+    [limit: 12]
+    |> Tracking.list_public_articles()
+    |> Enum.filter(& &1.cover_image_url)
+    |> Enum.take(4)
+  end
+
   @impl true
+  def handle_event("highlight", %{"step" => step}, socket) do
+    count = max(length(socket.assigns.highlights), 1)
+    step = if step == "next", do: 1, else: -1
+    {:noreply, update(socket, :highlight, &Integer.mod(&1 + step, count))}
+  end
+
   def handle_event("load-more", _params, socket) do
     {:noreply, socket |> update(:page, &(&1 + 1)) |> load_feed(reset: false)}
   end
@@ -57,7 +74,13 @@ defmodule TaamolWeb.HomeLive do
   def render(assigns) do
     ~H"""
     <Layouts.app flash={@flash} current_scope={@current_scope} wide active={:home}>
-      <div id="home" class="mx-auto max-w-7xl px-4 pt-5 sm:px-6 lg:px-8 lg:pt-8">
+      <.landing_hero
+        image={hero_image(@gallery, @lead)}
+        highlights={@highlights}
+        highlight={@highlight}
+        donations?={@donations?}
+      />
+      <div id="home" class="mx-auto max-w-7xl px-4 pt-8 sm:px-6 lg:px-8 lg:pt-12">
         <div class="grid gap-8 xl:grid-cols-[minmax(0,1fr)_18rem]">
           <div class="min-w-0 space-y-10">
             <div
@@ -228,6 +251,158 @@ defmodule TaamolWeb.HomeLive do
         </div>
       </div>
     </Layouts.app>
+    """
+  end
+
+  defp hero_image([%{image_url: url} | _], _lead), do: url
+  defp hero_image(_gallery, %{cover_image_url: url}) when is_binary(url), do: url
+  defp hero_image(_gallery, _lead), do: nil
+
+  attr :image, :string, default: nil
+  attr :highlights, :list, required: true
+  attr :highlight, :integer, required: true
+  attr :donations?, :boolean, default: false
+
+  defp landing_hero(assigns) do
+    assigns = assign(assigns, :current, Enum.at(assigns.highlights, assigns.highlight))
+
+    ~H"""
+    <section id="landing-hero" class="relative isolate overflow-hidden bg-zinc-950 text-white">
+      <img
+        :if={@image}
+        src={@image}
+        alt=""
+        fetchpriority="high"
+        class="absolute inset-0 -z-20 size-full object-cover motion-safe:animate-[hero-zoom_18s_ease-out_both]"
+      />
+      <%!-- darken the text side and the bottom so the copy always reads --%>
+      <div
+        aria-hidden="true"
+        class="absolute inset-0 -z-10 from-black/90 via-black/60 to-black/10 ltr:bg-gradient-to-r rtl:bg-gradient-to-l"
+      />
+      <div
+        aria-hidden="true"
+        class="absolute inset-x-0 bottom-0 -z-10 h-1/3 bg-gradient-to-t from-black/70 to-transparent"
+      />
+
+      <div class="mx-auto grid min-h-[32rem] max-w-7xl items-end gap-10 px-4 py-14 sm:px-6 lg:min-h-[38rem] lg:grid-cols-[minmax(0,1fr)_22rem] lg:px-8 lg:py-20">
+        <div class="max-w-2xl self-center">
+          <p class="inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-1 text-xs font-semibold tracking-wide text-white/85 ring-1 ring-white/15 backdrop-blur-sm">
+            <span class="size-1.5 rounded-full bg-primary" />
+            {gettext("Taamol · Shia community in Sweden")}
+          </p>
+          <h1 class="mt-5 text-4xl font-extrabold leading-[1.2] sm:text-5xl lg:text-6xl">
+            {gettext("A community rooted in")}
+            <span class="relative inline-block whitespace-nowrap text-primary">
+              {gettext("faith and compassion")}
+              <svg
+                aria-hidden="true"
+                viewBox="0 0 200 12"
+                preserveAspectRatio="none"
+                class="absolute inset-x-0 -bottom-2 h-2.5 w-full text-primary"
+              >
+                <path
+                  d="M2 9 C 50 2, 150 2, 198 8"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="3"
+                  stroke-linecap="round"
+                />
+              </svg>
+            </span>
+          </h1>
+          <p class="mt-6 max-w-xl text-base leading-relaxed text-white/75 sm:text-lg">
+            {gettext(
+              "News, gatherings, prayer times and the Shia calendar: everything that brings our community together, in one place."
+            )}
+          </p>
+          <div class="mt-8 flex flex-wrap items-center gap-3">
+            <.link
+              :if={@donations?}
+              navigate={~p"/donate"}
+              id="hero-donate"
+              class="inline-flex h-12 items-center gap-2 rounded-xl bg-primary px-6 text-sm font-bold text-primary-content shadow-lg shadow-primary/30 transition hover:-translate-y-0.5 hover:shadow-xl active:scale-95"
+            >
+              {gettext("Donate")}
+              <.icon name="hero-arrow-up-right-micro" class="size-4 rtl:-scale-x-100" />
+            </.link>
+            <.link
+              navigate={~p"/calendar"}
+              id="hero-calendar"
+              class="group inline-flex h-12 items-center gap-2.5 rounded-xl px-4 text-sm font-semibold text-white transition hover:bg-white/10"
+            >
+              <span class="grid size-7 place-items-center rounded-full bg-primary text-primary-content transition group-hover:scale-110">
+                <.icon name="hero-calendar-days-micro" class="size-4" />
+              </span>
+              {gettext("See what's coming up")}
+            </.link>
+          </div>
+        </div>
+
+        <div
+          :if={@current}
+          id="hero-highlight"
+          class="hidden rounded-2xl bg-base-100 p-2 text-base-content shadow-2xl shadow-black/40 lg:block"
+        >
+          <.link navigate={~p"/articles/#{@current.id}"} class="group block">
+            <div class="overflow-hidden rounded-xl">
+              <img
+                src={@current.cover_image_url}
+                alt=""
+                class="aspect-[16/10] w-full object-cover transition duration-500 group-hover:scale-105"
+              />
+            </div>
+          </.link>
+          <div class="px-3 pb-3 pt-3">
+            <div class="flex items-center gap-2">
+              <button
+                type="button"
+                id="hero-prev"
+                phx-click="highlight"
+                phx-value-step="prev"
+                aria-label={gettext("Previous")}
+                class="grid size-8 shrink-0 place-items-center rounded-full text-base-content/60 transition hover:bg-base-200 hover:text-base-content"
+              >
+                <.icon name="hero-chevron-left-mini" class="size-5 rtl:rotate-180" />
+              </button>
+              <.link
+                navigate={~p"/articles/#{@current.id}"}
+                dir="auto"
+                class="line-clamp-2 min-w-0 flex-1 text-center text-[15px] font-bold leading-snug transition-colors hover:text-primary"
+              >
+                {@current.title}
+              </.link>
+              <button
+                type="button"
+                id="hero-next"
+                phx-click="highlight"
+                phx-value-step="next"
+                aria-label={gettext("Next")}
+                class="grid size-8 shrink-0 place-items-center rounded-full text-base-content/60 transition hover:bg-base-200 hover:text-base-content"
+              >
+                <.icon name="hero-chevron-right-mini" class="size-5 rtl:rotate-180" />
+              </button>
+            </div>
+            <p
+              :if={@current.summary}
+              dir="auto"
+              class="mt-1.5 line-clamp-2 text-center text-xs leading-relaxed text-base-content/60"
+            >
+              {@current.summary}
+            </p>
+            <div class="mt-3 flex justify-center gap-1.5">
+              <span
+                :for={i <- 0..(length(@highlights) - 1)//1}
+                class={[
+                  "h-1.5 rounded-full transition-all duration-300",
+                  if(i == @highlight, do: "w-5 bg-primary", else: "w-1.5 bg-base-300")
+                ]}
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
     """
   end
 end

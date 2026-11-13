@@ -190,7 +190,7 @@ defmodule TaamolWeb.ArticleLive.Show do
     <Layouts.app flash={@flash} current_scope={@current_scope} wide active={@article.category}>
       <div class="mx-auto max-w-7xl px-4 pt-4 sm:px-6 lg:px-8 lg:pt-8">
         <div class="grid gap-10 xl:grid-cols-[minmax(0,1fr)_18rem]">
-          <article id={"article-#{@article.id}"} class="mx-auto w-full max-w-3xl min-w-0">
+          <article id={"article-#{@article.id}"} class="w-full min-w-0 max-w-3xl xl:max-w-none">
             <div class="flex items-center justify-between gap-4">
               <.link
                 id="article-back"
@@ -235,7 +235,7 @@ defmodule TaamolWeb.ArticleLive.Show do
               <.category_label category={@article.category} />
               <h1
                 dir="auto"
-                class="mt-2 text-3xl font-bold leading-tight tracking-tight text-balance sm:text-4xl"
+                class="mt-2 text-xl font-bold leading-snug text-balance sm:text-2xl"
               >
                 {@article.title}
               </h1>
@@ -279,7 +279,7 @@ defmodule TaamolWeb.ArticleLive.Show do
               {@article.summary}
             </p>
 
-            <div id="article-body" dir="auto" class="markdown-body mt-6 text-[1.05rem]">
+            <div id="article-body" dir="auto" class="markdown-body mt-6 text-[15px] sm:text-base">
               {raw(Taamol.Markdown.to_html(@article.body))}
             </div>
 
@@ -287,9 +287,9 @@ defmodule TaamolWeb.ArticleLive.Show do
               <.like_button id="like-article" liked={@liked?} count={@like_count} />
               <a
                 href="#comments"
-                class="inline-flex h-10 items-center gap-2 rounded-full border border-base-300 px-4 text-sm font-medium transition hover:border-primary/40 hover:bg-base-200"
+                class="inline-flex h-8 items-center gap-1.5 rounded-full border border-base-300 px-3 text-[13px] font-medium transition hover:border-primary/40 hover:bg-base-200"
               >
-                <.icon name="hero-chat-bubble-left-right" class="size-5" />
+                <.icon name="hero-chat-bubble-left-right" class="size-4" />
                 <span class="tabular-nums">{format_count(@comment_count)}</span>
                 <span class="hidden sm:inline">{gettext("Comments")}</span>
               </a>
@@ -425,16 +425,16 @@ defmodule TaamolWeb.ArticleLive.Show do
       phx-click="toggle-like"
       aria-pressed={to_string(@liked)}
       class={[
-        "group inline-flex h-10 items-center gap-2 rounded-full border px-4 text-sm font-medium transition active:scale-95",
+        "group inline-flex h-8 items-center gap-1.5 rounded-full border px-3 text-[13px] font-medium transition active:scale-95",
         if(@liked,
-          do: "border-rose-500/30 bg-rose-500/10 text-rose-600 dark:text-rose-400",
-          else: "border-base-300 hover:border-rose-400/50 hover:bg-rose-500/5"
+          do: "border-primary/30 bg-primary/10 text-primary",
+          else: "border-base-300 hover:border-primary/40 hover:bg-primary/5"
         )
       ]}
     >
       <.icon
-        name={if(@liked, do: "hero-heart-solid", else: "hero-heart")}
-        class="size-5 transition-transform group-active:scale-125"
+        name={if(@liked, do: "hero-hand-thumb-up-solid", else: "hero-hand-thumb-up")}
+        class="size-4 transition-transform group-active:scale-125"
       />
       <span class="tabular-nums">{format_count(@count)}</span>
       <span class="hidden sm:inline">{if(@liked, do: gettext("Liked"), else: gettext("Like"))}</span>
@@ -460,7 +460,7 @@ defmodule TaamolWeb.ArticleLive.Show do
       <div class="min-w-0 flex-1">
         <div class="rounded-2xl rounded-ss-md bg-base-200/70 px-4 py-3">
           <div class="flex flex-wrap items-baseline gap-x-2">
-            <span dir="auto" class="text-sm font-semibold">{@node.comment.creator.name}</span>
+            <span dir="auto" class="text-[15px] font-extrabold text-base-content">{@node.comment.creator.name}</span>
             <time
               datetime={DateTime.to_iso8601(@node.comment.inserted_at)}
               class="text-xs text-base-content/50"
@@ -487,11 +487,11 @@ defmodule TaamolWeb.ArticleLive.Show do
             aria-pressed={to_string(@node.liked?)}
             class={[
               "inline-flex items-center gap-1 rounded-full px-2 py-1 transition hover:bg-base-200",
-              @node.liked? && "text-rose-600 dark:text-rose-400"
+              @node.liked? && "text-primary"
             ]}
           >
             <.icon
-              name={if(@node.liked?, do: "hero-heart-solid", else: "hero-heart")}
+              name={if(@node.liked?, do: "hero-hand-thumb-up-solid", else: "hero-hand-thumb-up")}
               class="size-4"
             />
             <span :if={@node.likes > 0} class="tabular-nums">{@node.likes}</span>

@@ -119,6 +119,37 @@ defmodule TaamolWeb.DashboardLive.SiteSettings do
             </div>
           </section>
 
+          <section id="contact-settings" class="rounded-2xl border border-base-300 bg-base-100 p-5">
+            <h2 class="font-semibold">{gettext("Contact details")}</h2>
+            <p class="mb-4 mt-1 text-sm text-base-content/60">
+              {gettext("Shown on the contact page. Leave a field empty to hide it.")}
+            </p>
+            <.input
+              field={@form[:contact_address]}
+              type="textarea"
+              rows="2"
+              dir="auto"
+              label={gettext("Address")}
+            />
+            <div class="grid gap-x-4 sm:grid-cols-2">
+              <.input
+                field={@form[:contact_phone]}
+                type="tel"
+                label={gettext("Phone")}
+                placeholder="070 123 45 67"
+              />
+              <.input field={@form[:contact_email]} type="email" label={gettext("Email")} />
+            </div>
+            <.input
+              field={@form[:opening_hours]}
+              type="textarea"
+              rows="3"
+              dir="auto"
+              label={gettext("Opening hours")}
+              placeholder={gettext("One line per day or period")}
+            />
+          </section>
+
           <section class="rounded-2xl border border-base-300 bg-base-100 p-5">
             <h2 class="font-semibold">{gettext("Social media")}</h2>
             <p class="mb-4 mt-1 text-sm text-base-content/60">

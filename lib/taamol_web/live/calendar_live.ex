@@ -244,7 +244,7 @@ defmodule TaamolWeb.CalendarLive do
       <div id="calendar" class="mx-auto max-w-7xl px-4 pt-5 sm:px-6 lg:px-8 lg:pt-8">
         <div class="flex flex-wrap items-end justify-between gap-4">
           <div>
-            <h1 id="calendar-title" class="text-2xl font-bold tracking-tight sm:text-3xl">
+            <h1 id="calendar-title" class="text-2xl font-bold capitalize sm:text-3xl">
               {month_name(@month.month)} {@month.year}
             </h1>
             <p class="mt-1 flex items-center gap-1.5 text-sm text-base-content/60">
@@ -423,7 +423,9 @@ defmodule TaamolWeb.CalendarLive do
                         {gettext("Details")}
                       </.link>
                     </div>
-                    <p dir="auto" class="mt-2 font-semibold leading-snug">{entry_title(entry)}</p>
+                    <p dir="auto" class={["mt-2 font-semibold leading-snug", kind_text(entry.kind)]}>
+                      {entry_title(entry)}
+                    </p>
                     <p
                       :if={booking_details?(entry, @current_scope, @admin?)}
                       dir="auto"
@@ -476,7 +478,10 @@ defmodule TaamolWeb.CalendarLive do
                       <.kind_dot_badge kind={entry.kind} class="mt-2 size-1.5" />
                       <span
                         dir="auto"
-                        class="min-w-0 flex-1 text-sm leading-snug transition-colors group-hover:text-primary"
+                        class={[
+                          "min-w-0 flex-1 text-sm leading-snug transition-opacity group-hover:opacity-75",
+                          kind_text(entry.kind)
+                        ]}
                       >
                         {entry_title(entry)}
                       </span>

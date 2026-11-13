@@ -137,18 +137,25 @@ defmodule TaamolWeb.CalendarComponents do
   # ---------------------------------------------------------------------------
 
   @doc "Dot colour for a kind."
-  def kind_dot(:community), do: "bg-primary"
+  def kind_dot(:community), do: "bg-base-content"
   def kind_dot(:celebration), do: "bg-emerald-500"
-  def kind_dot(:mourning), do: "bg-base-content/70"
+  def kind_dot(:mourning), do: "bg-red-600 dark:bg-red-500"
   def kind_dot(:observance), do: "bg-sky-500"
   def kind_dot(:booking), do: "bg-violet-500"
 
   @doc "Chip colours for a kind."
   def kind_chip(:community), do: "bg-primary/12 text-primary"
   def kind_chip(:celebration), do: "bg-emerald-500/12 text-emerald-700 dark:text-emerald-400"
-  def kind_chip(:mourning), do: "bg-base-content/8 text-base-content/80"
+  def kind_chip(:mourning), do: "bg-red-600/12 text-red-700 dark:text-red-400"
   def kind_chip(:observance), do: "bg-sky-500/12 text-sky-700 dark:text-sky-400"
   def kind_chip(:booking), do: "bg-violet-500/12 text-violet-700 dark:text-violet-400"
+
+  @doc "Text colour for a kind (matches its dot)."
+  def kind_text(:community), do: "text-base-content"
+  def kind_text(:celebration), do: "text-emerald-700 dark:text-emerald-400"
+  def kind_text(:mourning), do: "text-red-700 dark:text-red-400"
+  def kind_text(:observance), do: "text-sky-700 dark:text-sky-400"
+  def kind_text(:booking), do: "text-violet-700 dark:text-violet-400"
 
   # ---------------------------------------------------------------------------
   # Components
@@ -173,12 +180,14 @@ defmodule TaamolWeb.CalendarComponents do
     <section id={@id} class={["rounded-2xl border border-base-300 bg-base-100 p-4", @class]}>
       <div class="flex items-center justify-between gap-2">
         <h2 class="flex items-center gap-2 text-sm font-semibold">
-          <.icon name="hero-calendar-days" class="size-4 text-primary" />
+          <span class="grid size-6 place-items-center rounded-full bg-primary/10 text-primary">
+            <.icon name="hero-calendar-days-micro" class="size-4" />
+          </span>
           {gettext("Upcoming")}
         </h2>
         <.link
           navigate={~p"/calendar"}
-          class="text-xs font-medium text-primary transition hover:opacity-75"
+          class="text-[13px] font-semibold text-primary transition hover:opacity-75"
         >
           {gettext("Calendar")}
         </.link>
@@ -192,11 +201,13 @@ defmodule TaamolWeb.CalendarComponents do
         <li :for={entry <- @entries}>
           <.link
             navigate={~p"/calendar?#{[date: Date.to_iso8601(entry.first_day)]}"}
-            class="group flex items-start gap-3 py-2.5"
+            class="group -mx-2 flex items-start gap-3 rounded-xl px-2 py-2.5 transition-colors hover:bg-base-200/70"
           >
-            <span class="grid w-11 shrink-0 place-items-center rounded-xl border border-base-300 py-1 leading-none">
-              <span class="text-base font-bold tabular-nums">{entry.first_day.day}</span>
-              <span class="mt-0.5 text-[10px] uppercase text-base-content/55">
+            <span class="flex size-12 shrink-0 flex-col items-center justify-center rounded-xl border border-base-300 leading-none transition-transform duration-200 group-hover:scale-105">
+              <span class={["text-lg font-extrabold tabular-nums", kind_text(entry.kind)]}>
+                {entry.first_day.day}
+              </span>
+              <span class="mt-0.5 text-[10px] font-semibold uppercase text-base-content/55">
                 {TaamolWeb.NewsComponents.month_short(entry.first_day.month)}
               </span>
             </span>
@@ -205,7 +216,10 @@ defmodule TaamolWeb.CalendarComponents do
                 <.kind_dot_badge kind={entry.kind} class="mt-1.5 size-1.5" />
                 <span
                   dir="auto"
-                  class="line-clamp-2 text-[13px] font-medium leading-snug transition-colors group-hover:text-primary"
+                  class={[
+                    "line-clamp-2 text-sm font-bold leading-snug",
+                    entry.kind == :mourning && "text-red-700 dark:text-red-400"
+                  ]}
                 >
                   {entry_title(entry)}
                 </span>

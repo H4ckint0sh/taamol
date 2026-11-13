@@ -67,7 +67,7 @@ defmodule TaamolWeb.Layouts do
           <ul
             id="main-nav-items"
             phx-hook=".NavIndicator"
-            class="relative flex h-full items-center gap-0.5 text-sm font-medium xl:gap-1"
+            class="relative flex h-full items-center gap-0.5 text-sm font-bold xl:gap-1"
           >
             <%!-- the pill behind the active item; positioned by the hook below --%>
             <span
@@ -177,9 +177,9 @@ defmodule TaamolWeb.Layouts do
             navigate={~p"/donate"}
             title={gettext("Donate")}
             aria-label={gettext("Donate")}
-            class="hidden h-9 items-center gap-1.5 rounded-full bg-rose-500/10 px-2.5 text-sm font-semibold text-rose-600 ring-1 ring-rose-500/20 transition hover:bg-rose-500/15 active:scale-95 lg:inline-flex 2xl:px-3.5 dark:text-rose-400"
+            class="hidden h-8 items-center gap-1.5 rounded-full bg-rose-500/10 px-2.5 text-[13px] font-semibold text-rose-600 ring-1 ring-rose-500/20 transition hover:bg-rose-500/15 active:scale-95 lg:inline-flex 2xl:px-3.5 dark:text-rose-400"
           >
-            <.donate_icon class="size-[18px]" />
+            <.donate_icon class="size-4" />
             <span class="hidden 2xl:inline">{gettext("Donate")}</span>
           </.link>
           <%= if @current_scope do %>
@@ -193,7 +193,7 @@ defmodule TaamolWeb.Layouts do
             </.link>
             <.link
               href={~p"/users/register"}
-              class="hidden whitespace-nowrap rounded-full bg-primary px-4 py-2 text-sm font-medium text-primary-content transition hover:opacity-85 lg:inline"
+              class="hidden h-8 items-center whitespace-nowrap rounded-full bg-primary px-4 text-[13px] font-semibold text-primary-content transition hover:opacity-85 lg:inline-flex"
             >
               {gettext("Register")}
             </.link>
@@ -687,12 +687,12 @@ defmodule TaamolWeb.Layouts do
                 {gettext("News for our community")}
               </span>
             </.link>
-            <p class="mt-4 text-sm leading-relaxed text-base-content/65">
+            <p class="mt-4 text-sm font-medium leading-relaxed text-base-content/70">
               {gettext(
                 "News, the Shia calendar, prayer times and community activities, in one place."
               )}
             </p>
-            <ul :if={@social_links != []} id="social-links" class="mt-5 flex flex-wrap gap-2">
+            <ul :if={@social_links != []} id="social-links" class="mt-5 flex flex-wrap gap-2.5">
               <li :for={{network, url} <- @social_links}>
                 <a
                   href={url}
@@ -701,9 +701,9 @@ defmodule TaamolWeb.Layouts do
                   id={"social-#{network}"}
                   aria-label={TaamolWeb.SocialIcons.name(network)}
                   title={TaamolWeb.SocialIcons.name(network)}
-                  class="grid size-9 place-items-center rounded-full border border-base-300 text-base-content/65 transition hover:-translate-y-0.5 hover:border-primary hover:bg-primary hover:text-primary-content"
+                  class="grid size-11 place-items-center rounded-full bg-primary/10 text-primary ring-1 ring-primary/20 transition hover:-translate-y-0.5 hover:bg-primary hover:text-primary-content hover:shadow-md hover:shadow-primary/30"
                 >
-                  <TaamolWeb.SocialIcons.social_icon network={network} class="size-4" />
+                  <TaamolWeb.SocialIcons.social_icon network={network} class="size-5" />
                 </a>
               </li>
             </ul>
@@ -720,11 +720,11 @@ defmodule TaamolWeb.Layouts do
           <nav aria-labelledby="footer-explore">
             <h2
               id="footer-explore"
-              class="text-[11px] font-semibold uppercase tracking-wider text-base-content/50"
+              class="text-xs font-bold uppercase tracking-wider text-base-content/60"
             >
               {gettext("Explore")}
             </h2>
-            <ul class="mt-4 space-y-2.5 text-sm">
+            <ul class="mt-4 space-y-2.5 text-sm font-semibold">
               <li>
                 <.footer_link to={~p"/news"}>{gettext("News")}</.footer_link>
               </li>
@@ -746,11 +746,11 @@ defmodule TaamolWeb.Layouts do
           <nav aria-labelledby="footer-account">
             <h2
               id="footer-account"
-              class="text-[11px] font-semibold uppercase tracking-wider text-base-content/50"
+              class="text-xs font-bold uppercase tracking-wider text-base-content/60"
             >
               {gettext("Account")}
             </h2>
-            <ul class="mt-4 space-y-2.5 text-sm">
+            <ul class="mt-4 space-y-2.5 text-sm font-semibold">
               <%= if @current_scope do %>
                 <li><.footer_link to={~p"/dashboard"}>{gettext("Dashboard")}</.footer_link></li>
                 <li>
@@ -760,7 +760,7 @@ defmodule TaamolWeb.Layouts do
                   <.link
                     href={~p"/users/log-out"}
                     method="delete"
-                    class="text-base-content/70 transition-colors hover:text-primary"
+                    class="text-base-content/80 transition-colors hover:text-primary"
                   >
                     {gettext("Log out")}
                   </.link>
@@ -792,7 +792,7 @@ defmodule TaamolWeb.Layouts do
 
   defp footer_link(assigns) do
     ~H"""
-    <.link navigate={@to} class="text-base-content/70 transition-colors hover:text-primary">
+    <.link navigate={@to} class="text-base-content/80 transition-colors hover:text-primary">
       {render_slot(@inner_block)}
     </.link>
     """
@@ -884,9 +884,9 @@ defmodule TaamolWeb.Layouts do
         type="button"
         id="user-menu-trigger"
         aria-haspopup="true"
-        class="flex items-center gap-3 rounded-full py-1 pe-2 ps-1 transition hover:bg-base-200"
+        class="flex items-center gap-3 rounded-full pe-2 transition hover:bg-base-200"
       >
-        <.avatar user={@current_scope.user} />
+        <.avatar user={@current_scope.user} class="size-8 text-xs" />
         <span class="hidden text-start leading-tight xl:block">
           <span class="block max-w-40 truncate text-sm font-semibold" dir="auto">
             {@current_scope.user.name}
@@ -1078,13 +1078,13 @@ defmodule TaamolWeb.Layouts do
         aria-label={@label}
         title={@label}
         dir="ltr"
-        class="inline-flex h-9 shrink-0 items-center gap-2 rounded-full bg-neutral-200 p-1 pe-3.5 text-neutral-800 shadow-inner ring-1 ring-black/5 transition-colors duration-300 hover:bg-neutral-300/80 active:scale-95 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary [[data-theme=dark]_&]:bg-neutral-800 [[data-theme=dark]_&]:text-white [[data-theme=dark]_&]:ring-white/10 [[data-theme=dark]_&]:hover:bg-neutral-700"
+        class="inline-flex h-8 shrink-0 items-center gap-2 rounded-full bg-neutral-200 p-1 pe-3 text-neutral-800 shadow-inner ring-1 ring-black/5 transition-colors duration-300 hover:bg-neutral-300/80 active:scale-95 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary [[data-theme=dark]_&]:bg-neutral-800 [[data-theme=dark]_&]:text-white [[data-theme=dark]_&]:ring-white/10 [[data-theme=dark]_&]:hover:bg-neutral-700"
       >
         <%!-- white knob with the globe, like the day/night switch --%>
-        <span class="grid size-7 place-items-center rounded-full bg-white shadow-md">
-          <.icon name="hero-globe-alt" class="size-4 text-neutral-800" />
+        <span class="grid size-6 place-items-center rounded-full bg-white shadow-md">
+          <.icon name="hero-globe-alt" class="size-3.5 text-neutral-800" />
         </span>
-        <span lang={@target} class="text-[13px] font-bold tracking-wider">{@code}</span>
+        <span lang={@target} class="text-xs font-bold tracking-wider">{@code}</span>
       </button>
     </.form>
     """
@@ -1110,7 +1110,7 @@ defmodule TaamolWeb.Layouts do
       title={gettext("Dark mode")}
       dir="ltr"
       class={[
-        "inline-flex h-9 shrink-0 items-center rounded-full bg-neutral-200 p-1 text-neutral-800 shadow-inner ring-1 ring-black/5 transition-colors duration-300 hover:bg-neutral-300/80 active:scale-95 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary",
+        "inline-flex h-8 shrink-0 items-center rounded-full bg-neutral-200 p-1 text-neutral-800 shadow-inner ring-1 ring-black/5 transition-colors duration-300 hover:bg-neutral-300/80 active:scale-95 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary",
         "[[data-theme=dark]_&]:bg-neutral-800 [[data-theme=dark]_&]:text-white [[data-theme=dark]_&]:ring-white/10 [[data-theme=dark]_&]:hover:bg-neutral-700",
         @class
       ]}
@@ -1118,7 +1118,7 @@ defmodule TaamolWeb.Layouts do
       <%!-- day: label (or a faint moon when compact), then the sun knob on the right --%>
       <span class="flex items-center gap-2 [[data-theme=dark]_&]:hidden">
         <span class={[
-          "whitespace-nowrap ps-2.5 text-[11px] font-semibold uppercase tracking-wider",
+          "whitespace-nowrap ps-2.5 text-[10px] font-semibold uppercase tracking-wider",
           @compact && "hidden 2xl:inline"
         ]}>
           {gettext("Day mode")}
@@ -1128,17 +1128,17 @@ defmodule TaamolWeb.Layouts do
           name="hero-moon-micro"
           class="ms-1.5 size-3.5 text-neutral-400 2xl:hidden"
         />
-        <span class="grid size-7 place-items-center rounded-full bg-white shadow-md">
-          <.icon name="hero-sun-solid" class="size-4 text-neutral-800" />
+        <span class="grid size-6 place-items-center rounded-full bg-white shadow-md">
+          <.icon name="hero-sun-solid" class="size-3.5 text-neutral-800" />
         </span>
       </span>
       <%!-- night: the moon knob on the left, then the label --%>
       <span class="hidden items-center gap-2 [[data-theme=dark]_&]:flex">
-        <span class="grid size-7 place-items-center rounded-full bg-white shadow-md">
-          <.icon name="hero-moon-solid" class="size-4 text-neutral-800" />
+        <span class="grid size-6 place-items-center rounded-full bg-white shadow-md">
+          <.icon name="hero-moon-solid" class="size-3.5 text-neutral-800" />
         </span>
         <span class={[
-          "whitespace-nowrap pe-2.5 text-[11px] font-semibold uppercase tracking-wider",
+          "whitespace-nowrap pe-2.5 text-[10px] font-semibold uppercase tracking-wider",
           @compact && "hidden 2xl:inline"
         ]}>
           {gettext("Night mode")}
@@ -1192,7 +1192,7 @@ defmodule TaamolWeb.Layouts do
           id={"#{@id}-trigger"}
           data-role="trigger"
           aria-describedby={"#{@id}-popover"}
-          class="inline-flex h-9 items-center gap-2 rounded-full border border-base-300 bg-base-100 pe-3 ps-1.5 text-xs transition hover:border-primary/40 hover:bg-base-200 focus-visible:outline-2 focus-visible:outline-primary"
+          class="inline-flex h-8 items-center gap-2 rounded-full border border-base-300 bg-base-100 pe-3 ps-1 text-xs transition hover:border-primary/40 hover:bg-base-200 focus-visible:outline-2 focus-visible:outline-primary"
         >
           <span class="relative grid size-6 place-items-center rounded-full bg-primary/10 text-primary">
             <.icon name="hero-moon-micro" class="size-4" />
@@ -1203,7 +1203,7 @@ defmodule TaamolWeb.Layouts do
           </span>
           <span
             data-role="next-time"
-            class="font-semibold tabular-nums group-data-[state=loading]/prayer:hidden"
+            class="font-bold tabular-nums group-data-[state=loading]/prayer:hidden"
           />
           <span class="hidden h-3 w-10 rounded bg-base-300 motion-safe:animate-pulse group-data-[state=loading]/prayer:inline-block" />
         </button>
@@ -1262,11 +1262,11 @@ defmodule TaamolWeb.Layouts do
           <dl class="flex gap-4">
             <div>
               <dt class="text-[10px] opacity-75">{gettext("Suhoor")}</dt>
-              <dd data-role="suhoor" class="text-sm font-semibold tabular-nums" />
+              <dd data-role="suhoor" class="text-sm font-bold tabular-nums" />
             </div>
             <div>
               <dt class="text-[10px] opacity-75">{gettext("Iftar")}</dt>
-              <dd data-role="iftar" class="text-sm font-semibold tabular-nums" />
+              <dd data-role="iftar" class="text-sm font-bold tabular-nums" />
             </div>
           </dl>
           <div class="rounded-lg bg-primary-content/15 px-3 py-1.5 text-end">
@@ -1276,13 +1276,13 @@ defmodule TaamolWeb.Layouts do
               data-iftar={gettext("Until iftar")}
               class="text-[10px] opacity-80"
             />
-            <p data-role="fast-countdown" class="text-base font-semibold tabular-nums" />
+            <p data-role="fast-countdown" class="text-base font-bold tabular-nums" />
           </div>
         </div>
       </section>
 
       <section class="p-2">
-        <div class="flex flex-wrap items-center justify-center gap-1.5 text-[11px] text-base-content/70">
+        <div class="flex flex-wrap items-center gap-1.5 text-[11px] text-base-content/70">
           <span class="inline-flex items-center gap-1 rounded-full bg-base-200 px-2 py-0.5">
             <.icon name="hero-map-pin-micro" class="size-3 text-primary" />
             <span data-role="place" />
@@ -1356,7 +1356,7 @@ defmodule TaamolWeb.Layouts do
             />
           </span>
           <div class="absolute inset-x-0 bottom-0 text-center">
-            <p data-role="countdown" class="text-3xl font-semibold tracking-tight tabular-nums">
+            <p data-role="countdown" class="text-3xl font-bold tracking-tight tabular-nums">
               --:--:--
             </p>
             <p
@@ -1364,7 +1364,7 @@ defmodule TaamolWeb.Layouts do
               data-template={gettext("until %{prayer}", prayer: "%{prayer}")}
               class="text-[11px] text-base-content/60"
             />
-            <p data-role="next-at" class="text-xs tabular-nums text-base-content/60" />
+            <p data-role="next-at" class="text-xs font-semibold tabular-nums text-base-content/60" />
           </div>
         </div>
 
@@ -1385,7 +1385,7 @@ defmodule TaamolWeb.Layouts do
             </span>
             <span
               data-role="time"
-              class="text-sm font-medium tracking-tight tabular-nums text-base-content group-data-[next]/cell:text-primary"
+              class="text-base font-extrabold tracking-tight tabular-nums text-base-content group-data-[next]/cell:text-primary"
             >
               <span class="inline-block h-3.5 w-10 rounded bg-base-300 align-middle motion-safe:animate-pulse" />
             </span>

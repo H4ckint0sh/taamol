@@ -247,11 +247,14 @@ defmodule TaamolWeb.CoreComponents do
     ~H"""
     <div class="fieldset mb-2">
       <label for={@id}>
-        <span :if={@label} class="label mb-1">{@label}</span>
+        <span :if={@label} class="label mb-1 flex">{@label}</span>
         <select
           id={@id}
           name={@name}
-          class={[@class || "w-full select", @errors != [] && (@error_class || "select-error")]}
+          class={[
+            @class || "select w-full sm:max-w-72",
+            @errors != [] && (@error_class || "select-error")
+          ]}
           multiple={@multiple}
           {@rest}
         >
@@ -268,7 +271,7 @@ defmodule TaamolWeb.CoreComponents do
     ~H"""
     <div class="fieldset mb-2">
       <label for={@id}>
-        <span :if={@label} class="label mb-1">{@label}</span>
+        <span :if={@label} class="label mb-1 flex">{@label}</span>
         <textarea
           id={@id}
           name={@name}
@@ -285,18 +288,27 @@ defmodule TaamolWeb.CoreComponents do
   end
 
   # All other inputs text, datetime-local, url, password, etc. are handled here...
+  # Short values (numbers, dates, times, phone numbers) get a narrower field on
+  # larger screens; free text uses the full width.
   def input(assigns) do
+    assigns =
+      assign_new(assigns, :width_class, fn ->
+        if assigns.type in ~w(number date time datetime-local tel),
+          do: "sm:max-w-72",
+          else: nil
+      end)
+
     ~H"""
     <div class="fieldset mb-2">
       <label for={@id}>
-        <span :if={@label} class="label mb-1">{@label}</span>
+        <span :if={@label} class="label mb-1 flex">{@label}</span>
         <input
           type={@type}
           name={@name}
           id={@id}
           value={Phoenix.HTML.Form.normalize_value(@type, @value)}
           class={[
-            @class || "w-full input",
+            @class || ["input w-full", @width_class],
             @errors != [] && (@error_class || "input-error")
           ]}
           {@rest}

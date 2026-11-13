@@ -32,6 +32,33 @@ defmodule TaamolWeb.DashboardComponents do
     """
   end
 
+  attr :id, :string, required: true
+  attr :icon, :string, required: true
+  attr :title, :string, required: true
+  attr :class, :string, default: nil
+  slot :inner_block, required: true
+
+  @doc """
+  A stat-tile style card for a piece of information ("Phone · 070 …"), used on
+  the public contact and donate pages so they match the dashboard.
+  """
+  def info_card(assigns) do
+    ~H"""
+    <section
+      id={@id}
+      class={["flex items-start gap-3 rounded-2xl border border-base-300 bg-base-100 p-5", @class]}
+    >
+      <span class="grid size-9 shrink-0 place-items-center rounded-lg bg-base-200 text-base-content/70">
+        <.icon name={@icon} class="size-5" />
+      </span>
+      <div class="min-w-0 flex-1">
+        <h2 class="font-semibold">{@title}</h2>
+        <div class="mt-0.5 text-sm text-base-content/60">{render_slot(@inner_block)}</div>
+      </div>
+    </section>
+    """
+  end
+
   attr :id, :string, default: nil
   attr :title, :string, default: nil
   attr :class, :string, default: nil

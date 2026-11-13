@@ -22,6 +22,12 @@ defmodule Taamol.Settings.SiteSetting do
     field :swish_number, :string
     field :swish_message, :string
 
+    # contact details on the contact page (empty = hidden)
+    field :contact_address, :string
+    field :contact_phone, :string
+    field :contact_email, :string
+    field :opening_hours, :string
+
     timestamps(type: :utc_datetime)
   end
 
@@ -37,7 +43,11 @@ defmodule Taamol.Settings.SiteSetting do
       :hijri_adjustment_days,
       :prayer_method,
       :swish_number,
-      :swish_message | @social_fields
+      :swish_message,
+      :contact_address,
+      :contact_phone,
+      :contact_email,
+      :opening_hours | @social_fields
     ])
     |> validate_required([:hijri_adjustment_days, :prayer_method])
     |> validate_number(:hijri_adjustment_days,
@@ -49,6 +59,13 @@ defmodule Taamol.Settings.SiteSetting do
     |> update_change(:swish_number, &String.replace(&1, ~r/\D/, ""))
     |> validate_format(:swish_number, ~r/^\d{10}$/, message: "must be a 10-digit Swish number")
     |> validate_length(:swish_message, max: 50)
+    |> validate_length(:contact_address, max: 300)
+    |> validate_length(:contact_phone, max: 40)
+    |> validate_length(:contact_email, max: 160)
+    |> validate_format(:contact_email, ~r/^[^@,;\s]+@[^@,;\s]+\.[^@,;\s]+$/,
+      message: "must have the @ sign and no spaces"
+    )
+    |> validate_length(:opening_hours, max: 500)
   end
 
   defp validate_social_links(changeset) do

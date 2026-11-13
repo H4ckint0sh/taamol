@@ -315,7 +315,12 @@ defaults = %{
   facebook_url: "https://facebook.com/taamol",
   telegram_url: "https://t.me/taamol",
   youtube_url: "https://youtube.com/@taamol",
-  whatsapp_url: "https://wa.me/46700000000"
+  whatsapp_url: "https://wa.me/46700000000",
+  # placeholders: replace with the community's real contact details
+  contact_address: "Exempelgatan 12\n352 30 Växjö",
+  contact_phone: "070 000 00 00",
+  contact_email: "info@example.com",
+  opening_hours: "شنبه تا پنجشنبه: ۱۷:۰۰ تا ۲۲:۰۰\nجمعه: ۱۸:۰۰ تا ۲۳:۰۰"
 }
 
 # only fill empty fields (and the prayer method while it's still the default)

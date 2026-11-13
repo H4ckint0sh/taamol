@@ -8,6 +8,8 @@ defmodule TaamolWeb.ContactLive do
   alias Taamol.Contact
   alias Taamol.Contact.Message
 
+  import TaamolWeb.DashboardComponents, only: [card: 1, info_card: 1]
+
   @impl true
   def mount(_params, _session, socket) do
     prefill =
@@ -21,7 +23,8 @@ defmodule TaamolWeb.ContactLive do
      |> assign(
        page_title: gettext("Contact"),
        sent?: false,
-       social_links: Taamol.Settings.social_links()
+       social_links: Taamol.Settings.social_links(),
+       details: Taamol.Settings.contact_details()
      )
      |> assign(:form, to_form(Contact.change_message(%Message{}, prefill)))}
   end
@@ -74,31 +77,31 @@ defmodule TaamolWeb.ContactLive do
   def render(assigns) do
     ~H"""
     <Layouts.app flash={@flash} current_scope={@current_scope} wide active={:contact}>
-      <div id="contact" class="mx-auto max-w-5xl px-4 pt-8 sm:px-6 lg:px-8 lg:pt-14">
-        <div class="max-w-2xl">
-          <h1 class="text-3xl font-bold tracking-tight sm:text-4xl">{gettext("Get in touch")}</h1>
-          <p class="mt-3 text-base-content/65">
-            {gettext(
+      <div id="contact" class="mx-auto max-w-7xl px-4 pt-6 sm:px-6 lg:px-8 lg:pt-10">
+        <Layouts.dashboard_heading
+          title={gettext("Get in touch")}
+          subtitle={
+            gettext(
               "Feedback, a question or an idea for an activity? Write to us and we will get back to you."
-            )}
-          </p>
-        </div>
+            )
+          }
+        />
 
-        <div class="mt-8 grid gap-6 lg:grid-cols-[minmax(0,1fr)_18rem]">
-          <section class="rounded-3xl border border-base-300 bg-base-100 p-6 sm:p-8">
+        <div class="grid gap-6 lg:grid-cols-[minmax(0,1fr)_22rem]">
+          <.card id="contact-card">
             <%= if @sent? do %>
-              <div id="contact-sent" class="py-10 text-center">
-                <span class="mx-auto grid size-14 place-items-center rounded-full bg-success/15 text-success">
-                  <.icon name="hero-check" class="size-7" />
+              <div id="contact-sent" class="py-12 text-center">
+                <span class="mx-auto grid size-12 place-items-center rounded-full bg-success/15 text-success">
+                  <.icon name="hero-check" class="size-6" />
                 </span>
-                <h2 class="mt-4 text-xl font-bold">{gettext("Thank you for your message!")}</h2>
-                <p class="mt-2 text-sm text-base-content/65">
+                <h2 class="mt-4 text-lg font-semibold">{gettext("Thank you for your message!")}</h2>
+                <p class="mx-auto mt-1 max-w-sm text-sm text-base-content/60">
                   {gettext("We read every message and will answer by email as soon as we can.")}
                 </p>
                 <button
                   type="button"
                   phx-click="again"
-                  class="mt-6 rounded-full border border-base-300 px-5 py-2 text-sm font-medium transition hover:bg-base-200"
+                  class="mt-6 rounded-xl border border-base-300 px-5 py-2.5 text-sm font-semibold transition hover:bg-base-200"
                 >
                   {gettext("Send another message")}
                 </button>
@@ -112,8 +115,15 @@ defmodule TaamolWeb.ContactLive do
                     label={gettext("Name")}
                     required
                     dir="auto"
+                    placeholder={gettext("Your name")}
                   />
-                  <.input field={@form[:email]} type="email" label={gettext("Email")} required />
+                  <.input
+                    field={@form[:email]}
+                    type="email"
+                    label={gettext("Email")}
+                    required
+                    placeholder="namn@exempel.se"
+                  />
                 </div>
                 <.input
                   field={@form[:topic]}
@@ -125,7 +135,7 @@ defmodule TaamolWeb.ContactLive do
                   field={@form[:message]}
                   type="textarea"
                   label={gettext("Message")}
-                  rows="6"
+                  rows="7"
                   dir="auto"
                   required
                   placeholder={gettext("Write your message…")}
@@ -141,7 +151,7 @@ defmodule TaamolWeb.ContactLive do
                     autocomplete="off"
                   />
                 </div>
-                <div class="mt-4 flex items-center justify-between gap-4">
+                <div class="mt-4 flex flex-wrap items-center justify-between gap-4">
                   <p class="text-xs text-base-content/50">
                     {gettext("We only use your email to answer you.")}
                   </p>
@@ -149,7 +159,7 @@ defmodule TaamolWeb.ContactLive do
                     type="submit"
                     id="send-message"
                     phx-disable-with={gettext("Sending…")}
-                    class="inline-flex items-center gap-2 rounded-full bg-primary px-6 py-2.5 text-sm font-semibold text-primary-content transition hover:opacity-85"
+                    class="inline-flex items-center gap-2 rounded-xl bg-primary px-6 py-2.5 text-sm font-semibold text-primary-content transition hover:opacity-85"
                   >
                     <.icon name="hero-paper-airplane" class="size-4 rtl:-scale-x-100" />
                     {gettext("Send message")}
@@ -157,50 +167,60 @@ defmodule TaamolWeb.ContactLive do
                 </div>
               </.form>
             <% end %>
-          </section>
+          </.card>
 
-          <aside class="space-y-4">
-            <section
-              :if={@social_links != []}
-              class="rounded-3xl border border-base-300 bg-base-100 p-5"
+          <%!-- how else to reach us --%>
+          <aside id="contact-details" class="space-y-4">
+            <.info_card
+              :for={{key, value} <- @details}
+              id={"contact-#{key}"}
+              icon={detail_icon(key)}
+              title={detail_title(key)}
             >
-              <h2 class="text-sm font-semibold">{gettext("Follow us")}</h2>
-              <ul class="mt-3 space-y-1">
+              <%= if href = detail_href(key, value) do %>
+                <a href={href} dir="ltr" class="transition-colors hover:text-primary">{value}</a>
+              <% else %>
+                <p
+                  class="whitespace-pre-line leading-relaxed [unicode-bidi:plaintext] ltr:text-left rtl:text-right"
+                  phx-no-format
+                >{value}</p>
+              <% end %>
+            </.info_card>
+
+            <.card :if={@social_links != []} id="contact-social" title={gettext("Follow us")}>
+              <ul class="flex flex-wrap gap-2">
                 <li :for={{network, url} <- @social_links}>
                   <a
                     href={url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    class="flex items-center gap-3 rounded-xl px-2 py-1.5 text-sm transition hover:bg-base-200"
+                    aria-label={TaamolWeb.SocialIcons.name(network)}
+                    title={TaamolWeb.SocialIcons.name(network)}
+                    class="grid size-9 place-items-center rounded-lg bg-base-200 text-base-content/70 transition hover:bg-primary hover:text-primary-content"
                   >
-                    <span class="grid size-8 place-items-center rounded-full border border-base-300 text-base-content/70">
-                      <TaamolWeb.SocialIcons.social_icon network={network} class="size-4" />
-                    </span>
-                    {TaamolWeb.SocialIcons.name(network)}
+                    <TaamolWeb.SocialIcons.social_icon network={network} class="size-4" />
                   </a>
                 </li>
               </ul>
-            </section>
-
-            <.link
-              navigate={~p"/donate"}
-              class="group block rounded-3xl bg-linear-to-br from-rose-500 to-primary p-5 text-white shadow-lg shadow-primary/20 transition hover:brightness-105"
-            >
-              <Layouts.donate_icon class="size-7" />
-              <p class="mt-3 font-semibold">{gettext("Support the community")}</p>
-              <p class="mt-1 text-sm text-white/85">{gettext("Give a gift with Swish.")}</p>
-              <span class="mt-3 inline-flex items-center gap-1 text-sm font-semibold">
-                {gettext("Donate")}
-                <.icon
-                  name="hero-arrow-right-micro"
-                  class="size-4 transition-transform group-hover:translate-x-0.5 rtl:rotate-180 rtl:group-hover:-translate-x-0.5"
-                />
-              </span>
-            </.link>
+            </.card>
           </aside>
         </div>
       </div>
     </Layouts.app>
     """
   end
+
+  defp detail_icon(:address), do: "hero-map-pin"
+  defp detail_icon(:phone), do: "hero-phone"
+  defp detail_icon(:email), do: "hero-envelope"
+  defp detail_icon(:opening_hours), do: "hero-clock"
+
+  defp detail_title(:address), do: gettext("Address")
+  defp detail_title(:phone), do: gettext("Phone")
+  defp detail_title(:email), do: gettext("Email")
+  defp detail_title(:opening_hours), do: gettext("Opening hours")
+
+  defp detail_href(:phone, phone), do: "tel:" <> String.replace(phone, ~r/[^\d+]/, "")
+  defp detail_href(:email, email), do: "mailto:" <> email
+  defp detail_href(_key, _value), do: nil
 end

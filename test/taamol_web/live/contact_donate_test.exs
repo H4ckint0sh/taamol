@@ -49,6 +49,24 @@ defmodule TaamolWeb.ContactDonateTest do
       assert admin_email == admin.email
     end
 
+    test "shows the contact details that are filled in", %{conn: conn} do
+      {:ok, view, _html} = live(conn, ~p"/contact")
+      refute has_element?(view, "#contact-phone")
+
+      {:ok, _} =
+        Settings.update(Scope.for_user(admin_fixture()), %{
+          "contact_phone" => "070 123 45 67",
+          "contact_email" => "info@example.com",
+          "opening_hours" => "Fridays 18–23"
+        })
+
+      {:ok, view, _html} = live(build_conn(), ~p"/contact")
+      assert has_element?(view, "#contact-phone a[href='tel:0701234567']")
+      assert has_element?(view, "#contact-email a[href='mailto:info@example.com']")
+      assert has_element?(view, "#contact-opening_hours", "Fridays 18–23")
+      refute has_element?(view, "#contact-address")
+    end
+
     test "is pre-filled for logged-in users", %{conn: conn} do
       user = user_fixture()
       {:ok, view, _html} = conn |> log_in_user(user) |> live(~p"/contact")

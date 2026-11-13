@@ -73,6 +73,24 @@ defmodule Taamol.Settings do
     end
   end
 
+  @doc """
+  The contact details shown on the contact page, without the empty ones:
+  `[address: "…", phone: "…", email: "…", opening_hours: "…"]`.
+  """
+  def contact_details do
+    settings = get()
+
+    for {key, field} <- [
+          address: :contact_address,
+          phone: :contact_phone,
+          email: :contact_email,
+          opening_hours: :opening_hours
+        ],
+        value = Map.get(settings, field),
+        is_binary(value) and String.trim(value) != "",
+        do: {key, String.trim(value)}
+  end
+
   @doc "A changeset for the settings form."
   def change(attrs \\ %{}), do: SiteSetting.changeset(get(), attrs)
 

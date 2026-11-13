@@ -141,7 +141,7 @@ defmodule TaamolWeb.NewsComponents do
   @doc "Small uppercase category label."
   def category_label(assigns) do
     ~H"""
-    <span class={["text-[11px] font-bold uppercase tracking-wider text-primary", @class]}>
+    <span class={["text-xs font-bold uppercase tracking-wider text-primary", @class]}>
       {category_name(@category)}
     </span>
     """
@@ -228,7 +228,7 @@ defmodule TaamolWeb.NewsComponents do
           <.category_label :if={@show_category} category={@article.category} />
           <h3
             dir="auto"
-            class="line-clamp-3 text-sm font-semibold leading-snug transition-colors group-hover:text-primary"
+            class="line-clamp-3 text-[15px] font-semibold leading-snug transition-colors group-hover:text-primary sm:text-base"
           >
             {@article.title}
           </h3>
@@ -265,7 +265,6 @@ defmodule TaamolWeb.NewsComponents do
           >
             {@article.title}
           </h3>
-          <.meta article={@article} class="mt-2" />
           <p
             :if={@article.summary}
             dir="auto"
@@ -273,6 +272,7 @@ defmodule TaamolWeb.NewsComponents do
           >
             {@article.summary}
           </p>
+          <.meta article={@article} class="mt-2" />
         </div>
       </.link>
     </article>
@@ -391,10 +391,12 @@ defmodule TaamolWeb.NewsComponents do
       <div class="sticky top-28 space-y-4">
         <section
           id="rail-prayer-card"
-          class="rounded-2xl border border-base-300 bg-base-100 p-3"
+          class="rounded-2xl border border-base-300 bg-base-100 p-2"
         >
-          <h2 class="mb-1 flex items-center gap-2 px-1 text-sm font-semibold">
-            <.icon name="hero-moon" class="size-4 text-primary" />
+          <h2 class="mb-2 flex items-center gap-2 px-2 pt-2 text-sm font-semibold">
+            <span class="grid size-6 place-items-center rounded-full bg-primary/10 text-primary">
+              <.icon name="hero-moon-micro" class="size-4" />
+            </span>
             {gettext("Prayer times")}
           </h2>
           <Layouts.prayer_times id="rail-prayer-times" variant={:card} />

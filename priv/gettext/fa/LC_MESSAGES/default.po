@@ -133,7 +133,9 @@ msgstr "داشبورد"
 msgid "Don't have an account?"
 msgstr "حساب ندارید؟"
 
-#: lib/taamol_web/live/contact_live.ex:116
+#: lib/taamol_web/live/contact_live.ex:123
+#: lib/taamol_web/live/contact_live.ex:217
+#: lib/taamol_web/live/dashboard_live/site_settings.ex:141
 #: lib/taamol_web/live/dashboard_live/user_form.ex:111
 #: lib/taamol_web/live/user_live/login.ex:49
 #: lib/taamol_web/live/user_live/login.ex:75
@@ -190,7 +192,7 @@ msgid "Keep me logged in on this device"
 msgstr "مرا در این دستگاه وارد نگه دار"
 
 #: lib/taamol_web/components/layouts.ex:590
-#: lib/taamol_web/live/menu_live.ex:110
+#: lib/taamol_web/live/menu_live.ex:118
 #, elixir-autogen, elixir-format
 msgid "Language"
 msgstr "زبان"
@@ -199,7 +201,7 @@ msgstr "زبان"
 #: lib/taamol_web/components/layouts.ex:537
 #: lib/taamol_web/components/layouts.ex:769
 #: lib/taamol_web/live/article_live/show.ex:355
-#: lib/taamol_web/live/calendar_live.ex:623
+#: lib/taamol_web/live/calendar_live.ex:672
 #: lib/taamol_web/live/menu_live.ex:67
 #: lib/taamol_web/live/user_live/confirmation.ex:53
 #: lib/taamol_web/live/user_live/login.ex:13
@@ -236,7 +238,7 @@ msgstr "ورود فقط برای این بار"
 #: lib/taamol_web/components/layouts.ex:621
 #: lib/taamol_web/components/layouts.ex:765
 #: lib/taamol_web/components/layouts.ex:941
-#: lib/taamol_web/live/menu_live.ex:125
+#: lib/taamol_web/live/menu_live.ex:133
 #, elixir-autogen, elixir-format
 msgid "Log out"
 msgstr "خروج"
@@ -462,84 +464,84 @@ msgstr "یا"
 msgid "the mailbox page"
 msgstr "صفحه صندوق ایمیل"
 
-#: lib/taamol_web/components/layouts.ex:1370
+#: lib/taamol_web/components/layouts.ex:1396
 #, elixir-autogen, elixir-format
 msgid "Allow location access in your browser to see prayer times for where you are."
 msgstr "برای دیدن اوقات شرعی محل خود، دسترسی به موقعیت مکانی را در مرورگر مجاز کنید."
 
-#: lib/taamol_web/components/layouts.ex:1156
+#: lib/taamol_web/components/layouts.ex:1182
 #, elixir-autogen, elixir-format
 msgid "Asr"
 msgstr "عصر"
 
-#: lib/taamol_web/components/layouts.ex:1155
+#: lib/taamol_web/components/layouts.ex:1181
 #, elixir-autogen, elixir-format
 msgid "Dhuhr"
 msgstr "ظهر"
 
-#: lib/taamol_web/components/layouts.ex:1153
+#: lib/taamol_web/components/layouts.ex:1179
 #, elixir-autogen, elixir-format
 msgid "Fajr"
 msgstr "صبح"
 
-#: lib/taamol_web/components/layouts.ex:1158
+#: lib/taamol_web/components/layouts.ex:1184
 #, elixir-autogen, elixir-format
 msgid "Isha"
 msgstr "عشا"
 
-#: lib/taamol_web/components/layouts.ex:1157
+#: lib/taamol_web/components/layouts.ex:1183
 #, elixir-autogen, elixir-format
 msgid "Maghrib"
 msgstr "مغرب"
 
-#: lib/taamol_web/components/layouts.ex:1176
-#: lib/taamol_web/components/news_components.ex:398
+#: lib/taamol_web/components/layouts.ex:1202
+#: lib/taamol_web/components/news_components.ex:400
 #: lib/taamol_web/live/dashboard_live/site_settings.ex:85
 #, elixir-autogen, elixir-format
 msgid "Prayer times"
 msgstr "اوقات شرعی"
 
-#: lib/taamol_web/components/layouts.ex:1373
+#: lib/taamol_web/components/layouts.ex:1399
 #, elixir-autogen, elixir-format
 msgid "Prayer times could not be loaded. Click to try again."
 msgstr "اوقات شرعی بارگذاری نشد. برای تلاش دوباره کلیک کنید."
 
-#: lib/taamol_web/components/layouts.ex:1154
+#: lib/taamol_web/components/layouts.ex:1180
 #, elixir-autogen, elixir-format
 msgid "Sunrise"
 msgstr "طلوع آفتاب"
 
-#: lib/taamol_web/components/layouts.ex:1226
+#: lib/taamol_web/components/layouts.ex:1252
 #, elixir-autogen, elixir-format
 msgid "Day %{day} of %{total}"
 msgstr "روز %{day} از %{total}"
 
-#: lib/taamol_web/components/layouts.ex:1242
+#: lib/taamol_web/components/layouts.ex:1268
 #, elixir-autogen, elixir-format
 msgid "Iftar"
 msgstr "افطار"
 
-#: lib/taamol_web/components/layouts.ex:1222
+#: lib/taamol_web/components/layouts.ex:1248
 #, elixir-autogen, elixir-format
 msgid "Ramadan Mubarak"
 msgstr "رمضان مبارک"
 
-#: lib/taamol_web/components/layouts.ex:1238
+#: lib/taamol_web/components/layouts.ex:1264
 #, elixir-autogen, elixir-format
 msgid "Suhoor"
 msgstr "سحر"
 
-#: lib/taamol_web/components/layouts.ex:1250
+#: lib/taamol_web/components/layouts.ex:1276
 #, elixir-autogen, elixir-format
 msgid "Until iftar"
 msgstr "تا افطار"
 
-#: lib/taamol_web/components/layouts.ex:1249
+#: lib/taamol_web/components/layouts.ex:1275
 #, elixir-autogen, elixir-format
 msgid "Until suhoor ends"
 msgstr "تا پایان سحر"
 
-#: lib/taamol_web/components/layouts.ex:1338
+#: lib/taamol_web/components/layouts.ex:1364
 #, elixir-autogen, elixir-format
 msgid "until %{prayer}"
 msgstr "تا %{prayer}"
@@ -566,7 +568,7 @@ msgstr[0] "%{count} دقیقه پیش"
 msgstr[1] "%{count} دقیقه پیش"
 
 #: lib/taamol_web/components/news_components.ex:300
-#: lib/taamol_web/live/dashboard_live/bookings.ex:178
+#: lib/taamol_web/live/dashboard_live/bookings.ex:191
 #: lib/taamol_web/live/dashboard_live/messages.ex:122
 #, elixir-autogen, elixir-format
 msgid "All"
@@ -597,8 +599,8 @@ msgstr "حساب کاربری بسازید تا نظر بدهید، مطالب �
 msgid "Culture"
 msgstr "فرهنگ"
 
-#: lib/taamol_web/components/layouts.ex:1083
-#: lib/taamol_web/components/layouts.ex:1084
+#: lib/taamol_web/components/layouts.ex:1109
+#: lib/taamol_web/components/layouts.ex:1110
 #, elixir-autogen, elixir-format
 msgid "Dark mode"
 msgstr "حالت تیره"
@@ -657,7 +659,7 @@ msgstr "ژوئن"
 msgid "Just now"
 msgstr "همین حالا"
 
-#: lib/taamol_web/live/home_live.ex:97
+#: lib/taamol_web/live/home_live.ex:120
 #, elixir-autogen, elixir-format
 msgid "Latest news"
 msgstr "آخرین اخبار"
@@ -668,7 +670,7 @@ msgid "Link copied"
 msgstr "پیوند کپی شد"
 
 #: lib/taamol_web/live/gallery_live.ex:148
-#: lib/taamol_web/live/home_live.ex:189
+#: lib/taamol_web/live/home_live.ex:212
 #: lib/taamol_web/live/news_live.ex:108
 #, elixir-autogen, elixir-format
 msgid "Loading…"
@@ -690,7 +692,7 @@ msgid "May"
 msgstr "مه"
 
 #: lib/taamol_web/live/article_live/show.ex:399
-#: lib/taamol_web/live/home_live.ex:113
+#: lib/taamol_web/live/home_live.ex:136
 #, elixir-autogen, elixir-format
 msgid "Most read"
 msgstr "پربازدیدترین"
@@ -704,7 +706,7 @@ msgstr "پربازدیدترین"
 #: lib/taamol_web/live/dashboard_live/articles.ex:22
 #: lib/taamol_web/live/dashboard_live/articles.ex:101
 #: lib/taamol_web/live/dashboard_live/articles.ex:104
-#: lib/taamol_web/live/home_live.ex:157
+#: lib/taamol_web/live/home_live.ex:180
 #: lib/taamol_web/live/news_live.ex:27
 #: lib/taamol_web/live/news_live.ex:64
 #, elixir-autogen, elixir-format
@@ -718,12 +720,12 @@ msgstr "اخبار"
 msgid "News for our community"
 msgstr "اخبار برای جامعه ما"
 
-#: lib/taamol_web/live/home_live.ex:69
+#: lib/taamol_web/live/home_live.ex:92
 #, elixir-autogen, elixir-format
 msgid "No news yet"
 msgstr "هنوز خبری نیست"
 
-#: lib/taamol_web/live/home_live.ex:124
+#: lib/taamol_web/live/home_live.ex:147
 #, elixir-autogen, elixir-format
 msgid "No other articles yet."
 msgstr "هنوز مطلب دیگری نیست."
@@ -739,7 +741,7 @@ msgid "October"
 msgstr "اکتبر"
 
 #: lib/taamol_web/components/layouts.ex:586
-#: lib/taamol_web/live/menu_live.ex:97
+#: lib/taamol_web/live/menu_live.ex:105
 #, elixir-autogen, elixir-format
 msgid "Preferences"
 msgstr "تنظیمات نمایش"
@@ -750,7 +752,7 @@ msgstr "تنظیمات نمایش"
 msgid "Profile"
 msgstr "پروفایل"
 
-#: lib/taamol_web/live/home_live.ex:71
+#: lib/taamol_web/live/home_live.ex:94
 #, elixir-autogen, elixir-format
 msgid "Published articles will appear here."
 msgstr "مطالب منتشرشده اینجا نمایش داده می‌شوند."
@@ -772,7 +774,7 @@ msgstr "اشتراک‌گذاری"
 
 #: lib/taamol_web/live/dashboard_live/gallery.ex:266
 #: lib/taamol_web/live/gallery_live.ex:151
-#: lib/taamol_web/live/home_live.ex:192
+#: lib/taamol_web/live/home_live.ex:215
 #: lib/taamol_web/live/news_live.ex:111
 #, elixir-autogen, elixir-format
 msgid "Show more"
@@ -794,7 +796,7 @@ msgid "Sweden"
 msgstr "سوئد"
 
 #: lib/taamol_web/components/layouts.ex:596
-#: lib/taamol_web/live/menu_live.ex:103
+#: lib/taamol_web/live/menu_live.ex:111
 #, elixir-autogen, elixir-format
 msgid "Theme"
 msgstr "پوسته"
@@ -831,7 +833,7 @@ msgstr "دسته‌بندی‌ها"
 msgid "More from %{category}"
 msgstr "بیشتر از %{category}"
 
-#: lib/taamol_web/live/home_live.ex:174
+#: lib/taamol_web/live/home_live.ex:197
 #: lib/taamol_web/live/news_live.ex:86
 #, elixir-autogen, elixir-format
 msgid "No articles in this category yet."
@@ -842,12 +844,12 @@ msgstr "هنوز مطلبی در این دسته نیست."
 msgid "No other articles in this category yet."
 msgstr "هنوز مطلب دیگری در این دسته نیست."
 
-#: lib/taamol_web/live/calendar_live.ex:699
+#: lib/taamol_web/live/calendar_live.ex:748
 #, elixir-autogen, elixir-format
 msgid "+%{count} more"
 msgstr "+%{count} مورد دیگر"
 
-#: lib/taamol_web/live/calendar_live.ex:299
+#: lib/taamol_web/live/calendar_live.ex:314
 #: lib/taamol_web/live/dashboard_live/event_form.ex:30
 #: lib/taamol_web/live/dashboard_live/events.ex:100
 #, elixir-autogen, elixir-format
@@ -859,135 +861,135 @@ msgstr "افزودن رویداد"
 msgid "All day"
 msgstr "تمام روز"
 
-#: lib/taamol_web/components/calendar_components.ex:28
+#: lib/taamol_web/components/calendar_components.ex:31
 #, elixir-autogen, elixir-format
 msgid "Arbaeen"
 msgstr "اربعین حسینی"
 
-#: lib/taamol_web/components/calendar_components.ex:25
+#: lib/taamol_web/components/calendar_components.ex:28
 #, elixir-autogen, elixir-format
 msgid "Ashura, martyrdom of Imam Hussain"
 msgstr "عاشورا، شهادت امام حسین (ع)"
 
-#: lib/taamol_web/components/calendar_components.ex:53
+#: lib/taamol_web/components/calendar_components.ex:56
 #, elixir-autogen, elixir-format
 msgid "Birth of Abbas ibn Ali"
 msgstr "ولادت حضرت ابوالفضل العباس (ع)"
 
-#: lib/taamol_web/components/calendar_components.ex:55
+#: lib/taamol_web/components/calendar_components.ex:58
 #, elixir-autogen, elixir-format
 msgid "Birth of Ali al-Akbar"
 msgstr "ولادت حضرت علی‌اکبر (ع)"
 
-#: lib/taamol_web/components/calendar_components.ex:48
+#: lib/taamol_web/components/calendar_components.ex:51
 #, elixir-autogen, elixir-format
 msgid "Birth of Imam Ali"
 msgstr "ولادت امام علی (ع)"
 
-#: lib/taamol_web/components/calendar_components.ex:75
+#: lib/taamol_web/components/calendar_components.ex:78
 #, elixir-autogen, elixir-format
 msgid "Birth of Imam Ali al-Hadi"
 msgstr "ولادت امام هادی (ع)"
 
-#: lib/taamol_web/components/calendar_components.ex:59
+#: lib/taamol_web/components/calendar_components.ex:62
 #, elixir-autogen, elixir-format
 msgid "Birth of Imam Hasan"
 msgstr "ولادت امام حسن مجتبی (ع)"
 
-#: lib/taamol_web/components/calendar_components.ex:39
+#: lib/taamol_web/components/calendar_components.ex:42
 #, elixir-autogen, elixir-format
 msgid "Birth of Imam Hasan al-Askari"
 msgstr "ولادت امام حسن عسکری (ع)"
 
-#: lib/taamol_web/components/calendar_components.ex:52
+#: lib/taamol_web/components/calendar_components.ex:55
 #, elixir-autogen, elixir-format
 msgid "Birth of Imam Hussain"
 msgstr "ولادت امام حسین (ع)"
 
-#: lib/taamol_web/components/calendar_components.ex:56
+#: lib/taamol_web/components/calendar_components.ex:59
 #, elixir-autogen, elixir-format
 msgid "Birth of Imam Mahdi"
 msgstr "ولادت حضرت مهدی (عج)"
 
-#: lib/taamol_web/components/calendar_components.ex:45
+#: lib/taamol_web/components/calendar_components.ex:48
 #, elixir-autogen, elixir-format
 msgid "Birth of Imam Muhammad al-Baqir"
 msgstr "ولادت امام محمد باقر (ع)"
 
-#: lib/taamol_web/components/calendar_components.ex:47
+#: lib/taamol_web/components/calendar_components.ex:50
 #, elixir-autogen, elixir-format
 msgid "Birth of Imam Muhammad al-Jawad"
 msgstr "ولادت امام محمد تقی (ع)"
 
-#: lib/taamol_web/components/calendar_components.ex:27
+#: lib/taamol_web/components/calendar_components.ex:30
 #, elixir-autogen, elixir-format
 msgid "Birth of Imam Musa al-Kadhim"
 msgstr "ولادت امام موسی کاظم (ع)"
 
-#: lib/taamol_web/components/calendar_components.ex:66
+#: lib/taamol_web/components/calendar_components.ex:69
 #, elixir-autogen, elixir-format
 msgid "Birth of Imam Reza"
 msgstr "ولادت امام رضا (ع)"
 
-#: lib/taamol_web/components/calendar_components.ex:54
+#: lib/taamol_web/components/calendar_components.ex:57
 #, elixir-autogen, elixir-format
 msgid "Birth of Imam Sajjad"
 msgstr "ولادت امام سجاد (ع)"
 
-#: lib/taamol_web/components/calendar_components.ex:65
+#: lib/taamol_web/components/calendar_components.ex:68
 #, elixir-autogen, elixir-format
 msgid "Birth of Lady Fatima Masumeh"
 msgstr "ولادت حضرت معصومه (س)"
 
-#: lib/taamol_web/components/calendar_components.ex:44
+#: lib/taamol_web/components/calendar_components.ex:47
 #, elixir-autogen, elixir-format
 msgid "Birth of Lady Fatima al-Zahra"
 msgstr "ولادت حضرت فاطمه زهرا (س)"
 
-#: lib/taamol_web/components/calendar_components.ex:41
+#: lib/taamol_web/components/calendar_components.ex:44
 #, elixir-autogen, elixir-format
 msgid "Birth of Lady Zaynab"
 msgstr "ولادت حضرت زینب (س)"
 
-#: lib/taamol_web/components/calendar_components.ex:37
+#: lib/taamol_web/components/calendar_components.ex:40
 #, elixir-autogen, elixir-format
 msgid "Birth of the Prophet and Imam Ja'far al-Sadiq"
 msgstr "میلاد پیامبر اکرم (ص) و امام جعفر صادق (ع)"
 
-#: lib/taamol_web/components/calendar_components.ex:180
+#: lib/taamol_web/components/calendar_components.ex:192
 #: lib/taamol_web/components/layouts.ex:88
 #: lib/taamol_web/components/layouts.ex:251
 #: lib/taamol_web/components/layouts.ex:555
 #: lib/taamol_web/components/layouts.ex:732
-#: lib/taamol_web/live/calendar_live.ex:26
-#: lib/taamol_web/live/calendar_live.ex:254
+#: lib/taamol_web/live/calendar_live.ex:29
+#: lib/taamol_web/live/calendar_live.ex:269
 #: lib/taamol_web/live/dashboard_live/site_settings.ex:64
 #: lib/taamol_web/live/menu_live.ex:82
 #, elixir-autogen, elixir-format
 msgid "Calendar"
 msgstr "تقویم"
 
-#: lib/taamol_web/components/calendar_components.ex:81
+#: lib/taamol_web/components/calendar_components.ex:84
 #, elixir-autogen, elixir-format
 msgid "Celebration"
 msgstr "جشن"
 
-#: lib/taamol_web/components/calendar_components.ex:73
+#: lib/taamol_web/components/calendar_components.ex:76
 #, elixir-autogen, elixir-format
 msgid "Day of Arafah"
 msgstr "روز عرفه"
 
-#: lib/taamol_web/components/calendar_components.ex:40
+#: lib/taamol_web/components/calendar_components.ex:43
 #, elixir-autogen, elixir-format
 msgid "Death of Lady Fatima Masumeh"
 msgstr "وفات حضرت معصومه (س)"
 
-#: lib/taamol_web/components/calendar_components.ex:58
+#: lib/taamol_web/components/calendar_components.ex:61
 #, elixir-autogen, elixir-format
 msgid "Death of Lady Khadija"
 msgstr "وفات حضرت خدیجه (س)"
 
-#: lib/taamol_web/components/calendar_components.ex:49
+#: lib/taamol_web/components/calendar_components.ex:52
 #, elixir-autogen, elixir-format
 msgid "Death of Lady Zaynab"
 msgstr "وفات حضرت زینب (س)"
@@ -1010,7 +1012,7 @@ msgstr "حذف"
 msgid "Delete this event?"
 msgstr "این رویداد حذف شود؟"
 
-#: lib/taamol_web/components/calendar_components.ex:31
+#: lib/taamol_web/components/calendar_components.ex:34
 #, elixir-autogen, elixir-format
 msgid "Demise of the Prophet and martyrdom of Imam Hasan"
 msgstr "رحلت پیامبر اکرم (ص) و شهادت امام حسن مجتبی (ع)"
@@ -1020,19 +1022,19 @@ msgstr "رحلت پیامبر اکرم (ص) و شهادت امام حسن مجت
 msgid "Description"
 msgstr "توضیحات"
 
-#: lib/taamol_web/components/calendar_components.ex:98
+#: lib/taamol_web/components/calendar_components.ex:101
 #, elixir-autogen, elixir-format
 msgid "Dhu al-Hijjah"
 msgstr "ذی‌الحجه"
 
-#: lib/taamol_web/components/calendar_components.ex:97
+#: lib/taamol_web/components/calendar_components.ex:100
 #, elixir-autogen, elixir-format
 msgid "Dhu al-Qadah"
 msgstr "ذی‌القعده"
 
-#: lib/taamol_web/live/calendar_live.ex:401
+#: lib/taamol_web/live/calendar_live.ex:416
 #: lib/taamol_web/live/dashboard_live/articles.ex:246
-#: lib/taamol_web/live/dashboard_live/booking_services.ex:118
+#: lib/taamol_web/live/dashboard_live/booking_services.ex:121
 #: lib/taamol_web/live/dashboard_live/events.ex:159
 #: lib/taamol_web/live/dashboard_live/users.ex:280
 #, elixir-autogen, elixir-format
@@ -1044,22 +1046,22 @@ msgstr "ویرایش"
 msgid "Edit event"
 msgstr "ویرایش رویداد"
 
-#: lib/taamol_web/components/calendar_components.ex:74
+#: lib/taamol_web/components/calendar_components.ex:77
 #, elixir-autogen, elixir-format
 msgid "Eid al-Adha"
 msgstr "عید قربان"
 
-#: lib/taamol_web/components/calendar_components.ex:63
+#: lib/taamol_web/components/calendar_components.ex:66
 #, elixir-autogen, elixir-format
 msgid "Eid al-Fitr"
 msgstr "عید فطر"
 
-#: lib/taamol_web/components/calendar_components.ex:76
+#: lib/taamol_web/components/calendar_components.ex:79
 #, elixir-autogen, elixir-format
 msgid "Eid al-Ghadir"
 msgstr "عید غدیر خم"
 
-#: lib/taamol_web/components/calendar_components.ex:77
+#: lib/taamol_web/components/calendar_components.ex:80
 #, elixir-autogen, elixir-format
 msgid "Eid al-Mubahala"
 msgstr "روز مباهله"
@@ -1080,32 +1082,32 @@ msgstr "رویداد حذف شد."
 msgid "Event saved."
 msgstr "رویداد ذخیره شد."
 
-#: lib/taamol_web/components/calendar_components.ex:42
+#: lib/taamol_web/components/calendar_components.ex:45
 #, elixir-autogen, elixir-format
 msgid "Fatimiyya (first narration)"
 msgstr "ایام فاطمیه (روایت اول)"
 
-#: lib/taamol_web/components/calendar_components.ex:57
+#: lib/taamol_web/components/calendar_components.ex:60
 #, elixir-autogen, elixir-format
 msgid "First day of Ramadan"
 msgstr "آغاز ماه رمضان"
 
-#: lib/taamol_web/components/calendar_components.ex:111
+#: lib/taamol_web/components/calendar_components.ex:114
 #, elixir-autogen, elixir-format
 msgid "Fri"
 msgstr "جمعه"
 
-#: lib/taamol_web/components/calendar_components.ex:23
+#: lib/taamol_web/components/calendar_components.ex:26
 #, elixir-autogen, elixir-format
 msgid "Islamic New Year"
 msgstr "آغاز سال نو هجری قمری"
 
-#: lib/taamol_web/components/calendar_components.ex:92
+#: lib/taamol_web/components/calendar_components.ex:95
 #, elixir-autogen, elixir-format
 msgid "Jumada al-Thani"
 msgstr "جمادی‌الثانی"
 
-#: lib/taamol_web/components/calendar_components.ex:91
+#: lib/taamol_web/components/calendar_components.ex:94
 #, elixir-autogen, elixir-format
 msgid "Jumada al-Ula"
 msgstr "جمادی‌الاول"
@@ -1115,147 +1117,147 @@ msgstr "جمادی‌الاول"
 msgid "Location"
 msgstr "مکان"
 
-#: lib/taamol_web/components/calendar_components.ex:51
+#: lib/taamol_web/components/calendar_components.ex:54
 #, elixir-autogen, elixir-format
 msgid "Mab'ath, the Prophet's mission"
 msgstr "عید مبعث"
 
-#: lib/taamol_web/components/calendar_components.ex:70
+#: lib/taamol_web/components/calendar_components.ex:73
 #, elixir-autogen, elixir-format
 msgid "Marriage of Imam Ali and Lady Fatima"
 msgstr "سالروز ازدواج امام علی (ع) و حضرت فاطمه (س)"
 
-#: lib/taamol_web/components/calendar_components.ex:46
+#: lib/taamol_web/components/calendar_components.ex:49
 #, elixir-autogen, elixir-format
 msgid "Martyrdom of Imam Ali al-Hadi"
 msgstr "شهادت امام هادی (ع)"
 
-#: lib/taamol_web/components/calendar_components.ex:61
+#: lib/taamol_web/components/calendar_components.ex:64
 #, elixir-autogen, elixir-format
 msgid "Martyrdom of Imam Ali, Night of Qadr"
 msgstr "شهادت امام علی (ع)، شب قدر"
 
-#: lib/taamol_web/components/calendar_components.ex:34
+#: lib/taamol_web/components/calendar_components.ex:37
 #, elixir-autogen, elixir-format
 msgid "Martyrdom of Imam Hasan al-Askari"
 msgstr "شهادت امام حسن عسکری (ع)"
 
-#: lib/taamol_web/components/calendar_components.ex:64
+#: lib/taamol_web/components/calendar_components.ex:67
 #, elixir-autogen, elixir-format
 msgid "Martyrdom of Imam Ja'far al-Sadiq"
 msgstr "شهادت امام جعفر صادق (ع)"
 
-#: lib/taamol_web/components/calendar_components.ex:72
+#: lib/taamol_web/components/calendar_components.ex:75
 #, elixir-autogen, elixir-format
 msgid "Martyrdom of Imam Muhammad al-Baqir"
 msgstr "شهادت امام محمد باقر (ع)"
 
-#: lib/taamol_web/components/calendar_components.ex:67
+#: lib/taamol_web/components/calendar_components.ex:70
 #, elixir-autogen, elixir-format
 msgid "Martyrdom of Imam Muhammad al-Jawad"
 msgstr "شهادت امام محمد تقی (ع)"
 
-#: lib/taamol_web/components/calendar_components.ex:50
+#: lib/taamol_web/components/calendar_components.ex:53
 #, elixir-autogen, elixir-format
 msgid "Martyrdom of Imam Musa al-Kadhim"
 msgstr "شهادت امام موسی کاظم (ع)"
 
-#: lib/taamol_web/components/calendar_components.ex:33
+#: lib/taamol_web/components/calendar_components.ex:36
 #, elixir-autogen, elixir-format
 msgid "Martyrdom of Imam Reza"
 msgstr "شهادت امام رضا (ع)"
 
-#: lib/taamol_web/components/calendar_components.ex:26
+#: lib/taamol_web/components/calendar_components.ex:29
 #, elixir-autogen, elixir-format
 msgid "Martyrdom of Imam Sajjad"
 msgstr "شهادت امام سجاد (ع)"
 
-#: lib/taamol_web/components/calendar_components.ex:43
+#: lib/taamol_web/components/calendar_components.ex:46
 #, elixir-autogen, elixir-format
 msgid "Martyrdom of Lady Fatima al-Zahra"
 msgstr "شهادت حضرت فاطمه زهرا (س)"
 
-#: lib/taamol_web/components/calendar_components.ex:107
+#: lib/taamol_web/components/calendar_components.ex:110
 #, elixir-autogen, elixir-format
 msgid "Mon"
 msgstr "دوشنبه"
 
-#: lib/taamol_web/components/calendar_components.ex:82
+#: lib/taamol_web/components/calendar_components.ex:85
 #, elixir-autogen, elixir-format
 msgid "Mourning"
 msgstr "سوگواری"
 
-#: lib/taamol_web/components/calendar_components.ex:87
+#: lib/taamol_web/components/calendar_components.ex:90
 #, elixir-autogen, elixir-format
 msgid "Muharram"
 msgstr "محرم"
 
-#: lib/taamol_web/live/calendar_live.ex:286
+#: lib/taamol_web/live/calendar_live.ex:301
 #, elixir-autogen, elixir-format
 msgid "Next month"
 msgstr "ماه بعد"
 
-#: lib/taamol_web/components/calendar_components.ex:60
+#: lib/taamol_web/components/calendar_components.ex:63
 #, elixir-autogen, elixir-format
 msgid "Night of Qadr (19th)"
 msgstr "شب قدر (نوزدهم)"
 
-#: lib/taamol_web/components/calendar_components.ex:62
+#: lib/taamol_web/components/calendar_components.ex:65
 #, elixir-autogen, elixir-format
 msgid "Night of Qadr (23rd)"
 msgstr "شب قدر (بیست‌وسوم)"
 
-#: lib/taamol_web/components/calendar_components.ex:185
+#: lib/taamol_web/components/calendar_components.ex:197
 #, elixir-autogen, elixir-format
 msgid "Nothing coming up."
 msgstr "رویداد پیش‌رویی نیست."
 
-#: lib/taamol_web/live/calendar_live.ex:379
+#: lib/taamol_web/live/calendar_live.ex:394
 #, elixir-autogen, elixir-format
 msgid "Nothing on this day."
 msgstr "در این روز چیزی نیست."
 
-#: lib/taamol_web/live/calendar_live.ex:450
+#: lib/taamol_web/live/calendar_live.ex:467
 #, elixir-autogen, elixir-format
 msgid "Nothing this month."
 msgstr "در این ماه چیزی نیست."
 
-#: lib/taamol_web/components/calendar_components.ex:83
+#: lib/taamol_web/components/calendar_components.ex:86
 #, elixir-autogen, elixir-format
 msgid "Observance"
 msgstr "مناسبت"
 
-#: lib/taamol_web/live/calendar_live.ex:278
+#: lib/taamol_web/live/calendar_live.ex:293
 #, elixir-autogen, elixir-format
 msgid "Previous month"
 msgstr "ماه قبل"
 
-#: lib/taamol_web/components/calendar_components.ex:89
+#: lib/taamol_web/components/calendar_components.ex:92
 #, elixir-autogen, elixir-format
 msgid "Rabi al-Awwal"
 msgstr "ربیع‌الاول"
 
-#: lib/taamol_web/components/calendar_components.ex:90
+#: lib/taamol_web/components/calendar_components.ex:93
 #, elixir-autogen, elixir-format
 msgid "Rabi al-Thani"
 msgstr "ربیع‌الثانی"
 
-#: lib/taamol_web/components/calendar_components.ex:93
+#: lib/taamol_web/components/calendar_components.ex:96
 #, elixir-autogen, elixir-format
 msgid "Rajab"
 msgstr "رجب"
 
-#: lib/taamol_web/components/calendar_components.ex:95
+#: lib/taamol_web/components/calendar_components.ex:98
 #, elixir-autogen, elixir-format
 msgid "Ramadan"
 msgstr "رمضان"
 
-#: lib/taamol_web/components/calendar_components.ex:88
+#: lib/taamol_web/components/calendar_components.ex:91
 #, elixir-autogen, elixir-format
 msgid "Safar"
 msgstr "صفر"
 
-#: lib/taamol_web/components/calendar_components.ex:112
+#: lib/taamol_web/components/calendar_components.ex:115
 #, elixir-autogen, elixir-format
 msgid "Sat"
 msgstr "شنبه"
@@ -1266,20 +1268,20 @@ msgid "Save event"
 msgstr "ذخیره رویداد"
 
 #: lib/taamol_web/live/dashboard_live/article_form.ex:383
-#: lib/taamol_web/live/dashboard_live/booking_services.ex:184
+#: lib/taamol_web/live/dashboard_live/booking_services.ex:200
 #: lib/taamol_web/live/dashboard_live/event_form.ex:156
-#: lib/taamol_web/live/dashboard_live/site_settings.ex:148
+#: lib/taamol_web/live/dashboard_live/site_settings.ex:179
 #: lib/taamol_web/live/dashboard_live/user_form.ex:116
 #, elixir-autogen, elixir-format
 msgid "Saving…"
 msgstr "در حال ذخیره…"
 
-#: lib/taamol_web/components/calendar_components.ex:94
+#: lib/taamol_web/components/calendar_components.ex:97
 #, elixir-autogen, elixir-format
 msgid "Shaban"
 msgstr "شعبان"
 
-#: lib/taamol_web/components/calendar_components.ex:96
+#: lib/taamol_web/components/calendar_components.ex:99
 #, elixir-autogen, elixir-format
 msgid "Shawwal"
 msgstr "شوال"
@@ -1289,17 +1291,17 @@ msgstr "شوال"
 msgid "Starts"
 msgstr "شروع"
 
-#: lib/taamol_web/components/calendar_components.ex:113
+#: lib/taamol_web/components/calendar_components.ex:116
 #, elixir-autogen, elixir-format
 msgid "Sun"
 msgstr "یکشنبه"
 
-#: lib/taamol_web/components/calendar_components.ex:80
+#: lib/taamol_web/components/calendar_components.ex:83
 #, elixir-autogen, elixir-format
 msgid "Taamol event"
 msgstr "رویداد تعامل"
 
-#: lib/taamol_web/components/calendar_components.ex:24
+#: lib/taamol_web/components/calendar_components.ex:27
 #, elixir-autogen, elixir-format
 msgid "Tasu'a"
 msgstr "تاسوعا"
@@ -1310,23 +1312,23 @@ msgstr "تاسوعا"
 msgid "The event could not be deleted."
 msgstr "رویداد حذف نشد."
 
-#: lib/taamol_web/live/calendar_live.ex:448
+#: lib/taamol_web/live/calendar_live.ex:465
 #, elixir-autogen, elixir-format
 msgid "This month"
 msgstr "این ماه"
 
-#: lib/taamol_web/components/calendar_components.ex:110
+#: lib/taamol_web/components/calendar_components.ex:113
 #, elixir-autogen, elixir-format
 msgid "Thu"
 msgstr "پنجشنبه"
 
-#: lib/taamol_web/live/calendar_live.ex:272
-#: lib/taamol_web/live/calendar_live.ex:498
+#: lib/taamol_web/live/calendar_live.ex:287
+#: lib/taamol_web/live/calendar_live.ex:518
 #, elixir-autogen, elixir-format
 msgid "Today"
 msgstr "امروز"
 
-#: lib/taamol_web/components/calendar_components.ex:108
+#: lib/taamol_web/components/calendar_components.ex:111
 #, elixir-autogen, elixir-format
 msgid "Tue"
 msgstr "سه‌شنبه"
@@ -1337,14 +1339,14 @@ msgstr "سه‌شنبه"
 msgid "Type"
 msgstr "نوع"
 
-#: lib/taamol_web/components/calendar_components.ex:174
-#: lib/taamol_web/live/dashboard_live/bookings.ex:177
+#: lib/taamol_web/components/calendar_components.ex:186
+#: lib/taamol_web/live/dashboard_live/bookings.ex:190
 #: lib/taamol_web/live/dashboard_live/events.ex:108
 #, elixir-autogen, elixir-format
 msgid "Upcoming"
 msgstr "پیش رو"
 
-#: lib/taamol_web/components/calendar_components.ex:109
+#: lib/taamol_web/components/calendar_components.ex:112
 #, elixir-autogen, elixir-format
 msgid "Wed"
 msgstr "چهارشنبه"
@@ -1421,7 +1423,7 @@ msgid "All categories"
 msgstr "همه دسته‌ها"
 
 #: lib/taamol_web/live/dashboard_live/overview.ex:133
-#: lib/taamol_web/live/home_live.ex:164
+#: lib/taamol_web/live/home_live.ex:187
 #, elixir-autogen, elixir-format
 msgid "All news"
 msgstr "همه اخبار"
@@ -1562,7 +1564,7 @@ msgstr "این حساب حذف شود؟ این کار قابل بازگشت نی
 msgid "Delete this article and its comments?"
 msgstr "این مطلب و نظراتش حذف شوند؟"
 
-#: lib/taamol_web/components/dashboard_components.ex:165
+#: lib/taamol_web/components/dashboard_components.ex:192
 #: lib/taamol_web/live/dashboard_live/article_form.ex:370
 #, elixir-autogen, elixir-format
 msgid "Draft"
@@ -1684,8 +1686,8 @@ msgstr "منو"
 msgid "Most read articles"
 msgstr "پربازدیدترین مطالب"
 
-#: lib/taamol_web/live/calendar_live.ex:588
-#: lib/taamol_web/live/contact_live.ex:112
+#: lib/taamol_web/live/calendar_live.ex:631
+#: lib/taamol_web/live/contact_live.ex:115
 #: lib/taamol_web/live/dashboard_live/user_form.ex:110
 #, elixir-autogen, elixir-format
 msgid "Name"
@@ -1709,7 +1711,8 @@ msgstr "مطلب جدید"
 msgid "New user"
 msgstr "کاربر جدید"
 
-#: lib/taamol_web/components/dashboard_components.ex:209
+#: lib/taamol_web/components/dashboard_components.ex:236
+#: lib/taamol_web/live/home_live.ex:380
 #, elixir-autogen, elixir-format
 msgid "Next"
 msgstr "بعدی"
@@ -1765,7 +1768,7 @@ msgstr "باز کردن تقویم"
 msgid "Overview"
 msgstr "نمای کلی"
 
-#: lib/taamol_web/components/dashboard_components.ex:188
+#: lib/taamol_web/components/dashboard_components.ex:215
 #, elixir-autogen, elixir-format
 msgid "Pages"
 msgstr "صفحه‌ها"
@@ -1786,12 +1789,13 @@ msgstr "افراد"
 msgid "Preview"
 msgstr "پیش‌نمایش"
 
-#: lib/taamol_web/components/dashboard_components.ex:194
+#: lib/taamol_web/components/dashboard_components.ex:221
+#: lib/taamol_web/live/home_live.ex:363
 #, elixir-autogen, elixir-format
 msgid "Previous"
 msgstr "قبلی"
 
-#: lib/taamol_web/components/dashboard_components.ex:163
+#: lib/taamol_web/components/dashboard_components.ex:190
 #: lib/taamol_web/live/dashboard_live/article_form.ex:372
 #, elixir-autogen, elixir-format
 msgid "Published"
@@ -1840,12 +1844,12 @@ msgstr "نقش‌ها و دسترسی به آمار از فهرست کاربرا
 msgid "Save"
 msgstr "ذخیره"
 
-#: lib/taamol_web/live/dashboard_live/site_settings.ex:151
+#: lib/taamol_web/live/dashboard_live/site_settings.ex:182
 #, elixir-autogen, elixir-format
 msgid "Save settings"
 msgstr "ذخیره تنظیمات"
 
-#: lib/taamol_web/components/dashboard_components.ex:164
+#: lib/taamol_web/components/dashboard_components.ex:191
 #, elixir-autogen, elixir-format
 msgid "Scheduled"
 msgstr "زمان‌بندی‌شده"
@@ -1870,7 +1874,7 @@ msgstr "تنظیمات ذخیره شد."
 msgid "Show statistics"
 msgstr "نمایش آمار"
 
-#: lib/taamol_web/components/dashboard_components.ex:186
+#: lib/taamol_web/components/dashboard_components.ex:213
 #, elixir-autogen, elixir-format
 msgid "Showing %{from} to %{to} of %{total}"
 msgstr "نمایش %{from} تا %{to} از %{total}"
@@ -2109,8 +2113,8 @@ msgstr "توضیح تصویر"
 msgid "Caption saved."
 msgstr "توضیح ذخیره شد."
 
-#: lib/taamol_web/live/calendar_live.ex:540
-#: lib/taamol_web/live/dashboard_live/bookings.ex:307
+#: lib/taamol_web/live/calendar_live.ex:564
+#: lib/taamol_web/live/dashboard_live/bookings.ex:328
 #: lib/taamol_web/live/gallery_live.ex:170
 #, elixir-autogen, elixir-format
 msgid "Close"
@@ -2126,7 +2130,7 @@ msgstr "این عکس حذف شود؟"
 msgid "Drop photos here or click to choose"
 msgstr "عکس‌ها را اینجا رها کنید یا برای انتخاب کلیک کنید"
 
-#: lib/taamol_web/live/home_live.ex:200
+#: lib/taamol_web/live/home_live.ex:223
 #, elixir-autogen, elixir-format
 msgid "From the gallery"
 msgstr "از گالری"
@@ -2145,7 +2149,7 @@ msgstr "از گالری"
 msgid "Gallery"
 msgstr "گالری"
 
-#: lib/taamol_web/live/dashboard_live/site_settings.ex:125
+#: lib/taamol_web/live/dashboard_live/site_settings.ex:156
 #, elixir-autogen, elixir-format
 msgid "Links shown as icons in the site footer. Leave a field empty to hide it."
 msgstr "پیوندهایی که به صورت آیکون در پایین سایت نمایش داده می‌شوند. برای پنهان کردن، فیلد را خالی بگذارید."
@@ -2181,7 +2185,7 @@ msgstr "عکس قبلی"
 msgid "Save caption"
 msgstr "ذخیره توضیح"
 
-#: lib/taamol_web/live/dashboard_live/site_settings.ex:123
+#: lib/taamol_web/live/dashboard_live/site_settings.ex:154
 #, elixir-autogen, elixir-format
 msgid "Social media"
 msgstr "شبکه‌های اجتماعی"
@@ -2213,7 +2217,7 @@ msgstr[1] "بارگذاری %{count} عکس"
 msgid "Uploading…"
 msgstr "در حال بارگذاری…"
 
-#: lib/taamol_web/live/home_live.ex:206
+#: lib/taamol_web/live/home_live.ex:229
 #, elixir-autogen, elixir-format
 msgid "View all"
 msgstr "مشاهده همه"
@@ -2238,22 +2242,22 @@ msgstr "بستن منو"
 msgid "Open menu"
 msgstr "باز کردن منو"
 
-#: lib/taamol_web/components/layouts.ex:1098
+#: lib/taamol_web/components/layouts.ex:1124
 #, elixir-autogen, elixir-format
 msgid "Day mode"
 msgstr "حالت روز"
 
-#: lib/taamol_web/components/layouts.ex:1118
+#: lib/taamol_web/components/layouts.ex:1144
 #, elixir-autogen, elixir-format
 msgid "Night mode"
 msgstr "حالت شب"
 
-#: lib/taamol_web/components/layouts.ex:1040
+#: lib/taamol_web/components/layouts.ex:1066
 #, elixir-autogen, elixir-format
 msgid "Switch to Persian"
 msgstr "تغییر به فارسی"
 
-#: lib/taamol_web/components/layouts.ex:1041
+#: lib/taamol_web/components/layouts.ex:1067
 #, elixir-autogen, elixir-format
 msgid "Switch to Swedish"
 msgstr "تغییر به سوئدی"
@@ -2336,7 +2340,7 @@ msgstr "نظر حذف نشد."
 msgid "Write a comment…"
 msgstr "نظر خود را بنویسید…"
 
-#: lib/taamol_web/live/donate_live.ex:83
+#: lib/taamol_web/live/donate_live.ex:72
 #, elixir-autogen, elixir-format
 msgid "Choose an amount"
 msgstr "یک مبلغ انتخاب کنید"
@@ -2344,13 +2348,14 @@ msgstr "یک مبلغ انتخاب کنید"
 #: lib/taamol_web/components/layouts.ex:98
 #: lib/taamol_web/components/layouts.ex:579
 #: lib/taamol_web/components/layouts.ex:738
-#: lib/taamol_web/live/contact_live.ex:22
+#: lib/taamol_web/live/contact_live.ex:24
 #: lib/taamol_web/live/menu_live.ex:88
 #, elixir-autogen, elixir-format
 msgid "Contact"
 msgstr "تماس با ما"
 
-#: lib/taamol_web/live/donate_live.ex:69
+#: lib/taamol_web/live/donate_live.ex:66
+#: lib/taamol_web/live/donate_live.ex:140
 #, elixir-autogen, elixir-format
 msgid "Contact us"
 msgstr "تماس با ما"
@@ -2365,9 +2370,9 @@ msgstr "این پیام حذف شود؟"
 #: lib/taamol_web/components/layouts.ex:183
 #: lib/taamol_web/components/layouts.ex:571
 #: lib/taamol_web/components/layouts.ex:741
-#: lib/taamol_web/live/contact_live.ex:193
-#: lib/taamol_web/live/donate_live.ex:16
-#: lib/taamol_web/live/menu_live.ex:91
+#: lib/taamol_web/live/donate_live.ex:18
+#: lib/taamol_web/live/home_live.ex:326
+#: lib/taamol_web/live/menu_live.ex:97
 #, elixir-autogen, elixir-format
 msgid "Donate"
 msgstr "حمایت مالی"
@@ -2377,13 +2382,13 @@ msgstr "حمایت مالی"
 msgid "Donations"
 msgstr "کمک‌های مالی"
 
-#: lib/taamol_web/live/contact_live.ex:70
+#: lib/taamol_web/live/contact_live.ex:73
 #: lib/taamol_web/live/dashboard_live/messages.ex:97
 #, elixir-autogen, elixir-format
 msgid "Events and activities"
 msgstr "رویدادها و فعالیت‌ها"
 
-#: lib/taamol_web/live/contact_live.ex:68
+#: lib/taamol_web/live/contact_live.ex:71
 #: lib/taamol_web/live/dashboard_live/messages.ex:95
 #, elixir-autogen, elixir-format
 msgid "Feedback"
@@ -2394,17 +2399,17 @@ msgstr "بازخورد"
 msgid "Feedback and questions sent through the contact page."
 msgstr "بازخوردها و پرسش‌هایی که از صفحه تماس فرستاده شده‌اند."
 
-#: lib/taamol_web/live/contact_live.ex:81
+#: lib/taamol_web/live/contact_live.ex:84
 #, elixir-autogen, elixir-format
 msgid "Feedback, a question or an idea for an activity? Write to us and we will get back to you."
 msgstr "بازخورد، پرسش یا ایده‌ای برای یک فعالیت دارید؟ برای ما بنویسید تا پاسخ دهیم."
 
-#: lib/taamol_web/live/contact_live.ex:167
+#: lib/taamol_web/live/contact_live.ex:187
 #, elixir-autogen, elixir-format
 msgid "Follow us"
 msgstr "ما را دنبال کنید"
 
-#: lib/taamol_web/live/contact_live.ex:79
+#: lib/taamol_web/live/contact_live.ex:82
 #, elixir-autogen, elixir-format
 msgid "Get in touch"
 msgstr "با ما در تماس باشید"
@@ -2414,17 +2419,12 @@ msgstr "با ما در تماس باشید"
 msgid "Gift to Taamol"
 msgstr "هدیه به تعامل"
 
-#: lib/taamol_web/live/contact_live.ex:191
-#, elixir-autogen, elixir-format
-msgid "Give a gift with Swish."
-msgstr "با سوئیش کمک کنید."
-
 #: lib/taamol_web/live/dashboard_live/messages.ex:202
 #, elixir-autogen, elixir-format
 msgid "Mark as unread"
 msgstr "علامت‌گذاری به‌عنوان خوانده‌نشده"
 
-#: lib/taamol_web/live/contact_live.ex:127
+#: lib/taamol_web/live/contact_live.ex:137
 #: lib/taamol_web/live/donate_live.ex:136
 #, elixir-autogen, elixir-format
 msgid "Message"
@@ -2453,7 +2453,7 @@ msgstr "پیام‌ها"
 msgid "No messages."
 msgstr "پیامی نیست."
 
-#: lib/taamol_web/live/donate_live.ex:67
+#: lib/taamol_web/live/donate_live.ex:64
 #, elixir-autogen, elixir-format
 msgid "Online donations are not set up yet. Please contact us to give."
 msgstr "کمک مالی آنلاین هنوز راه‌اندازی نشده است. برای کمک با ما تماس بگیرید."
@@ -2463,7 +2463,7 @@ msgstr "کمک مالی آنلاین هنوز راه‌اندازی نشده ا�
 msgid "Open Swish"
 msgstr "باز کردن سوئیش"
 
-#: lib/taamol_web/live/donate_live.ex:106
+#: lib/taamol_web/live/donate_live.ex:96
 #, elixir-autogen, elixir-format
 msgid "Or another amount"
 msgstr "یا مبلغ دیگری"
@@ -2473,7 +2473,7 @@ msgstr "یا مبلغ دیگری"
 msgid "Pay with Swish"
 msgstr "پرداخت با سوئیش"
 
-#: lib/taamol_web/live/contact_live.ex:69
+#: lib/taamol_web/live/contact_live.ex:72
 #: lib/taamol_web/live/dashboard_live/messages.ex:96
 #, elixir-autogen, elixir-format
 msgid "Question"
@@ -2489,30 +2489,29 @@ msgstr "پاسخ با ایمیل"
 msgid "Scan the code with the Swish app on your phone."
 msgstr "کد را با اپ سوئیش گوشی خود اسکن کنید."
 
-#: lib/taamol_web/live/contact_live.ex:103
+#: lib/taamol_web/live/contact_live.ex:106
 #, elixir-autogen, elixir-format
 msgid "Send another message"
 msgstr "ارسال پیام دیگر"
 
-#: lib/taamol_web/live/contact_live.ex:155
+#: lib/taamol_web/live/contact_live.ex:165
 #, elixir-autogen, elixir-format
 msgid "Send message"
 msgstr "ارسال پیام"
 
-#: lib/taamol_web/live/calendar_live.ex:613
-#: lib/taamol_web/live/contact_live.ex:151
+#: lib/taamol_web/live/calendar_live.ex:659
+#: lib/taamol_web/live/contact_live.ex:161
 #, elixir-autogen, elixir-format
 msgid "Sending…"
 msgstr "در حال ارسال…"
 
-#: lib/taamol_web/live/contact_live.ex:71
+#: lib/taamol_web/live/contact_live.ex:74
 #: lib/taamol_web/live/dashboard_live/messages.ex:98
 #, elixir-autogen, elixir-format
 msgid "Something else"
 msgstr "موضوع دیگر"
 
-#: lib/taamol_web/live/contact_live.ex:190
-#: lib/taamol_web/live/donate_live.ex:53
+#: lib/taamol_web/live/donate_live.ex:51
 #, elixir-autogen, elixir-format
 msgid "Support the community"
 msgstr "از جامعه حمایت کنید"
@@ -2523,12 +2522,12 @@ msgid "Swish QR code for %{amount} kr"
 msgstr "کد QR سوئیش برای %{amount} کرون"
 
 #: lib/taamol_web/live/dashboard_live/site_settings.ex:108
-#: lib/taamol_web/live/donate_live.ex:130
+#: lib/taamol_web/live/donate_live.ex:127
 #, elixir-autogen, elixir-format
 msgid "Swish number"
 msgstr "شماره سوئیش"
 
-#: lib/taamol_web/live/contact_live.ex:94
+#: lib/taamol_web/live/contact_live.ex:97
 #, elixir-autogen, elixir-format
 msgid "Thank you for your message!"
 msgstr "از پیام شما سپاسگزاریم!"
@@ -2538,7 +2537,7 @@ msgstr "از پیام شما سپاسگزاریم!"
 msgid "The message could not be deleted."
 msgstr "پیام حذف نشد."
 
-#: lib/taamol_web/live/contact_live.ex:121
+#: lib/taamol_web/live/contact_live.ex:131
 #, elixir-autogen, elixir-format
 msgid "Topic"
 msgstr "موضوع"
@@ -2553,110 +2552,110 @@ msgstr "خوانده‌نشده"
 msgid "Visitors donate with Swish: the app opens with your number, the amount and the message filled in. Leave the number empty to hide donations."
 msgstr "بازدیدکنندگان با سوئیش کمک می‌کنند: اپ با شماره، مبلغ و پیام از پیش پرشده باز می‌شود. برای پنهان کردن کمک مالی، شماره را خالی بگذارید."
 
-#: lib/taamol_web/live/contact_live.ex:146
+#: lib/taamol_web/live/contact_live.ex:156
 #, elixir-autogen, elixir-format
 msgid "We only use your email to answer you."
 msgstr "از ایمیل شما فقط برای پاسخ دادن استفاده می‌کنیم."
 
-#: lib/taamol_web/live/contact_live.ex:96
+#: lib/taamol_web/live/contact_live.ex:99
 #, elixir-autogen, elixir-format
 msgid "We read every message and will answer by email as soon as we can."
 msgstr "همه پیام‌ها را می‌خوانیم و در اولین فرصت با ایمیل پاسخ می‌دهیم."
 
-#: lib/taamol_web/live/contact_live.ex:131
+#: lib/taamol_web/live/contact_live.ex:141
 #, elixir-autogen, elixir-format
 msgid "Write your message…"
 msgstr "پیام خود را بنویسید…"
 
-#: lib/taamol_web/live/donate_live.ex:178
+#: lib/taamol_web/live/donate_live.ex:119
 #, elixir-autogen, elixir-format
 msgid "You can change the amount in Swish before you confirm."
 msgstr "پیش از تأیید می‌توانید مبلغ را در سوئیش تغییر دهید."
 
-#: lib/taamol_web/live/contact_live.ex:45
+#: lib/taamol_web/live/contact_live.ex:48
 #, elixir-autogen, elixir-format
 msgid "You have sent several messages recently. Please try again later."
 msgstr "اخیراً چند پیام فرستاده‌اید. لطفاً بعداً دوباره تلاش کنید."
 
-#: lib/taamol_web/live/donate_live.ex:56
+#: lib/taamol_web/live/donate_live.ex:53
 #, elixir-autogen, elixir-format
 msgid "Your gift helps us run the centre, the weekend school, youth activities and the programmes during Muharram and Ramadan."
 msgstr "کمک شما به اداره مرکز، مدرسه آخر هفته، فعالیت‌های جوانان و برنامه‌های محرم و رمضان یاری می‌رساند."
 
-#: lib/taamol_web/live/donate_live.ex:95
+#: lib/taamol_web/live/donate_live.ex:83
 #: lib/taamol_web/live/donate_live.ex:151
 #, elixir-autogen, elixir-format
 msgid "%{amount} kr"
 msgstr "%{amount} کرون"
 
-#: lib/taamol_web/live/donate_live.ex:123
+#: lib/taamol_web/live/donate_live.ex:113
 #, elixir-autogen, elixir-format
 msgid "kr"
 msgstr "کرون"
 
-#: lib/taamol_web/live/calendar_live.ex:678
+#: lib/taamol_web/live/calendar_live.ex:727
 #, elixir-autogen, elixir-format
 msgid "%{count} free"
 msgid_plural "%{count} free"
 msgstr[0] "%{count} آزاد"
 msgstr[1] "%{count} آزاد"
 
-#: lib/taamol_web/live/dashboard_live/bookings.ex:223
+#: lib/taamol_web/live/dashboard_live/bookings.ex:239
 #, elixir-autogen, elixir-format
 msgid "%{count} guest"
 msgid_plural "%{count} guests"
 msgstr[0] "%{count} مهمان"
 msgstr[1] "%{count} مهمان"
 
-#: lib/taamol_web/live/dashboard_live/booking_services.ex:104
+#: lib/taamol_web/live/dashboard_live/booking_services.ex:107
 #, elixir-autogen, elixir-format
 msgid "%{count} minute"
 msgid_plural "%{count} minutes"
 msgstr[0] "%{count} دقیقه"
 msgstr[1] "%{count} دقیقه"
 
-#: lib/taamol_web/components/calendar_components.ex:20
+#: lib/taamol_web/components/calendar_components.ex:21
 #, elixir-autogen, elixir-format
 msgid "%{service} (booked)"
 msgstr "%{service} (رزرو شده)"
 
-#: lib/taamol_web/live/dashboard_live/bookings.ex:329
+#: lib/taamol_web/live/dashboard_live/bookings.ex:350
 #, elixir-autogen, elixir-format
 msgid "Accept"
 msgstr "پذیرفتن"
 
-#: lib/taamol_web/live/dashboard_live/bookings.ex:252
+#: lib/taamol_web/live/dashboard_live/bookings.ex:270
 #, elixir-autogen, elixir-format
 msgid "Accept the new time"
 msgstr "پذیرفتن زمان جدید"
 
-#: lib/taamol_web/live/dashboard_live/bookings.ex:157
+#: lib/taamol_web/live/dashboard_live/bookings.ex:170
 #, elixir-autogen, elixir-format
 msgid "Answer booking requests for the premises, the imam and more."
 msgstr "به درخواست‌های رزرو سالن، امام و موارد دیگر پاسخ دهید."
 
-#: lib/taamol_web/live/calendar_live.ex:606
+#: lib/taamol_web/live/calendar_live.ex:652
 #, elixir-autogen, elixir-format
 msgid "Anything we should know? (optional)"
 msgstr "نکته‌ای که باید بدانیم؟ (اختیاری)"
 
-#: lib/taamol_web/live/calendar_live.ex:263
+#: lib/taamol_web/live/calendar_live.ex:278
 #, elixir-autogen, elixir-format
 msgid "Book"
 msgstr "رزرو"
 
-#: lib/taamol_web/components/calendar_components.ex:84
+#: lib/taamol_web/components/calendar_components.ex:87
 #, elixir-autogen, elixir-format
 msgid "Booking"
 msgstr "رزرو"
 
-#: lib/taamol_web/live/dashboard_live/bookings.ex:61
-#: lib/taamol_web/live/dashboard_live/bookings.ex:75
+#: lib/taamol_web/live/dashboard_live/bookings.ex:70
+#: lib/taamol_web/live/dashboard_live/bookings.ex:86
 #, elixir-autogen, elixir-format
 msgid "Booking cancelled."
 msgstr "رزرو لغو شد."
 
-#: lib/taamol_web/live/dashboard_live/bookings.ex:61
+#: lib/taamol_web/live/dashboard_live/bookings.ex:69
 #, elixir-autogen, elixir-format
 msgid "Booking confirmed."
 msgstr "رزرو تأیید شد."
@@ -2671,23 +2670,23 @@ msgstr "خدمات قابل رزرو"
 
 #: lib/taamol_web/components/layouts.ex:293
 #: lib/taamol_web/live/dashboard_live/bookings.ex:17
-#: lib/taamol_web/live/dashboard_live/bookings.ex:151
-#: lib/taamol_web/live/dashboard_live/bookings.ex:154
+#: lib/taamol_web/live/dashboard_live/bookings.ex:164
+#: lib/taamol_web/live/dashboard_live/bookings.ex:167
 #, elixir-autogen, elixir-format
 msgid "Bookings"
 msgstr "رزروها"
 
-#: lib/taamol_web/live/dashboard_live/booking_services.ex:177
+#: lib/taamol_web/live/dashboard_live/booking_services.ex:191
 #, elixir-autogen, elixir-format
 msgid "Can be booked"
 msgstr "قابل رزرو"
 
-#: lib/taamol_web/live/dashboard_live/bookings.ex:285
+#: lib/taamol_web/live/dashboard_live/bookings.ex:303
 #, elixir-autogen, elixir-format
 msgid "Cancel booking"
 msgstr "لغو رزرو"
 
-#: lib/taamol_web/live/dashboard_live/bookings.ex:282
+#: lib/taamol_web/live/dashboard_live/bookings.ex:300
 #, elixir-autogen, elixir-format
 msgid "Cancel this booking?"
 msgstr "این رزرو لغو شود؟"
@@ -2697,23 +2696,23 @@ msgstr "این رزرو لغو شود؟"
 msgid "Cancelled"
 msgstr "لغوشده"
 
-#: lib/taamol_web/live/dashboard_live/bookings.ex:133
+#: lib/taamol_web/live/dashboard_live/bookings.ex:146
 #, elixir-autogen, elixir-format
 msgid "Choose a date and a time to offer."
 msgstr "تاریخ و ساعتی برای پیشنهاد انتخاب کنید."
 
-#: lib/taamol_web/live/calendar_live.ex:559
+#: lib/taamol_web/live/calendar_live.ex:588
 #, elixir-autogen, elixir-format
 msgid "Choose a time"
 msgstr "یک ساعت انتخاب کنید"
 
-#: lib/taamol_web/live/dashboard_live/bookings.ex:298
+#: lib/taamol_web/live/dashboard_live/bookings.ex:319
 #, elixir-autogen, elixir-format
 msgid "Clashes with a confirmed booking at this time."
 msgstr "با یک رزرو تأییدشده در همین زمان تداخل دارد."
 
-#: lib/taamol_web/live/dashboard_live/bookings.ex:262
-#: lib/taamol_web/live/dashboard_live/bookings.ex:338
+#: lib/taamol_web/live/dashboard_live/bookings.ex:280
+#: lib/taamol_web/live/dashboard_live/bookings.ex:359
 #, elixir-autogen, elixir-format
 msgid "Decline"
 msgstr "رد کردن"
@@ -2723,42 +2722,42 @@ msgstr "رد کردن"
 msgid "Declined"
 msgstr "ردشده"
 
-#: lib/taamol_web/live/dashboard_live/booking_services.ex:152
+#: lib/taamol_web/live/dashboard_live/booking_services.ex:166
 #, elixir-autogen, elixir-format
 msgid "Description (Persian)"
 msgstr "توضیحات (فارسی)"
 
-#: lib/taamol_web/live/dashboard_live/booking_services.ex:146
+#: lib/taamol_web/live/dashboard_live/booking_services.ex:159
 #, elixir-autogen, elixir-format
 msgid "Description (Swedish)"
 msgstr "توضیحات (سوئدی)"
 
-#: lib/taamol_web/live/calendar_live.ex:408
+#: lib/taamol_web/live/calendar_live.ex:423
 #, elixir-autogen, elixir-format
 msgid "Details"
 msgstr "جزئیات"
 
-#: lib/taamol_web/live/dashboard_live/bookings.ex:126
+#: lib/taamol_web/live/dashboard_live/bookings.ex:138
 #, elixir-autogen, elixir-format
 msgid "Done: %{status}."
 msgstr "انجام شد: %{status}."
 
-#: lib/taamol_web/live/dashboard_live/booking_services.ex:132
+#: lib/taamol_web/live/dashboard_live/booking_services.ex:135
 #, elixir-autogen, elixir-format
 msgid "Edit service"
 msgstr "ویرایش خدمت"
 
-#: lib/taamol_web/live/calendar_live.ex:684
+#: lib/taamol_web/live/calendar_live.ex:733
 #, elixir-autogen, elixir-format
 msgid "Full"
 msgstr "پر"
 
-#: lib/taamol_web/live/calendar_live.ex:556
+#: lib/taamol_web/live/calendar_live.ex:585
 #, elixir-autogen, elixir-format
 msgid "Fully booked this day. Please choose another day."
 msgstr "این روز کاملاً رزرو شده است. لطفاً روز دیگری انتخاب کنید."
 
-#: lib/taamol_web/live/dashboard_live/booking_services.ex:172
+#: lib/taamol_web/live/dashboard_live/booking_services.ex:186
 #, elixir-autogen, elixir-format
 msgid "Icon"
 msgstr "آیکون"
@@ -2768,102 +2767,102 @@ msgstr "آیکون"
 msgid "Imam"
 msgstr "امام"
 
-#: lib/taamol_web/live/calendar_live.ex:621
+#: lib/taamol_web/live/calendar_live.ex:667
 #, elixir-autogen, elixir-format
 msgid "Log in to send a booking request."
 msgstr "برای ارسال درخواست رزرو وارد شوید."
 
-#: lib/taamol_web/live/dashboard_live/bookings.ex:272
+#: lib/taamol_web/live/dashboard_live/bookings.ex:290
 #, elixir-autogen, elixir-format
 msgid "Message from us:"
 msgstr "پیام ما:"
 
-#: lib/taamol_web/live/dashboard_live/bookings.ex:317
+#: lib/taamol_web/live/dashboard_live/bookings.ex:338
 #, elixir-autogen, elixir-format
 msgid "Message to the member (optional)"
 msgstr "پیام به عضو (اختیاری)"
 
-#: lib/taamol_web/live/dashboard_live/booking_services.ex:164
+#: lib/taamol_web/live/dashboard_live/booking_services.ex:178
 #, elixir-autogen, elixir-format
 msgid "Minutes"
 msgstr "دقیقه"
 
 #: lib/taamol_web/components/layouts.ex:925
-#: lib/taamol_web/live/calendar_live.ex:537
-#: lib/taamol_web/live/dashboard_live/bookings.ex:179
+#: lib/taamol_web/live/calendar_live.ex:557
+#: lib/taamol_web/live/dashboard_live/bookings.ex:192
 #: lib/taamol_web/live/menu_live.ex:47
 #, elixir-autogen, elixir-format
 msgid "My bookings"
 msgstr "رزروهای من"
 
-#: lib/taamol_web/live/dashboard_live/booking_services.ex:145
+#: lib/taamol_web/live/dashboard_live/booking_services.ex:151
 #, elixir-autogen, elixir-format
 msgid "Name (Persian)"
 msgstr "نام (فارسی)"
 
-#: lib/taamol_web/live/dashboard_live/booking_services.ex:144
+#: lib/taamol_web/live/dashboard_live/booking_services.ex:147
 #, elixir-autogen, elixir-format
 msgid "Name (Swedish)"
 msgstr "نام (سوئدی)"
 
-#: lib/taamol_web/live/dashboard_live/bookings.ex:167
+#: lib/taamol_web/live/dashboard_live/bookings.ex:180
 #, elixir-autogen, elixir-format
 msgid "New booking"
 msgstr "رزرو جدید"
 
-#: lib/taamol_web/live/dashboard_live/booking_services.ex:132
-#: lib/taamol_web/live/dashboard_live/booking_services.ex:140
+#: lib/taamol_web/live/dashboard_live/booking_services.ex:135
+#: lib/taamol_web/live/dashboard_live/booking_services.ex:143
 #, elixir-autogen, elixir-format
 msgid "New service"
 msgstr "خدمت جدید"
 
 #: lib/taamol_web/components/booking_components.ex:23
-#: lib/taamol_web/live/dashboard_live/bookings.ex:238
+#: lib/taamol_web/live/dashboard_live/bookings.ex:254
 #, elixir-autogen, elixir-format
 msgid "New time offered"
 msgstr "زمان جدید پیشنهاد شده"
 
-#: lib/taamol_web/live/dashboard_live/bookings.ex:195
+#: lib/taamol_web/live/dashboard_live/bookings.ex:210
 #, elixir-autogen, elixir-format
 msgid "No bookings yet."
 msgstr "هنوز رزروی نیست."
 
-#: lib/taamol_web/live/dashboard_live/bookings.ex:359
+#: lib/taamol_web/live/dashboard_live/bookings.ex:380
 #, elixir-autogen, elixir-format
 msgid "No free times"
 msgstr "زمان آزادی نیست"
 
-#: lib/taamol_web/live/dashboard_live/bookings.ex:195
+#: lib/taamol_web/live/dashboard_live/bookings.ex:209
 #, elixir-autogen, elixir-format
 msgid "No requests waiting."
 msgstr "درخواستی در انتظار نیست."
 
-#: lib/taamol_web/live/dashboard_live/booking_services.ex:125
+#: lib/taamol_web/live/dashboard_live/booking_services.ex:128
 #, elixir-autogen, elixir-format
 msgid "No services yet."
 msgstr "هنوز خدمتی نیست."
 
-#: lib/taamol_web/live/calendar_live.ex:549
+#: lib/taamol_web/live/calendar_live.ex:574
 #, elixir-autogen, elixir-format
 msgid "Nothing can be booked right now."
 msgstr "فعلاً چیزی قابل رزرو نیست."
 
-#: lib/taamol_web/live/calendar_live.ex:599
+#: lib/taamol_web/live/calendar_live.ex:645
 #, elixir-autogen, elixir-format
 msgid "Number of guests (optional)"
 msgstr "تعداد مهمانان (اختیاری)"
 
-#: lib/taamol_web/live/dashboard_live/bookings.ex:343
+#: lib/taamol_web/live/dashboard_live/bookings.ex:364
 #, elixir-autogen, elixir-format
 msgid "Offer another time"
 msgstr "پیشنهاد زمان دیگر"
 
-#: lib/taamol_web/live/dashboard_live/bookings.ex:375
+#: lib/taamol_web/live/dashboard_live/bookings.ex:396
 #, elixir-autogen, elixir-format
 msgid "Offer this time"
 msgstr "پیشنهاد این زمان"
 
-#: lib/taamol_web/live/dashboard_live/booking_services.ex:175
+#: lib/taamol_web/live/dashboard_live/booking_services.ex:189
 #, elixir-autogen, elixir-format
 msgid "Order"
 msgstr "ترتیب"
@@ -2873,7 +2872,9 @@ msgstr "ترتیب"
 msgid "Other"
 msgstr "دیگر"
 
-#: lib/taamol_web/live/calendar_live.ex:592
+#: lib/taamol_web/live/calendar_live.ex:638
+#: lib/taamol_web/live/contact_live.ex:216
+#: lib/taamol_web/live/dashboard_live/site_settings.ex:138
 #, elixir-autogen, elixir-format
 msgid "Phone"
 msgstr "تلفن"
@@ -2883,27 +2884,27 @@ msgstr "تلفن"
 msgid "Premises"
 msgstr "سالن"
 
-#: lib/taamol_web/live/calendar_live.ex:528
+#: lib/taamol_web/live/calendar_live.ex:548
 #, elixir-autogen, elixir-format
 msgid "Request sent!"
 msgstr "درخواست فرستاده شد!"
 
-#: lib/taamol_web/live/dashboard_live/bookings.ex:176
+#: lib/taamol_web/live/dashboard_live/bookings.ex:189
 #, elixir-autogen, elixir-format
 msgid "Requests"
 msgstr "درخواست‌ها"
 
-#: lib/taamol_web/live/dashboard_live/bookings.ex:307
+#: lib/taamol_web/live/dashboard_live/bookings.ex:328
 #, elixir-autogen, elixir-format
 msgid "Respond"
 msgstr "پاسخ"
 
-#: lib/taamol_web/live/dashboard_live/booking_services.ex:187
+#: lib/taamol_web/live/dashboard_live/booking_services.ex:203
 #, elixir-autogen, elixir-format
 msgid "Save service"
 msgstr "ذخیره خدمت"
 
-#: lib/taamol_web/live/calendar_live.ex:616
+#: lib/taamol_web/live/calendar_live.ex:662
 #, elixir-autogen, elixir-format
 msgid "Send booking request"
 msgstr "ارسال درخواست رزرو"
@@ -2913,46 +2914,46 @@ msgstr "ارسال درخواست رزرو"
 msgid "Service saved."
 msgstr "خدمت ذخیره شد."
 
-#: lib/taamol_web/live/dashboard_live/booking_services.ex:179
+#: lib/taamol_web/live/dashboard_live/booking_services.ex:193
 #, elixir-autogen, elixir-format
 msgid "Services that use the same premises or the imam can't be booked at the same time."
 msgstr "خدماتی که از یک سالن یا امام استفاده می‌کنند هم‌زمان قابل رزرو نیستند."
 
-#: lib/taamol_web/live/calendar_live.ex:561
+#: lib/taamol_web/live/calendar_live.ex:590
 #, elixir-autogen, elixir-format
 msgid "Takes %{count} minute"
 msgid_plural "Takes %{count} minutes"
 msgstr[0] "%{count} دقیقه طول می‌کشد"
 msgstr[1] "%{count} دقیقه طول می‌کشد"
 
-#: lib/taamol_web/live/dashboard_live/bookings.ex:130
+#: lib/taamol_web/live/dashboard_live/bookings.ex:143
 #, elixir-autogen, elixir-format
 msgid "That time clashes with a confirmed booking."
 msgstr "این زمان با یک رزرو تأییدشده تداخل دارد."
 
-#: lib/taamol_web/live/calendar_live.ex:153
+#: lib/taamol_web/live/calendar_live.ex:166
 #, elixir-autogen, elixir-format
 msgid "That time was just taken. Please choose another time."
 msgstr "این زمان همین حالا گرفته شد. لطفاً زمان دیگری انتخاب کنید."
 
-#: lib/taamol_web/live/dashboard_live/bookings.ex:65
+#: lib/taamol_web/live/dashboard_live/bookings.ex:76
 #, elixir-autogen, elixir-format
 msgid "That time was just taken. Please contact us."
 msgstr "این زمان همین حالا گرفته شد. لطفاً با ما تماس بگیرید."
 
-#: lib/taamol_web/live/dashboard_live/bookings.ex:68
-#: lib/taamol_web/live/dashboard_live/bookings.ex:77
-#: lib/taamol_web/live/dashboard_live/bookings.ex:136
+#: lib/taamol_web/live/dashboard_live/bookings.ex:79
+#: lib/taamol_web/live/dashboard_live/bookings.ex:88
+#: lib/taamol_web/live/dashboard_live/bookings.ex:149
 #, elixir-autogen, elixir-format
 msgid "The booking could not be updated."
 msgstr "رزرو به‌روزرسانی نشد."
 
-#: lib/taamol_web/live/calendar_live.ex:552
+#: lib/taamol_web/live/calendar_live.ex:581
 #, elixir-autogen, elixir-format
 msgid "This day can't be booked. Bookings are made at least a day in advance."
 msgstr "این روز قابل رزرو نیست. رزرو باید دست‌کم یک روز زودتر انجام شود."
 
-#: lib/taamol_web/live/dashboard_live/booking_services.ex:158
+#: lib/taamol_web/live/dashboard_live/booking_services.ex:172
 #, elixir-autogen, elixir-format
 msgid "Uses"
 msgstr "استفاده از"
@@ -2962,7 +2963,7 @@ msgstr "استفاده از"
 msgid "Waiting for answer"
 msgstr "در انتظار پاسخ"
 
-#: lib/taamol_web/live/calendar_live.ex:531
+#: lib/taamol_web/live/calendar_live.ex:551
 #, elixir-autogen, elixir-format
 msgid "We will confirm your booking or suggest another time. You'll get an email, and you can follow it in your dashboard."
 msgstr "رزرو شما را تأیید می‌کنیم یا زمان دیگری پیشنهاد می‌دهیم. ایمیلی دریافت می‌کنید و می‌توانید آن را در داشبورد دنبال کنید."
@@ -2972,12 +2973,74 @@ msgstr "رزرو شما را تأیید می‌کنیم یا زمان دیگری
 msgid "What members can book from the calendar."
 msgstr "آنچه اعضا می‌توانند از تقویم رزرو کنند."
 
-#: lib/taamol_web/live/dashboard_live/bookings.ex:158
+#: lib/taamol_web/live/dashboard_live/bookings.ex:171
 #, elixir-autogen, elixir-format
 msgid "Your booking requests and their status."
 msgstr "درخواست‌های رزرو شما و وضعیت آن‌ها."
 
-#: lib/taamol_web/live/dashboard_live/booking_services.ex:99
+#: lib/taamol_web/live/dashboard_live/booking_services.ex:102
 #, elixir-autogen, elixir-format
 msgid "hidden"
 msgstr "پنهان"
+
+#: lib/taamol_web/live/home_live.ex:295
+#, elixir-autogen, elixir-format
+msgid "A community rooted in"
+msgstr "جامعه‌ای ریشه‌دار در"
+
+#: lib/taamol_web/live/home_live.ex:315
+#, elixir-autogen, elixir-format
+msgid "News, gatherings, prayer times and the Shia calendar: everything that brings our community together, in one place."
+msgstr "اخبار، مراسم، اوقات شرعی و تقویم شیعه؛ هر آنچه جامعه ما را گرد هم می‌آورد، در یک جا."
+
+#: lib/taamol_web/live/home_live.ex:337
+#, elixir-autogen, elixir-format
+msgid "See what's coming up"
+msgstr "برنامه‌های پیش رو"
+
+#: lib/taamol_web/live/home_live.ex:292
+#, elixir-autogen, elixir-format
+msgid "Taamol · Shia community in Sweden"
+msgstr "تعامل · جامعه شیعیان در سوئد"
+
+#: lib/taamol_web/live/home_live.ex:297
+#, elixir-autogen, elixir-format
+msgid "faith and compassion"
+msgstr "ایمان و همدلی"
+
+#: lib/taamol_web/live/contact_live.ex:215
+#: lib/taamol_web/live/dashboard_live/site_settings.ex:132
+#, elixir-autogen, elixir-format
+msgid "Address"
+msgstr "نشانی"
+
+#: lib/taamol_web/live/dashboard_live/site_settings.ex:123
+#, elixir-autogen, elixir-format
+msgid "Contact details"
+msgstr "اطلاعات تماس"
+
+#: lib/taamol_web/live/dashboard_live/site_settings.ex:149
+#, elixir-autogen, elixir-format
+msgid "One line per day or period"
+msgstr "هر روز یا بازه در یک خط"
+
+#: lib/taamol_web/live/contact_live.ex:218
+#: lib/taamol_web/live/dashboard_live/site_settings.ex:148
+#, elixir-autogen, elixir-format
+msgid "Opening hours"
+msgstr "ساعات کاری"
+
+#: lib/taamol_web/live/dashboard_live/site_settings.ex:125
+#, elixir-autogen, elixir-format
+msgid "Shown on the contact page. Leave a field empty to hide it."
+msgstr "در صفحه تماس نمایش داده می‌شود. برای پنهان کردن، فیلد را خالی بگذارید."
+
+#: lib/taamol_web/live/contact_live.ex:118
+#, elixir-autogen, elixir-format
+msgid "Your name"
+msgstr "نام شما"
+
+#: lib/taamol_web/live/donate_live.ex:142
+#, elixir-autogen, elixir-format
+msgid "Questions about giving? Write to us."
+msgstr "سؤالی درباره کمک مالی دارید؟ برای ما بنویسید."
