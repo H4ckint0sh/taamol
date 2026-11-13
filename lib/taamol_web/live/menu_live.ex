@@ -87,9 +87,17 @@ defmodule TaamolWeb.MenuLive do
           <.menu_item id="menu-contact" to={~p"/contact"} icon="hero-chat-bubble-left-ellipsis">
             {gettext("Contact")}
           </.menu_item>
-          <.menu_item id="menu-donate" to={~p"/donate"} icon="hero-heart">
-            {gettext("Donate")}
-          </.menu_item>
+          <li>
+            <.link
+              id="menu-donate"
+              navigate={~p"/donate"}
+              class="flex items-center gap-3 px-4 py-3.5 text-sm transition last:rounded-b-2xl hover:bg-base-200"
+            >
+              <Layouts.donate_icon class="size-5 text-base-content/50" />
+              <span class="flex-1">{gettext("Donate")}</span>
+              <.icon name="hero-chevron-right" class="size-4 text-base-content/30 rtl:rotate-180" />
+            </.link>
+          </li>
         </ul>
 
         <section>

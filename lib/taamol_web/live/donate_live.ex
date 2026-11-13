@@ -47,7 +47,7 @@ defmodule TaamolWeb.DonateLive do
       <div id="donate" class="mx-auto max-w-5xl px-4 pt-8 sm:px-6 lg:px-8 lg:pt-14">
         <div class="mx-auto max-w-2xl text-center">
           <span class="mx-auto grid size-14 place-items-center rounded-2xl bg-rose-500/10 text-rose-500">
-            <.icon name="hero-heart-solid" class="size-7" />
+            <Layouts.donate_icon class="size-8" />
           </span>
           <h1 class="mt-4 text-3xl font-bold tracking-tight sm:text-4xl">
             {gettext("Support the community")}

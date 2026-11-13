@@ -179,7 +179,7 @@ defmodule TaamolWeb.Layouts do
             aria-label={gettext("Donate")}
             class="hidden h-9 items-center gap-1.5 rounded-full bg-rose-500/10 px-2.5 text-sm font-semibold text-rose-600 ring-1 ring-rose-500/20 transition hover:bg-rose-500/15 active:scale-95 lg:inline-flex 2xl:px-3.5 dark:text-rose-400"
           >
-            <.icon name="hero-heart-solid" class="size-4" />
+            <.donate_icon class="size-[18px]" />
             <span class="hidden 2xl:inline">{gettext("Donate")}</span>
           </.link>
           <%= if @current_scope do %>
@@ -568,7 +568,7 @@ defmodule TaamolWeb.Layouts do
               phx-click={close_drawer()}
               class="flex items-center justify-center gap-2 rounded-2xl bg-rose-500/10 py-3 text-sm font-semibold text-rose-600 ring-1 ring-rose-500/20 transition hover:bg-rose-500/15 dark:text-rose-400"
             >
-              <.icon name="hero-heart-solid" class="size-4" />{gettext("Donate")}
+              <.donate_icon class="size-[18px]" />{gettext("Donate")}
             </.link>
             <.link
               navigate={~p"/contact"}
@@ -1018,6 +1018,32 @@ defmodule TaamolWeb.Layouts do
         <.icon name="hero-arrow-path" class="ml-1 size-3 motion-safe:animate-spin" />
       </.flash>
     </div>
+    """
+  end
+
+  attr :class, :string, default: "size-5"
+
+  @doc """
+  A hand holding a heart, for donations (Heroicons has no such icon). From
+  Lucide (lucide.dev, "hand-heart", ISC license), drawn in `currentColor`.
+  """
+  def donate_icon(assigns) do
+    ~H"""
+    <svg
+      aria-hidden="true"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="2"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      class={["shrink-0", @class]}
+    >
+      <path d="M11 14h2a2 2 0 0 0 0-4h-3c-.6 0-1.1.2-1.4.6L3 16" />
+      <path d="m14.45 13.39 5.05-4.694C20.196 8 21 6.85 21 5.75a2.75 2.75 0 0 0-4.797-1.837.276.276 0 0 1-.406 0A2.75 2.75 0 0 0 11 5.75c0 1.2.802 2.248 1.5 2.946L16 11.95" />
+      <path d="m2 15 6 6" />
+      <path d="m7 20 1.6-1.4c.3-.4.8-.6 1.4-.6h4c1.1 0 2.1-.4 2.8-1.2l4.6-4.4a1 1 0 0 0-2.75-2.91" />
+    </svg>
     """
   end
 

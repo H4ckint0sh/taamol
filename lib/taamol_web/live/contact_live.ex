@@ -186,7 +186,7 @@ defmodule TaamolWeb.ContactLive do
               navigate={~p"/donate"}
               class="group block rounded-3xl bg-linear-to-br from-rose-500 to-primary p-5 text-white shadow-lg shadow-primary/20 transition hover:brightness-105"
             >
-              <.icon name="hero-heart-solid" class="size-6" />
+              <Layouts.donate_icon class="size-7" />
               <p class="mt-3 font-semibold">{gettext("Support the community")}</p>
               <p class="mt-1 text-sm text-white/85">{gettext("Give a gift with Swish.")}</p>
               <span class="mt-3 inline-flex items-center gap-1 text-sm font-semibold">
