@@ -214,3 +214,18 @@ html[lang="fa"] body {
   border-color: var(--color-primary);
   box-shadow: 0 0 0 3px color-mix(in oklab, var(--color-primary) 20%, transparent);
 }
+
+/* Form labels everywhere: larger and bold, in the main text colour, instead
+   of daisyUI's small grey labels. */
+.fieldset .label {
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: var(--color-base-content);
+  margin-bottom: 0.5rem;
+}
+
+/* Table column titles everywhere: bold and in the main text colour. */
+thead th {
+  font-weight: 700;
+  color: var(--color-base-content);
+}

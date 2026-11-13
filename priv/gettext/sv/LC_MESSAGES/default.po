@@ -26,7 +26,7 @@ msgstr "Åtkomsten har uppdaterats."
 msgid "Account Settings"
 msgstr "Kontoinställningar"
 
-#: lib/taamol_web/components/core_components.ex:380
+#: lib/taamol_web/components/core_components.ex:392
 #: lib/taamol_web/live/dashboard_live/articles.ex:185
 #: lib/taamol_web/live/dashboard_live/events.ex:125
 #: lib/taamol_web/live/dashboard_live/users.ex:185
@@ -134,7 +134,7 @@ msgid "Don't have an account?"
 msgstr "Har du inget konto?"
 
 #: lib/taamol_web/live/contact_live.ex:123
-#: lib/taamol_web/live/contact_live.ex:217
+#: lib/taamol_web/live/contact_live.ex:220
 #: lib/taamol_web/live/dashboard_live/site_settings.ex:141
 #: lib/taamol_web/live/dashboard_live/user_form.ex:111
 #: lib/taamol_web/live/user_live/login.ex:49
@@ -464,7 +464,7 @@ msgstr "eller"
 msgid "the mailbox page"
 msgstr "brevlådan"
 
-#: lib/taamol_web/components/layouts.ex:1396
+#: lib/taamol_web/components/layouts.ex:1412
 #, elixir-autogen, elixir-format
 msgid "Allow location access in your browser to see prayer times for where you are."
 msgstr "Tillåt platsåtkomst i webbläsaren för att se bönetider där du befinner dig."
@@ -494,14 +494,14 @@ msgstr "Isha"
 msgid "Maghrib"
 msgstr "Maghrib"
 
-#: lib/taamol_web/components/layouts.ex:1202
+#: lib/taamol_web/components/layouts.ex:1213
 #: lib/taamol_web/components/news_components.ex:400
 #: lib/taamol_web/live/dashboard_live/site_settings.ex:85
 #, elixir-autogen, elixir-format
 msgid "Prayer times"
 msgstr "Bönetider"
 
-#: lib/taamol_web/components/layouts.ex:1399
+#: lib/taamol_web/components/layouts.ex:1415
 #, elixir-autogen, elixir-format
 msgid "Prayer times could not be loaded. Click to try again."
 msgstr "Bönetiderna kunde inte laddas. Klicka för att försöka igen."
@@ -511,37 +511,37 @@ msgstr "Bönetiderna kunde inte laddas. Klicka för att försöka igen."
 msgid "Sunrise"
 msgstr "Soluppgång"
 
-#: lib/taamol_web/components/layouts.ex:1252
+#: lib/taamol_web/components/layouts.ex:1268
 #, elixir-autogen, elixir-format
 msgid "Day %{day} of %{total}"
 msgstr "Dag %{day} av %{total}"
 
-#: lib/taamol_web/components/layouts.ex:1268
+#: lib/taamol_web/components/layouts.ex:1284
 #, elixir-autogen, elixir-format
 msgid "Iftar"
 msgstr "Iftar"
 
-#: lib/taamol_web/components/layouts.ex:1248
+#: lib/taamol_web/components/layouts.ex:1264
 #, elixir-autogen, elixir-format
 msgid "Ramadan Mubarak"
 msgstr "Ramadan Mubarak"
 
-#: lib/taamol_web/components/layouts.ex:1264
+#: lib/taamol_web/components/layouts.ex:1280
 #, elixir-autogen, elixir-format
 msgid "Suhoor"
 msgstr "Suhoor"
 
-#: lib/taamol_web/components/layouts.ex:1276
+#: lib/taamol_web/components/layouts.ex:1292
 #, elixir-autogen, elixir-format
 msgid "Until iftar"
 msgstr "Tills iftar"
 
-#: lib/taamol_web/components/layouts.ex:1275
+#: lib/taamol_web/components/layouts.ex:1291
 #, elixir-autogen, elixir-format
 msgid "Until suhoor ends"
 msgstr "Tills suhoor slutar"
 
-#: lib/taamol_web/components/layouts.ex:1364
+#: lib/taamol_web/components/layouts.ex:1380
 #, elixir-autogen, elixir-format
 msgid "until %{prayer}"
 msgstr "till %{prayer}"
@@ -1564,7 +1564,7 @@ msgstr "Ta bort kontot? Det går inte att ångra."
 msgid "Delete this article and its comments?"
 msgstr "Ta bort artikeln och dess kommentarer?"
 
-#: lib/taamol_web/components/dashboard_components.ex:192
+#: lib/taamol_web/components/dashboard_components.ex:194
 #: lib/taamol_web/live/dashboard_live/article_form.ex:370
 #, elixir-autogen, elixir-format
 msgid "Draft"
@@ -1711,7 +1711,7 @@ msgstr "Ny artikel"
 msgid "New user"
 msgstr "Ny användare"
 
-#: lib/taamol_web/components/dashboard_components.ex:236
+#: lib/taamol_web/components/dashboard_components.ex:238
 #: lib/taamol_web/live/home_live.ex:380
 #, elixir-autogen, elixir-format
 msgid "Next"
@@ -1768,7 +1768,7 @@ msgstr "Öppna kalendern"
 msgid "Overview"
 msgstr "Översikt"
 
-#: lib/taamol_web/components/dashboard_components.ex:215
+#: lib/taamol_web/components/dashboard_components.ex:217
 #, elixir-autogen, elixir-format
 msgid "Pages"
 msgstr "Sidor"
@@ -1789,13 +1789,13 @@ msgstr "Personer"
 msgid "Preview"
 msgstr "Förhandsgranska"
 
-#: lib/taamol_web/components/dashboard_components.ex:221
+#: lib/taamol_web/components/dashboard_components.ex:223
 #: lib/taamol_web/live/home_live.ex:363
 #, elixir-autogen, elixir-format
 msgid "Previous"
 msgstr "Föregående"
 
-#: lib/taamol_web/components/dashboard_components.ex:190
+#: lib/taamol_web/components/dashboard_components.ex:192
 #: lib/taamol_web/live/dashboard_live/article_form.ex:372
 #, elixir-autogen, elixir-format
 msgid "Published"
@@ -1849,7 +1849,7 @@ msgstr "Spara"
 msgid "Save settings"
 msgstr "Spara inställningar"
 
-#: lib/taamol_web/components/dashboard_components.ex:191
+#: lib/taamol_web/components/dashboard_components.ex:193
 #, elixir-autogen, elixir-format
 msgid "Scheduled"
 msgstr "Schemalagd"
@@ -1874,7 +1874,7 @@ msgstr "Inställningarna sparades."
 msgid "Show statistics"
 msgstr "Visa statistik"
 
-#: lib/taamol_web/components/dashboard_components.ex:213
+#: lib/taamol_web/components/dashboard_components.ex:215
 #, elixir-autogen, elixir-format
 msgid "Showing %{from} to %{to} of %{total}"
 msgstr "Visar %{from} till %{to} av %{total}"
@@ -2340,7 +2340,8 @@ msgstr "Kommentaren kunde inte tas bort."
 msgid "Write a comment…"
 msgstr "Skriv en kommentar…"
 
-#: lib/taamol_web/live/donate_live.ex:72
+#: lib/taamol_web/live/donate_live.ex:141
+#: lib/taamol_web/live/donate_live.ex:147
 #, elixir-autogen, elixir-format
 msgid "Choose an amount"
 msgstr "Välj ett belopp"
@@ -2354,8 +2355,8 @@ msgstr "Välj ett belopp"
 msgid "Contact"
 msgstr "Kontakt"
 
-#: lib/taamol_web/live/donate_live.ex:66
-#: lib/taamol_web/live/donate_live.ex:140
+#: lib/taamol_web/live/donate_live.ex:136
+#: lib/taamol_web/live/donate_live.ex:252
 #, elixir-autogen, elixir-format
 msgid "Contact us"
 msgstr "Kontakta oss"
@@ -2404,7 +2405,7 @@ msgstr "Feedback och frågor som skickats via kontaktsidan."
 msgid "Feedback, a question or an idea for an activity? Write to us and we will get back to you."
 msgstr "Har du feedback, en fråga eller en idé till en aktivitet? Skriv till oss så hör vi av oss."
 
-#: lib/taamol_web/live/contact_live.ex:187
+#: lib/taamol_web/live/contact_live.ex:190
 #, elixir-autogen, elixir-format
 msgid "Follow us"
 msgstr "Följ oss"
@@ -2425,7 +2426,7 @@ msgid "Mark as unread"
 msgstr "Markera som oläst"
 
 #: lib/taamol_web/live/contact_live.ex:137
-#: lib/taamol_web/live/donate_live.ex:136
+#: lib/taamol_web/live/donate_live.ex:248
 #, elixir-autogen, elixir-format
 msgid "Message"
 msgstr "Meddelande"
@@ -2453,22 +2454,22 @@ msgstr "Meddelanden"
 msgid "No messages."
 msgstr "Inga meddelanden."
 
-#: lib/taamol_web/live/donate_live.ex:64
+#: lib/taamol_web/live/donate_live.ex:134
 #, elixir-autogen, elixir-format
 msgid "Online donations are not set up yet. Please contact us to give."
 msgstr "Onlinegåvor är inte inställda än. Kontakta oss om du vill ge en gåva."
 
-#: lib/taamol_web/live/donate_live.ex:160
+#: lib/taamol_web/live/donate_live.ex:215
 #, elixir-autogen, elixir-format
 msgid "Open Swish"
 msgstr "Öppna Swish"
 
-#: lib/taamol_web/live/donate_live.ex:96
+#: lib/taamol_web/live/donate_live.ex:172
 #, elixir-autogen, elixir-format
 msgid "Or another amount"
 msgstr "Eller ett annat belopp"
 
-#: lib/taamol_web/live/donate_live.ex:148
+#: lib/taamol_web/live/donate_live.ex:204
 #, elixir-autogen, elixir-format
 msgid "Pay with Swish"
 msgstr "Betala med Swish"
@@ -2484,7 +2485,7 @@ msgstr "Fråga"
 msgid "Reply by email"
 msgstr "Svara via e-post"
 
-#: lib/taamol_web/live/donate_live.ex:173
+#: lib/taamol_web/live/donate_live.ex:228
 #, elixir-autogen, elixir-format
 msgid "Scan the code with the Swish app on your phone."
 msgstr "Skanna koden med Swish-appen i din mobil."
@@ -2511,18 +2512,13 @@ msgstr "Skickar…"
 msgid "Something else"
 msgstr "Något annat"
 
-#: lib/taamol_web/live/donate_live.ex:51
-#, elixir-autogen, elixir-format
-msgid "Support the community"
-msgstr "Stöd gemenskapen"
-
-#: lib/taamol_web/live/donate_live.ex:167
+#: lib/taamol_web/live/donate_live.ex:222
 #, elixir-autogen, elixir-format
 msgid "Swish QR code for %{amount} kr"
 msgstr "Swish-QR-kod för %{amount} kr"
 
 #: lib/taamol_web/live/dashboard_live/site_settings.ex:108
-#: lib/taamol_web/live/donate_live.ex:127
+#: lib/taamol_web/live/donate_live.ex:239
 #, elixir-autogen, elixir-format
 msgid "Swish number"
 msgstr "Swishnummer"
@@ -2567,7 +2563,7 @@ msgstr "Vi läser alla meddelanden och svarar via e-post så snart vi kan."
 msgid "Write your message…"
 msgstr "Skriv ditt meddelande…"
 
-#: lib/taamol_web/live/donate_live.ex:119
+#: lib/taamol_web/live/donate_live.ex:195
 #, elixir-autogen, elixir-format
 msgid "You can change the amount in Swish before you confirm."
 msgstr "Du kan ändra beloppet i Swish innan du bekräftar."
@@ -2577,18 +2573,18 @@ msgstr "Du kan ändra beloppet i Swish innan du bekräftar."
 msgid "You have sent several messages recently. Please try again later."
 msgstr "Du har skickat flera meddelanden nyligen. Försök igen senare."
 
-#: lib/taamol_web/live/donate_live.ex:53
+#: lib/taamol_web/live/donate_live.ex:95
 #, elixir-autogen, elixir-format
 msgid "Your gift helps us run the centre, the weekend school, youth activities and the programmes during Muharram and Ramadan."
 msgstr "Din gåva hjälper oss att driva centret, helgskolan, ungdomsverksamheten och programmen under muharram och ramadan."
 
-#: lib/taamol_web/live/donate_live.ex:83
-#: lib/taamol_web/live/donate_live.ex:151
+#: lib/taamol_web/live/donate_live.ex:159
+#: lib/taamol_web/live/donate_live.ex:206
 #, elixir-autogen, elixir-format
 msgid "%{amount} kr"
 msgstr "%{amount} kr"
 
-#: lib/taamol_web/live/donate_live.ex:113
+#: lib/taamol_web/live/donate_live.ex:189
 #, elixir-autogen, elixir-format
 msgid "kr"
 msgstr "kr"
@@ -2873,7 +2869,7 @@ msgid "Other"
 msgstr "Annat"
 
 #: lib/taamol_web/live/calendar_live.ex:638
-#: lib/taamol_web/live/contact_live.ex:216
+#: lib/taamol_web/live/contact_live.ex:219
 #: lib/taamol_web/live/dashboard_live/site_settings.ex:138
 #, elixir-autogen, elixir-format
 msgid "Phone"
@@ -3008,7 +3004,7 @@ msgstr "Taamol · Shiamuslimsk gemenskap i Sverige"
 msgid "faith and compassion"
 msgstr "tro och omtanke"
 
-#: lib/taamol_web/live/contact_live.ex:215
+#: lib/taamol_web/live/contact_live.ex:218
 #: lib/taamol_web/live/dashboard_live/site_settings.ex:132
 #, elixir-autogen, elixir-format
 msgid "Address"
@@ -3024,7 +3020,7 @@ msgstr "Kontaktuppgifter"
 msgid "One line per day or period"
 msgstr "En rad per dag eller period"
 
-#: lib/taamol_web/live/contact_live.ex:218
+#: lib/taamol_web/live/contact_live.ex:221
 #: lib/taamol_web/live/dashboard_live/site_settings.ex:148
 #, elixir-autogen, elixir-format
 msgid "Opening hours"
@@ -3040,7 +3036,67 @@ msgstr "Visas på kontaktsidan. Lämna ett fält tomt för att dölja det."
 msgid "Your name"
 msgstr "Ditt namn"
 
-#: lib/taamol_web/live/donate_live.ex:142
+#: lib/taamol_web/live/donate_live.ex:254
 #, elixir-autogen, elixir-format
 msgid "Questions about giving? Write to us."
 msgstr "Frågor om att ge? Skriv till oss."
+
+#: lib/taamol_web/live/donate_live.ex:52
+#, elixir-autogen, elixir-format
+msgid "Keeping the hussainiya open for prayers, gatherings and lectures."
+msgstr "Håller husseiniyan öppen för bön, sammankomster och föreläsningar."
+
+#: lib/taamol_web/live/donate_live.ex:73
+#, elixir-autogen, elixir-format
+msgid "Majlis, iftars and nazri during the holy months."
+msgstr "Majlis, iftar och nazri under de heliga månaderna."
+
+#: lib/taamol_web/live/donate_live.ex:72
+#, elixir-autogen, elixir-format
+msgid "Muharram and Ramadan"
+msgstr "Muharram och ramadan"
+
+#: lib/taamol_web/live/donate_live.ex:51
+#, elixir-autogen, elixir-format
+msgid "Our centre"
+msgstr "Vårt center"
+
+#: lib/taamol_web/live/donate_live.ex:66
+#, elixir-autogen, elixir-format
+msgid "Programmes, sports and meeting places for young people."
+msgstr "Program, idrott och mötesplatser för unga."
+
+#: lib/taamol_web/live/donate_live.ex:59
+#, elixir-autogen, elixir-format
+msgid "Quran, faith and Persian classes for children and teenagers."
+msgstr "Koran-, tros- och persiskundervisning för barn och tonåringar."
+
+#: lib/taamol_web/live/donate_live.ex:91
+#, elixir-autogen, elixir-format
+msgid "Support"
+msgstr "Stöd"
+
+#: lib/taamol_web/live/donate_live.ex:58
+#, elixir-autogen, elixir-format
+msgid "Weekend school"
+msgstr "Helgskolan"
+
+#: lib/taamol_web/live/donate_live.ex:88
+#, elixir-autogen, elixir-format
+msgid "What your gift does"
+msgstr "Det här gör din gåva"
+
+#: lib/taamol_web/live/donate_live.ex:65
+#, elixir-autogen, elixir-format
+msgid "Youth activities"
+msgstr "Ungdomsverksamhet"
+
+#: lib/taamol_web/live/donate_live.ex:92
+#, elixir-autogen, elixir-format
+msgid "where it matters most."
+msgstr "där det betyder mest."
+
+#: lib/taamol_web/components/layouts.ex:1221
+#, elixir-autogen, elixir-format
+msgid "Time left"
+msgstr "Tid kvar"

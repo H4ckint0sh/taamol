@@ -1195,7 +1195,18 @@ defmodule TaamolWeb.Layouts do
           class="inline-flex h-8 items-center gap-2 rounded-full border border-base-300 bg-base-100 pe-3 ps-1 text-xs transition hover:border-primary/40 hover:bg-base-200 focus-visible:outline-2 focus-visible:outline-primary"
         >
           <span class="relative grid size-6 place-items-center rounded-full bg-primary/10 text-primary">
-            <.icon name="hero-moon-micro" class="size-4" />
+            <%!-- the next prayer's icon; the script shows the right one --%>
+            <span data-chip-icon="none" class="grid place-items-center">
+              <.icon name="hero-moon-micro" class="size-4" />
+            </span>
+            <span
+              :for={{key, _label, icon} <- @prayers}
+              data-chip-icon={key}
+              hidden
+              class="grid scale-75 place-items-center"
+            >
+              <.prayer_icon type={icon} />
+            </span>
             <span class="absolute -end-0.5 -top-0.5 hidden size-2 rounded-full bg-primary group-data-[state=ready]/prayer:block group-data-[state=ready]/prayer:motion-safe:animate-pulse" />
           </span>
           <span data-role="next-label" class="text-base-content/70">
@@ -1203,6 +1214,11 @@ defmodule TaamolWeb.Layouts do
           </span>
           <span
             data-role="next-time"
+            class="hidden tabular-nums text-base-content/60 xl:inline group-data-[state=loading]/prayer:hidden"
+          />
+          <span
+            data-role="chip-countdown"
+            title={gettext("Time left")}
             class="font-bold tabular-nums group-data-[state=loading]/prayer:hidden"
           />
           <span class="hidden h-3 w-10 rounded bg-base-300 motion-safe:animate-pulse group-data-[state=loading]/prayer:inline-block" />

@@ -187,6 +187,11 @@ class PrayerTimes extends HTMLElement {
       cell.toggleAttribute("data-past", Boolean(ts) && ts <= now && key !== next)
     })
 
+    // the header chip shows the next prayer's own icon
+    this.querySelectorAll("[data-chip-icon]").forEach(el => {
+      el.hidden = el.dataset.chipIcon !== (next || "none")
+    })
+
     const label = next ? this.querySelector(`[data-prayer="${next}"]`).dataset.label : ""
     this.set("next-label", label)
     this.set("next-time", this.nextAt ? format(this.nextAt) : "")
@@ -312,6 +317,7 @@ class PrayerTimes extends HTMLElement {
     const m = Math.floor((left % 3600) / 60)
     const s = left % 60
     this.set("countdown", `${this.two.format(h)}:${this.two.format(m)}:${this.two.format(s)}`)
+    this.set("chip-countdown", `${this.number.format(h)}:${this.two.format(m)}:${this.two.format(s)}`)
 
     if (this.root.hasAttribute("data-ramadan") && this.fastUntil) {
       const mins = Math.max(0, Math.ceil((this.fastUntil - now) / 60000))

@@ -46,14 +46,16 @@ defmodule TaamolWeb.DashboardComponents do
     ~H"""
     <section
       id={@id}
-      class={["flex items-start gap-3 rounded-2xl border border-base-300 bg-base-100 p-5", @class]}
+      class={["flex items-center gap-4 rounded-2xl border border-base-300 bg-base-100 p-5", @class]}
     >
-      <span class="grid size-9 shrink-0 place-items-center rounded-lg bg-base-200 text-base-content/70">
+      <span class="grid size-11 shrink-0 place-items-center rounded-xl bg-base-200 text-base-content/70">
         <.icon name={@icon} class="size-5" />
       </span>
       <div class="min-w-0 flex-1">
-        <h2 class="font-semibold">{@title}</h2>
-        <div class="mt-0.5 text-sm text-base-content/60">{render_slot(@inner_block)}</div>
+        <h2 class="text-xs font-medium text-base-content/55">{@title}</h2>
+        <div class="mt-1 text-sm font-semibold leading-relaxed text-base-content">
+          {render_slot(@inner_block)}
+        </div>
       </div>
     </section>
     """
