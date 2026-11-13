@@ -7,6 +7,9 @@ defmodule Taamol.Application do
 
   @impl true
   def start(_type, _args) do
+    # in-memory cache for Swish donation QR codes
+    Taamol.Donations.init_cache()
+
     children = [
       TaamolWeb.Telemetry,
       Taamol.Repo,

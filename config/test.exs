@@ -53,3 +53,6 @@ config :taamol, :initial_admin, nil
 
 # Tests compare against the English source strings (the msgids)
 config :taamol, :default_locale, "en"
+
+# Never call Swish's QR generator from tests
+config :taamol, :swish_req_options, plug: {Req.Test, Taamol.Donations}

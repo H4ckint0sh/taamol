@@ -19,7 +19,9 @@ defmodule Taamol.Tracking.Comment do
   def changeset(comment, attrs) do
     comment
     |> cast(attrs, [:body])
+    |> update_change(:body, &String.trim/1)
     |> validate_required([:body, :article_id, :creator_id])
+    |> validate_length(:body, max: 2000)
     |> foreign_key_constraint(:article_id)
     |> foreign_key_constraint(:creator_id)
     |> foreign_key_constraint(:parent_id)

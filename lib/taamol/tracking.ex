@@ -399,4 +399,126 @@ defmodule Taamol.Tracking do
       from l in CommentLike, where: l.comment_id == ^comment_id and l.user_id == ^user_id
     )
   end
+
+  ## Public reading: like counts and comment threads (guests included)
+
+  @doc "Number of likes on an article."
+  def article_like_count(%Article{id: article_id}) do
+    Repo.aggregate(from(l in ArticleLike, where: l.article_id == ^article_id), :count)
+  end
+
+  @doc "Whether the scope's user liked the article (false for guests)."
+  def liked_by?(%Scope{user: %User{}} = scope, %Article{} = article),
+    do: liked_article?(scope, article)
+
+  def liked_by?(_scope, _article), do: false
+
+  @doc "Number of comments (replies included) on an article."
+  def comment_count(%Article{id: article_id}) do
+    Repo.aggregate(from(c in Comment, where: c.article_id == ^article_id), :count)
+  end
+
+  @doc """
+  The article's comments as threads, newest thread first. Each node is
+  `%{id:, comment:, likes:, liked?:, replies: [node]}` with replies oldest
+  first; `liked?` is for the scope's user (false for guests).
+  """
+  def comment_threads(scope, %Article{id: article_id}) do
+    comments =
+      Repo.all(
+        from c in Comment,
+          where: c.article_id == ^article_id,
+          order_by: [asc: c.inserted_at, asc: c.id],
+          preload: [:creator]
+      )
+
+    ids = Enum.map(comments, & &1.id)
+
+    likes =
+      Repo.all(
+        from l in CommentLike,
+          where: l.comment_id in ^ids,
+          group_by: l.comment_id,
+          select: {l.comment_id, count(l.id)}
+      )
+      |> Map.new()
+
+    liked =
+      case scope do
+        %Scope{user: %User{id: user_id}} ->
+          Repo.all(
+            from l in CommentLike,
+              where: l.comment_id in ^ids and l.user_id == ^user_id,
+              select: l.comment_id
+          )
+          |> MapSet.new()
+
+        _ ->
+          MapSet.new()
+      end
+
+    by_parent = Enum.group_by(comments, & &1.parent_id)
+
+    by_parent
+    |> Map.get(nil, [])
+    |> Enum.reverse()
+    |> Enum.map(&comment_node(&1, by_parent, likes, liked))
+  end
+
+  @doc "One thread (by its top-level comment id), or nil if it no longer exists."
+  def comment_thread(scope, %Article{} = article, root_id) do
+    scope |> comment_threads(article) |> Enum.find(&(&1.id == root_id))
+  end
+
+  defp comment_node(comment, by_parent, likes, liked) do
+    %{
+      id: comment.id,
+      comment: comment,
+      likes: Map.get(likes, comment.id, 0),
+      liked?: MapSet.member?(liked, comment.id),
+      replies:
+        by_parent
+        |> Map.get(comment.id, [])
+        |> Enum.map(&comment_node(&1, by_parent, likes, liked))
+    }
+  end
+
+  @doc "Gets a comment on the given article, or nil."
+  def get_article_comment(%Article{id: article_id}, comment_id) do
+    with {:ok, uuid} <- Ecto.UUID.cast(comment_id) do
+      Repo.get_by(Comment, id: uuid, article_id: article_id)
+    else
+      _ -> nil
+    end
+  end
+
+  @doc """
+  Deletes a comment (and its replies). Allowed for the comment's author and
+  for administrators.
+  """
+  def delete_comment(%Scope{user: %User{id: user_id}} = scope, %Comment{} = comment) do
+    if comment.creator_id == user_id or fresh_admin?(scope),
+      do: Repo.delete(comment),
+      else: {:error, :forbidden}
+  end
+
+  def delete_comment(_scope, _comment), do: {:error, :forbidden}
+
+  @doc "Whether the scope may delete the comment (author or administrator)."
+  def can_delete_comment?(%Scope{user: %User{id: user_id, role: role}}, %Comment{
+        creator_id: creator_id
+      }),
+      do: user_id == creator_id or role == :admin
+
+  def can_delete_comment?(_scope, _comment), do: false
+
+  ## Live updates for an article's page
+
+  @doc "Subscribes to likes/comments changes on an article."
+  def subscribe_article(%Article{id: id}),
+    do: Phoenix.PubSub.subscribe(Taamol.PubSub, "article:#{id}")
+
+  @doc "Tells everyone viewing the article that something changed."
+  def broadcast_article(%Article{id: id}, message),
+    do: Phoenix.PubSub.broadcast_from(Taamol.PubSub, self(), "article:#{id}", message)
 end

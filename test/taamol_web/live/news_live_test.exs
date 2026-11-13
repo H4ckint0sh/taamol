@@ -14,11 +14,15 @@ defmodule TaamolWeb.NewsLiveTest do
       {:ok, view, _html} = live(conn, ~p"/")
       assert has_element?(view, "#home-empty")
       assert has_element?(view, "#bottom-nav")
-      assert has_element?(view, "#site-footer a[href='/categories/world']")
-      refute has_element?(view, "#sidebar-categories")
+      # categories are only on the News page, not in the site navigation
+      refute has_element?(view, "header a[href^='/categories'], header a[href^='/news?category']")
+      refute has_element?(view, "#site-footer a[href*='category']")
+      refute has_element?(view, "#mobile-drawer a[href*='category']")
+      assert has_element?(view, "#main-nav a[href='/news']")
+      assert has_element?(view, "#bottom-nav a[href='/news']")
       assert has_element?(view, "#mobile-menu-open")
       assert has_element?(view, "#mobile-drawer a[href='/calendar']")
-      assert has_element?(view, "#mobile-drawer a[href='/categories/religion']")
+      assert has_element?(view, "#mobile-drawer a[href='/news']")
       assert has_element?(view, "#drawer-locale-button")
     end
 
@@ -61,30 +65,43 @@ defmodule TaamolWeb.NewsLiveTest do
     end
   end
 
-  describe "categories" do
-    test "lists categories with counts", %{conn: conn, creator: creator} do
-      article_fixture(creator, category: :culture)
+  describe "news page" do
+    test "lists all news with the category filter", %{conn: conn, creator: creator} do
+      lead = article_fixture(creator, featured: true)
+      other = article_fixture(creator, category: :world)
 
-      {:ok, view, _html} = live(conn, ~p"/categories")
-      assert has_element?(view, "#category-culture")
-      assert has_element?(view, "#category-sport")
-    end
-
-    test "shows a category's articles", %{conn: conn, creator: creator} do
-      lead = article_fixture(creator, category: :sport, featured: true)
-      other = article_fixture(creator, category: :sport)
-      world = article_fixture(creator, category: :world)
-
-      {:ok, view, _html} = live(conn, ~p"/categories/sport")
-      assert has_element?(view, "#category-lead")
+      {:ok, view, _html} = live(conn, ~p"/news")
+      assert has_element?(view, "#news-categories a[href='/news?category=religion']")
+      assert has_element?(view, "#news-lead")
       assert has_element?(view, "#feed-#{other.id}")
-      refute has_element?(view, "#feed-#{world.id}")
       # the lead story is not repeated in the feed
       refute has_element?(view, "#feed-#{lead.id}")
     end
 
-    test "unknown categories are not found", %{conn: conn} do
-      assert_raise Ecto.NoResultsError, fn -> live(conn, ~p"/categories/nope") end
+    test "filters by category with the chips", %{conn: conn, creator: creator} do
+      sport_lead = article_fixture(creator, category: :sport, featured: true)
+      sport = article_fixture(creator, category: :sport)
+      world = article_fixture(creator, category: :world)
+
+      {:ok, view, _html} = live(conn, ~p"/news")
+      view |> element("#news-categories a[href='/news?category=sport']") |> render_click()
+      assert_patch(view, ~p"/news?category=sport")
+
+      assert has_element?(view, "#news-categories a[aria-current=page]", "Sport")
+      assert has_element?(view, "#news-lead a[href='/articles/#{sport_lead.id}']")
+      assert has_element?(view, "#feed-#{sport.id}")
+      refute has_element?(view, "#feed-#{world.id}")
+    end
+
+    test "unknown categories show all news", %{conn: conn, creator: creator} do
+      article = article_fixture(creator)
+      {:ok, view, _html} = live(conn, ~p"/news?category=nope")
+      assert has_element?(view, "#news-lead a[href='/articles/#{article.id}']")
+    end
+
+    test "old category links redirect to the News page", %{conn: conn} do
+      assert redirected_to(get(conn, "/categories/sport"), 301) == "/news?category=sport"
+      assert redirected_to(get(build_conn(), "/categories"), 301) == "/news"
     end
   end
 

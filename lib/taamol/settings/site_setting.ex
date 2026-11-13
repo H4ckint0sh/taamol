@@ -18,6 +18,10 @@ defmodule Taamol.Settings.SiteSetting do
     field :whatsapp_url, :string
     field :tiktok_url, :string
 
+    # donations via Swish (empty number = donations hidden)
+    field :swish_number, :string
+    field :swish_message, :string
+
     timestamps(type: :utc_datetime)
   end
 
@@ -29,7 +33,12 @@ defmodule Taamol.Settings.SiteSetting do
   @doc false
   def changeset(setting, attrs) do
     setting
-    |> cast(attrs, [:hijri_adjustment_days, :prayer_method | @social_fields])
+    |> cast(attrs, [
+      :hijri_adjustment_days,
+      :prayer_method,
+      :swish_number,
+      :swish_message | @social_fields
+    ])
     |> validate_required([:hijri_adjustment_days, :prayer_method])
     |> validate_number(:hijri_adjustment_days,
       greater_than_or_equal_to: -2,
@@ -37,6 +46,9 @@ defmodule Taamol.Settings.SiteSetting do
     )
     |> validate_inclusion(:prayer_method, @prayer_methods)
     |> validate_social_links()
+    |> update_change(:swish_number, &String.replace(&1, ~r/\D/, ""))
+    |> validate_format(:swish_number, ~r/^\d{10}$/, message: "must be a 10-digit Swish number")
+    |> validate_length(:swish_message, max: 50)
   end
 
   defp validate_social_links(changeset) do

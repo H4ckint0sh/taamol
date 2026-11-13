@@ -1,7 +1,8 @@
 defmodule TaamolWeb.HomeLive do
   @moduledoc """
   The start page: lead story, latest/most read lists and a news feed that can
-  be filtered by category (`/?category=world`).
+  be filtered by category (`/?category=world`); the full, filterable list is
+  the News page (`/news`).
   """
   use TaamolWeb, :live_view
 
@@ -151,15 +152,19 @@ defmodule TaamolWeb.HomeLive do
             />
 
             <section :if={@lead} id="news" aria-labelledby="news-title">
-              <h2 id="news-title" class="mb-4 text-xl font-bold tracking-tight">
-                {gettext("News")}
-              </h2>
-              <.category_tabs
-                id="news-tabs"
-                active={@category}
-                all_path={~p"/"}
-                path={fn category -> ~p"/?#{[category: category]}" end}
-              />
+              <div class="mb-2 flex items-center justify-between gap-3">
+                <h2 id="news-title" class="text-xl font-bold tracking-tight">
+                  {gettext("News")}
+                </h2>
+                <.link
+                  id="all-news"
+                  navigate={~p"/news"}
+                  class="inline-flex items-center gap-1 text-sm font-medium text-primary hover:underline"
+                >
+                  {gettext("All news")}
+                  <.icon name="hero-arrow-right-micro" class="size-4 rtl:rotate-180" />
+                </.link>
+              </div>
 
               <div id="feed" phx-update="stream" class="grid gap-x-8 md:grid-cols-2">
                 <p

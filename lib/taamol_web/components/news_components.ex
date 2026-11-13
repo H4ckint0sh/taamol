@@ -261,7 +261,7 @@ defmodule TaamolWeb.NewsComponents do
           <.category_label category={@article.category} />
           <h3
             dir="auto"
-            class="mt-1 line-clamp-3 text-[15px] font-bold leading-snug tracking-tight transition-colors group-hover:text-primary sm:text-lg"
+            class="mt-1 line-clamp-3 text-[15px] font-bold leading-snug tracking-tight transition-colors group-hover:text-primary sm:line-clamp-2 sm:text-lg"
           >
             {@article.title}
           </h3>
@@ -269,7 +269,7 @@ defmodule TaamolWeb.NewsComponents do
           <p
             :if={@article.summary}
             dir="auto"
-            class="mt-2 line-clamp-3 hidden text-sm text-base-content/65 sm:block"
+            class="mt-2 line-clamp-2 text-sm leading-relaxed text-base-content/65 max-sm:hidden"
           >
             {@article.summary}
           </p>

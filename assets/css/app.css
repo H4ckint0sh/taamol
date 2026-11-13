@@ -6,6 +6,8 @@
 @source "../css";
 @source "../js";
 @source "../../lib/taamol_web";
+/* booking service icons are chosen from a list in this file */
+@source "../../lib/taamol/bookings/service.ex";
 /* Required for Tailwind to automatically pick up changes in colocated CSS files in dev */
 @source "../../_build/dev/phoenix-colocated/taamol/*/";
 

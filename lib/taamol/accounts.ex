@@ -36,6 +36,8 @@ defmodule Taamol.Accounts do
              :manage_users,
              :manage_events,
              :manage_gallery,
+             :manage_messages,
+             :manage_bookings,
              :manage_settings
            ],
       do: admin?(scope)

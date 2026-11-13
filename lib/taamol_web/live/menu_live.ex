@@ -43,6 +43,9 @@ defmodule TaamolWeb.MenuLive do
             >
               {gettext("Users")}
             </.menu_item>
+            <.menu_item id="menu-bookings" to={~p"/dashboard/bookings"} icon="hero-bookmark-square">
+              {gettext("My bookings")}
+            </.menu_item>
             <.menu_item id="menu-settings" to={~p"/users/settings"} icon="hero-cog-6-tooth">
               {gettext("Settings")}
             </.menu_item>
@@ -80,6 +83,12 @@ defmodule TaamolWeb.MenuLive do
           </.menu_item>
           <.menu_item id="menu-gallery" to={~p"/gallery"} icon="hero-photo">
             {gettext("Gallery")}
+          </.menu_item>
+          <.menu_item id="menu-contact" to={~p"/contact"} icon="hero-chat-bubble-left-ellipsis">
+            {gettext("Contact")}
+          </.menu_item>
+          <.menu_item id="menu-donate" to={~p"/donate"} icon="hero-heart">
+            {gettext("Donate")}
           </.menu_item>
         </ul>
 

@@ -23,7 +23,7 @@ defmodule TaamolWeb.Layouts do
       </Layouts.app>
 
   Pass `wide` for full-width pages that manage their own container, and
-  `active` (`:home`, `:categories`, `:calendar`, `:gallery`, `:menu` or a category atom) to highlight the
+  `active` (`:home`, `:news`, `:calendar`, `:gallery`, `:contact`, `:donate` or `:menu`) to highlight the
   current navigation item. Category tabs show on mobile for `:home` and
   category pages.
   """
@@ -39,15 +39,7 @@ defmodule TaamolWeb.Layouts do
   slot :inner_block, required: true
 
   def app(assigns) do
-    categories = TaamolWeb.NewsComponents.categories()
-    {nav_categories, more_categories} = Enum.split(categories, 3)
-
-    assigns =
-      assigns
-      |> assign(:categories, categories)
-      |> assign(:nav_categories, nav_categories)
-      |> assign(:more_categories, more_categories)
-      |> assign(:category_tabs?, assigns.active == :home or assigns.active in categories)
+    assigns = assign(assigns, :donations?, Taamol.Settings.swish() != nil)
 
     ~H"""
     <header class="sticky top-0 z-40 border-b border-base-300/70 bg-base-100/90 backdrop-blur-md">
@@ -89,6 +81,9 @@ defmodule TaamolWeb.Layouts do
               <.nav_link to={~p"/"} active={@active == :home}>{gettext("Home")}</.nav_link>
             </li>
             <li class="flex">
+              <.nav_link to={~p"/news"} active={@active == :news}>{gettext("News")}</.nav_link>
+            </li>
+            <li class="flex">
               <.nav_link to={~p"/calendar"} active={@active == :calendar}>
                 {gettext("Calendar")}
               </.nav_link>
@@ -98,43 +93,10 @@ defmodule TaamolWeb.Layouts do
                 {gettext("Gallery")}
               </.nav_link>
             </li>
-            <li :for={category <- @nav_categories} class="flex">
-              <.nav_link to={~p"/categories/#{category}"} active={@active == category}>
-                {TaamolWeb.NewsComponents.category_name(category)}
+            <li class="flex">
+              <.nav_link to={~p"/contact"} active={@active == :contact}>
+                {gettext("Contact")}
               </.nav_link>
-            </li>
-            <li class="group/more relative flex items-center">
-              <button
-                type="button"
-                id="main-nav-more"
-                aria-haspopup="true"
-                data-nav-item
-                data-active={@active in @more_categories}
-                class={[
-                  "relative z-10 inline-flex h-9 items-center gap-1 rounded-full px-3.5 transition-colors hover:text-primary",
-                  @active in @more_categories && "text-primary"
-                ]}
-              >
-                {gettext("More")}
-                <.icon
-                  name="hero-chevron-down-micro"
-                  class="size-4 transition-transform group-hover/more:rotate-180 group-focus-within/more:rotate-180"
-                />
-              </button>
-              <.dropdown group="more" class="start-0 w-52">
-                <.link
-                  :for={category <- @more_categories}
-                  navigate={~p"/categories/#{category}"}
-                  aria-current={if(@active == category, do: "page")}
-                  class="flex items-center gap-3 rounded-xl px-3 py-2 text-sm transition hover:bg-base-200 aria-[current=page]:text-primary"
-                >
-                  <.icon
-                    name={TaamolWeb.NewsComponents.category_icon(category)}
-                    class="size-4 text-base-content/50"
-                  />
-                  {TaamolWeb.NewsComponents.category_name(category)}
-                </.link>
-              </.dropdown>
             </li>
           </ul>
           <script :type={Phoenix.LiveView.ColocatedHook} name=".NavIndicator">
@@ -206,46 +168,37 @@ defmodule TaamolWeb.Layouts do
         <div class="ms-auto flex items-center gap-2 sm:gap-3">
           <.prayer_times />
           <.locale_toggle id="header-locale" />
-          <.theme_switch id="header-theme" class="hidden lg:block" />
+          <div class="hidden lg:block">
+            <.theme_switch id="header-theme" compact />
+          </div>
+          <.link
+            :if={@donations?}
+            id="header-donate"
+            navigate={~p"/donate"}
+            title={gettext("Donate")}
+            aria-label={gettext("Donate")}
+            class="hidden h-9 items-center gap-1.5 rounded-full bg-rose-500/10 px-2.5 text-sm font-semibold text-rose-600 ring-1 ring-rose-500/20 transition hover:bg-rose-500/15 active:scale-95 lg:inline-flex 2xl:px-3.5 dark:text-rose-400"
+          >
+            <.icon name="hero-heart-solid" class="size-4" />
+            <span class="hidden 2xl:inline">{gettext("Donate")}</span>
+          </.link>
           <%= if @current_scope do %>
             <.user_menu current_scope={@current_scope} class="hidden lg:block" />
           <% else %>
             <.link
               href={~p"/users/log-in"}
-              class="hidden text-sm font-medium transition-colors hover:text-primary lg:inline"
+              class="hidden whitespace-nowrap text-sm font-medium transition-colors hover:text-primary lg:inline"
             >
               {gettext("Log in")}
             </.link>
             <.link
               href={~p"/users/register"}
-              class="hidden rounded-full bg-primary px-4 py-2 text-sm font-medium text-primary-content transition hover:opacity-85 lg:inline"
+              class="hidden whitespace-nowrap rounded-full bg-primary px-4 py-2 text-sm font-medium text-primary-content transition hover:opacity-85 lg:inline"
             >
               {gettext("Register")}
             </.link>
           <% end %>
         </div>
-      </div>
-
-      <div :if={@category_tabs?} class="border-t border-base-300/60 lg:hidden">
-        <TaamolWeb.NewsComponents.chip_row
-          id="mobile-category-tabs"
-          class="px-4 py-2 sm:px-6"
-        >
-          <li>
-            <TaamolWeb.NewsComponents.chip to={~p"/"} icon="hero-home" active={@active == :home}>
-              {gettext("Home")}
-            </TaamolWeb.NewsComponents.chip>
-          </li>
-          <li :for={category <- @categories}>
-            <TaamolWeb.NewsComponents.chip
-              to={~p"/categories/#{category}"}
-              icon={TaamolWeb.NewsComponents.category_icon(category)}
-              active={@active == category}
-            >
-              {TaamolWeb.NewsComponents.category_name(category)}
-            </TaamolWeb.NewsComponents.chip>
-          </li>
-        </TaamolWeb.NewsComponents.chip_row>
       </div>
     </header>
 
@@ -258,9 +211,9 @@ defmodule TaamolWeb.Layouts do
       </div>
     </main>
 
-    <.site_footer current_scope={@current_scope} categories={@categories} />
+    <.site_footer current_scope={@current_scope} />
 
-    <.mobile_drawer current_scope={@current_scope} categories={@categories} active={@active} />
+    <.mobile_drawer current_scope={@current_scope} active={@active} />
 
     <nav
       id="bottom-nav"
@@ -280,12 +233,12 @@ defmodule TaamolWeb.Layouts do
         </li>
         <li>
           <.bottom_nav_link
-            to={~p"/categories"}
-            icon="hero-squares-2x2"
-            active_icon="hero-squares-2x2-solid"
-            active={@active == :categories or @active in @categories}
+            to={~p"/news"}
+            icon="hero-newspaper"
+            active_icon="hero-newspaper-solid"
+            active={@active == :news}
           >
-            {gettext("Categories")}
+            {gettext("News")}
           </.bottom_nav_link>
         </li>
         <li>
@@ -336,7 +289,8 @@ defmodule TaamolWeb.Layouts do
       [
         {gettext("General"),
          [
-           {:overview, gettext("Overview"), "hero-squares-2x2", ~p"/dashboard", true}
+           {:overview, gettext("Overview"), "hero-squares-2x2", ~p"/dashboard", true},
+           {:bookings, gettext("Bookings"), "hero-bookmark-square", ~p"/dashboard/bookings", true}
          ]},
         {gettext("Content"),
          [
@@ -345,12 +299,16 @@ defmodule TaamolWeb.Layouts do
            {:events, gettext("Calendar events"), "hero-calendar-days", ~p"/dashboard/events",
             Taamol.Accounts.can?(scope, :manage_events)},
            {:gallery, gettext("Gallery"), "hero-photo", ~p"/dashboard/gallery",
-            Taamol.Accounts.can?(scope, :manage_gallery)}
+            Taamol.Accounts.can?(scope, :manage_gallery)},
+           {:booking_services, gettext("Booking services"), "hero-building-library",
+            ~p"/dashboard/booking-services", Taamol.Accounts.can?(scope, :manage_bookings)}
          ]},
         {gettext("People"),
          [
            {:users, gettext("Users"), "hero-users", ~p"/dashboard/users",
-            Taamol.Accounts.can?(scope, :manage_users)}
+            Taamol.Accounts.can?(scope, :manage_users)},
+           {:messages, gettext("Messages"), "hero-inbox", ~p"/dashboard/messages",
+            Taamol.Accounts.can?(scope, :manage_messages)}
          ]},
         {gettext("Settings"),
          [
@@ -362,7 +320,11 @@ defmodule TaamolWeb.Layouts do
       |> Enum.map(fn {label, items} -> {label, Enum.filter(items, &elem(&1, 4))} end)
       |> Enum.reject(fn {_label, items} -> items == [] end)
 
-    assigns = assign(assigns, :groups, groups)
+    assigns =
+      assigns
+      |> assign(:groups, groups)
+      |> assign(:unread_messages, Taamol.Contact.unread_count(scope))
+      |> assign(:pending_bookings, Taamol.Bookings.pending_count(scope))
 
     ~H"""
     <div id="dashboard-shell" class="group/shell min-h-screen bg-base-200/40">
@@ -398,6 +360,20 @@ defmodule TaamolWeb.Layouts do
                 >
                   <.icon name={icon} class="size-5 shrink-0" />
                   {name}
+                  <span
+                    :if={key == :bookings and @pending_bookings > 0}
+                    id="pending-bookings"
+                    class="ms-auto min-w-5 rounded-full bg-primary px-1.5 text-center text-[11px] font-semibold leading-5 text-primary-content"
+                  >
+                    {@pending_bookings}
+                  </span>
+                  <span
+                    :if={key == :messages and @unread_messages > 0}
+                    id="unread-messages"
+                    class="ms-auto min-w-5 rounded-full bg-primary px-1.5 text-center text-[11px] font-semibold leading-5 text-primary-content"
+                  >
+                    {@unread_messages}
+                  </span>
                 </.link>
               </li>
             </ul>
@@ -489,7 +465,6 @@ defmodule TaamolWeb.Layouts do
   end
 
   attr :current_scope, :map, default: nil
-  attr :categories, :list, required: true
   attr :active, :atom, default: nil
 
   # Slide-in navigation for phones and tablets. It enters from the reading
@@ -582,37 +557,28 @@ defmodule TaamolWeb.Layouts do
             <.drawer_tile to={~p"/gallery"} icon="hero-photo" active={@active == :gallery}>
               {gettext("Gallery")}
             </.drawer_tile>
-            <.drawer_tile
-              to={~p"/categories"}
-              icon="hero-squares-2x2"
-              active={@active == :categories}
-            >
-              {gettext("Categories")}
+            <.drawer_tile to={~p"/news"} icon="hero-newspaper" active={@active == :news}>
+              {gettext("News")}
             </.drawer_tile>
           </div>
 
-          <%!-- categories --%>
-          <section>
-            <h2 class="mb-2 px-1 text-[11px] font-semibold uppercase tracking-wider text-base-content/50">
-              {gettext("Categories")}
-            </h2>
-            <ul class="grid grid-cols-2 gap-1">
-              <li :for={category <- @categories}>
-                <.link
-                  navigate={~p"/categories/#{category}"}
-                  phx-click={close_drawer()}
-                  aria-current={if(@active == category, do: "page")}
-                  class="flex items-center gap-2.5 rounded-xl px-2.5 py-2 text-sm text-base-content/80 transition hover:bg-base-200 aria-[current=page]:bg-primary/10 aria-[current=page]:font-semibold aria-[current=page]:text-primary"
-                >
-                  <.icon
-                    name={TaamolWeb.NewsComponents.category_icon(category)}
-                    class="size-4 shrink-0 text-base-content/45"
-                  />
-                  <span class="truncate">{TaamolWeb.NewsComponents.category_name(category)}</span>
-                </.link>
-              </li>
-            </ul>
-          </section>
+          <div class="grid grid-cols-2 gap-2">
+            <.link
+              navigate={~p"/donate"}
+              phx-click={close_drawer()}
+              class="flex items-center justify-center gap-2 rounded-2xl bg-rose-500/10 py-3 text-sm font-semibold text-rose-600 ring-1 ring-rose-500/20 transition hover:bg-rose-500/15 dark:text-rose-400"
+            >
+              <.icon name="hero-heart-solid" class="size-4" />{gettext("Donate")}
+            </.link>
+            <.link
+              navigate={~p"/contact"}
+              phx-click={close_drawer()}
+              aria-current={if(@active == :contact, do: "page")}
+              class="flex items-center justify-center gap-2 rounded-2xl border border-base-300 py-3 text-sm font-medium transition hover:bg-base-200/60 aria-[current=page]:border-primary/50 aria-[current=page]:text-primary"
+            >
+              <.icon name="hero-chat-bubble-left-ellipsis" class="size-4" />{gettext("Contact")}
+            </.link>
+          </div>
 
           <%!-- preferences --%>
           <section class="space-y-3">
@@ -698,7 +664,6 @@ defmodule TaamolWeb.Layouts do
   end
 
   attr :current_scope, :map, default: nil
-  attr :categories, :list, required: true
 
   # Site footer: brand, category and site links, and the copyright line.
   # Extra bottom padding on phones keeps it clear of the bottom tab bar.
@@ -714,7 +679,7 @@ defmodule TaamolWeb.Layouts do
       class="border-t border-base-300/70 bg-base-100 pb-[calc(4.5rem+env(safe-area-inset-bottom))] lg:pb-0"
     >
       <div class="mx-auto max-w-7xl px-4 pt-12 sm:px-6 lg:px-8">
-        <div class="grid gap-10 sm:grid-cols-2 lg:grid-cols-[1.4fr_1.4fr_1fr_1fr]">
+        <div class="grid gap-10 sm:grid-cols-3 lg:grid-cols-[2fr_1fr_1fr]">
           <div class="max-w-xs">
             <.link navigate={~p"/"} class="inline-block leading-none">
               <span class="block text-2xl font-black tracking-tight text-primary">Taamol</span>
@@ -752,25 +717,6 @@ defmodule TaamolWeb.Layouts do
             </.link>
           </div>
 
-          <nav aria-labelledby="footer-categories">
-            <h2
-              id="footer-categories"
-              class="text-[11px] font-semibold uppercase tracking-wider text-base-content/50"
-            >
-              {gettext("Categories")}
-            </h2>
-            <ul class="mt-4 grid grid-cols-2 gap-x-6 gap-y-2.5 text-sm">
-              <li :for={category <- @categories}>
-                <.link
-                  navigate={~p"/categories/#{category}"}
-                  class="text-base-content/70 transition-colors hover:text-primary"
-                >
-                  {TaamolWeb.NewsComponents.category_name(category)}
-                </.link>
-              </li>
-            </ul>
-          </nav>
-
           <nav aria-labelledby="footer-explore">
             <h2
               id="footer-explore"
@@ -780,7 +726,7 @@ defmodule TaamolWeb.Layouts do
             </h2>
             <ul class="mt-4 space-y-2.5 text-sm">
               <li>
-                <.footer_link to={~p"/"}>{gettext("Latest news")}</.footer_link>
+                <.footer_link to={~p"/news"}>{gettext("News")}</.footer_link>
               </li>
               <li>
                 <.footer_link to={~p"/calendar"}>{gettext("Calendar")}</.footer_link>
@@ -789,7 +735,10 @@ defmodule TaamolWeb.Layouts do
                 <.footer_link to={~p"/gallery"}>{gettext("Gallery")}</.footer_link>
               </li>
               <li>
-                <.footer_link to={~p"/categories"}>{gettext("All categories")}</.footer_link>
+                <.footer_link to={~p"/contact"}>{gettext("Contact")}</.footer_link>
+              </li>
+              <li>
+                <.footer_link to={~p"/donate"}>{gettext("Donate")}</.footer_link>
               </li>
             </ul>
           </nav>
@@ -969,6 +918,13 @@ defmodule TaamolWeb.Layouts do
           {gettext("Users")}
         </.link>
         <.link
+          navigate={~p"/dashboard/bookings"}
+          class="flex items-center gap-3 rounded-xl px-3 py-2 text-sm transition hover:bg-base-200"
+        >
+          <.icon name="hero-bookmark-square" class="size-4 text-base-content/50" />
+          {gettext("My bookings")}
+        </.link>
+        <.link
           navigate={~p"/users/settings"}
           class="flex items-center gap-3 rounded-xl px-3 py-2 text-sm transition hover:bg-base-200"
         >
@@ -1110,6 +1066,7 @@ defmodule TaamolWeb.Layouts do
 
   attr :id, :string, default: "theme-switch"
   attr :class, :string, default: nil
+  attr :compact, :boolean, default: false, doc: "show the labels only on very wide screens"
 
   @doc """
   Day/night switch: a light pill reading "Day mode" with a sun knob on the
@@ -1132,11 +1089,19 @@ defmodule TaamolWeb.Layouts do
         @class
       ]}
     >
-      <%!-- day: label, then the sun knob on the right --%>
+      <%!-- day: label (or a faint moon when compact), then the sun knob on the right --%>
       <span class="flex items-center gap-2 [[data-theme=dark]_&]:hidden">
-        <span class="whitespace-nowrap ps-2.5 text-[11px] font-semibold uppercase tracking-wider">
+        <span class={[
+          "whitespace-nowrap ps-2.5 text-[11px] font-semibold uppercase tracking-wider",
+          @compact && "hidden 2xl:inline"
+        ]}>
           {gettext("Day mode")}
         </span>
+        <.icon
+          :if={@compact}
+          name="hero-moon-micro"
+          class="ms-1.5 size-3.5 text-neutral-400 2xl:hidden"
+        />
         <span class="grid size-7 place-items-center rounded-full bg-white shadow-md">
           <.icon name="hero-sun-solid" class="size-4 text-neutral-800" />
         </span>
@@ -1146,9 +1111,17 @@ defmodule TaamolWeb.Layouts do
         <span class="grid size-7 place-items-center rounded-full bg-white shadow-md">
           <.icon name="hero-moon-solid" class="size-4 text-neutral-800" />
         </span>
-        <span class="whitespace-nowrap pe-2.5 text-[11px] font-semibold uppercase tracking-wider">
+        <span class={[
+          "whitespace-nowrap pe-2.5 text-[11px] font-semibold uppercase tracking-wider",
+          @compact && "hidden 2xl:inline"
+        ]}>
           {gettext("Night mode")}
         </span>
+        <.icon
+          :if={@compact}
+          name="hero-sun-micro"
+          class="me-1.5 size-3.5 text-neutral-500 2xl:hidden"
+        />
       </span>
     </button>
     """
@@ -1212,7 +1185,7 @@ defmodule TaamolWeb.Layouts do
         <div
           id={"#{@id}-popover"}
           role="tooltip"
-          class="invisible absolute end-0 top-full z-50 w-[18rem] max-w-[calc(100vw-2rem)] translate-y-1 pt-2 opacity-0 transition duration-200 ease-out group-hover/prayer:visible group-hover/prayer:translate-y-0 group-hover/prayer:opacity-100 group-focus-within/prayer:visible group-focus-within/prayer:translate-y-0 group-focus-within/prayer:opacity-100"
+          class="invisible fixed inset-x-3 top-16 z-50 translate-y-1 pt-2 opacity-0 sm:inset-x-auto sm:end-4 sm:w-[18rem] lg:absolute lg:end-0 lg:top-full transition duration-200 ease-out group-hover/prayer:visible group-hover/prayer:translate-y-0 group-hover/prayer:opacity-100 group-focus-within/prayer:visible group-focus-within/prayer:translate-y-0 group-focus-within/prayer:opacity-100"
         >
           <.prayer_panel
             id={@id}

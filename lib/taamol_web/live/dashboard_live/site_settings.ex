@@ -94,6 +94,31 @@ defmodule TaamolWeb.DashboardLive.SiteSettings do
             />
           </section>
 
+          <section id="donation-settings" class="rounded-2xl border border-base-300 bg-base-100 p-5">
+            <h2 class="font-semibold">{gettext("Donations")}</h2>
+            <p class="mb-4 mt-1 text-sm text-base-content/60">
+              {gettext(
+                "Visitors donate with Swish: the app opens with your number, the amount and the message filled in. Leave the number empty to hide donations."
+              )}
+            </p>
+            <div class="grid gap-x-4 sm:grid-cols-2">
+              <.input
+                field={@form[:swish_number]}
+                type="text"
+                label={gettext("Swish number")}
+                placeholder="123 456 78 90"
+                inputmode="numeric"
+              />
+              <.input
+                field={@form[:swish_message]}
+                type="text"
+                label={gettext("Message in Swish")}
+                placeholder={gettext("Gift to Taamol")}
+                maxlength="50"
+              />
+            </div>
+          </section>
+
           <section class="rounded-2xl border border-base-300 bg-base-100 p-5">
             <h2 class="font-semibold">{gettext("Social media")}</h2>
             <p class="mb-4 mt-1 text-sm text-base-content/60">

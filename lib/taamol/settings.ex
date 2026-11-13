@@ -59,6 +59,20 @@ defmodule Taamol.Settings do
     end
   end
 
+  @doc """
+  The Swish details for donations, or nil when no Swish number is set:
+  `%{number: "1231181189", message: "Gåva till Taamol"}`.
+  """
+  def swish do
+    case get() do
+      %{swish_number: number} = settings when is_binary(number) and number != "" ->
+        %{number: number, message: settings.swish_message || "Taamol"}
+
+      _ ->
+        nil
+    end
+  end
+
   @doc "A changeset for the settings form."
   def change(attrs \\ %{}), do: SiteSetting.changeset(get(), attrs)
 

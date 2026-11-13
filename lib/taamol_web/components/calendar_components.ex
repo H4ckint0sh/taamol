@@ -15,6 +15,13 @@ defmodule TaamolWeb.CalendarComponents do
   def entry_title(%{source: :holiday, key: key}), do: holiday_name(key)
   def entry_title(%{source: :event, event: event}), do: event.title
 
+  # bookings are private: everyone sees only what is booked
+  def entry_title(%{source: :booking, booking: booking}),
+    do:
+      gettext("%{service} (booked)",
+        service: TaamolWeb.BookingComponents.service_name(booking.service)
+      )
+
   @doc "Translated holiday name."
   def holiday_name(:islamic_new_year), do: gettext("Islamic New Year")
   def holiday_name(:tasua), do: gettext("Tasu'a")
@@ -77,6 +84,7 @@ defmodule TaamolWeb.CalendarComponents do
   def kind_name(:celebration), do: gettext("Celebration")
   def kind_name(:mourning), do: gettext("Mourning")
   def kind_name(:observance), do: gettext("Observance")
+  def kind_name(:booking), do: gettext("Booking")
 
   @doc "Hijri month name."
   def hijri_month_name(1), do: gettext("Muharram")
@@ -133,12 +141,14 @@ defmodule TaamolWeb.CalendarComponents do
   def kind_dot(:celebration), do: "bg-emerald-500"
   def kind_dot(:mourning), do: "bg-base-content/70"
   def kind_dot(:observance), do: "bg-sky-500"
+  def kind_dot(:booking), do: "bg-violet-500"
 
   @doc "Chip colours for a kind."
   def kind_chip(:community), do: "bg-primary/12 text-primary"
   def kind_chip(:celebration), do: "bg-emerald-500/12 text-emerald-700 dark:text-emerald-400"
   def kind_chip(:mourning), do: "bg-base-content/8 text-base-content/80"
   def kind_chip(:observance), do: "bg-sky-500/12 text-sky-700 dark:text-sky-400"
+  def kind_chip(:booking), do: "bg-violet-500/12 text-violet-700 dark:text-violet-400"
 
   # ---------------------------------------------------------------------------
   # Components

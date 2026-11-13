@@ -37,6 +37,16 @@ defmodule TaamolWeb.Router do
     pipe_through :browser
 
     post "/locale", LocaleController, :update
+
+    # category pages moved to /news?category=… (kept for old links)
+    get "/categories", RedirectController, :categories
+    get "/categories/:category", RedirectController, :categories
+  end
+
+  # The Swish QR image for donations. No :browser pipeline: it is an image,
+  # needs no session, and browsers ask for it with an image Accept header.
+  scope "/", TaamolWeb do
+    get "/donate/qr.png", DonationQrController, :show
   end
 
   # Public JSON API. Prayer times only depend on a location and date, so no
@@ -80,6 +90,10 @@ defmodule TaamolWeb.Router do
       live "/dashboard/events/new", DashboardLive.EventForm, :new
       live "/dashboard/events/:id/edit", DashboardLive.EventForm, :edit
       live "/dashboard/gallery", DashboardLive.Gallery, :index
+      live "/dashboard/messages", DashboardLive.Messages, :index
+      # members see their own bookings here; administrators see all of them
+      live "/dashboard/bookings", DashboardLive.Bookings, :index
+      live "/dashboard/booking-services", DashboardLive.BookingServices, :index
       live "/dashboard/settings", DashboardLive.SiteSettings, :edit
     end
 
@@ -98,12 +112,13 @@ defmodule TaamolWeb.Router do
       live "/articles", ArticleLive.ArticleListLive, :new
       # public news pages: work for visitors and logged-in users alike
       live "/", HomeLive, :index
-      live "/categories", CategoryLive, :index
-      live "/categories/:category", CategoryLive, :show
+      live "/news", NewsLive, :index
       live "/articles/:id", ArticleLive.Show, :show
       live "/menu", MenuLive, :index
       live "/calendar", CalendarLive, :index
       live "/gallery", GalleryLive, :index
+      live "/contact", ContactLive, :index
+      live "/donate", DonateLive, :index
     end
 
     post "/users/log-in", UserSessionController, :create
