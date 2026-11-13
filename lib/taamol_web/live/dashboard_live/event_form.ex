@@ -5,8 +5,6 @@ defmodule TaamolWeb.DashboardLive.EventForm do
   """
   use TaamolWeb, :live_view
 
-  import TaamolWeb.CalendarComponents, only: [kind_name: 1]
-
   alias Taamol.Events
   alias Taamol.Events.Event
 
@@ -28,7 +26,6 @@ defmodule TaamolWeb.DashboardLive.EventForm do
 
     socket
     |> assign(page_title: gettext("Add event"), event: event)
-    |> assign_form(Events.change_event(event))
   end
 
   defp apply_action(socket, :edit, %{"id" => id}) do
@@ -36,56 +33,16 @@ defmodule TaamolWeb.DashboardLive.EventForm do
 
     socket
     |> assign(page_title: gettext("Edit event"), event: event)
-    |> assign_form(Events.change_event(event))
   end
-
-  defp assign_form(socket, changeset), do: assign(socket, :form, to_form(changeset))
 
   @impl true
-  def handle_event("validate", %{"event" => params}, socket) do
-    changeset = Events.change_event(socket.assigns.event, params)
-    {:noreply, assign_form(socket, Map.put(changeset, :action, :validate))}
+  def handle_info({:event_editor, action, event}, socket) when action in [:saved, :deleted] do
+    message = if action == :saved, do: gettext("Event saved."), else: gettext("Event deleted.")
+    {:noreply, socket |> put_flash(:info, message) |> push_navigate(to: calendar_path(event))}
   end
 
-  def handle_event("save", %{"event" => params}, socket) do
-    scope = socket.assigns.current_scope
-
-    result =
-      case socket.assigns.live_action do
-        :new -> Events.create_event(scope, params)
-        :edit -> Events.update_event(scope, socket.assigns.event, params)
-      end
-
-    case result do
-      {:ok, event} ->
-        {:noreply,
-         socket
-         |> put_flash(:info, gettext("Event saved."))
-         |> push_navigate(to: calendar_path(event))}
-
-      {:error, %Ecto.Changeset{} = changeset} ->
-        {:noreply, assign_form(socket, changeset)}
-
-      {:error, :forbidden} ->
-        {:noreply,
-         socket
-         |> put_flash(:error, gettext("You are not allowed to do that."))
-         |> push_navigate(to: ~p"/calendar")}
-    end
-  end
-
-  def handle_event("delete", _params, socket) do
-    case Events.delete_event(socket.assigns.current_scope, socket.assigns.event) do
-      {:ok, event} ->
-        {:noreply,
-         socket
-         |> put_flash(:info, gettext("Event deleted."))
-         |> push_navigate(to: calendar_path(event))}
-
-      {:error, _} ->
-        {:noreply, put_flash(socket, :error, gettext("The event could not be deleted."))}
-    end
-  end
+  def handle_info({:event_editor, :error, message}, socket),
+    do: {:noreply, put_flash(socket, :error, message)}
 
   defp calendar_path(%Event{starts_at: starts_at}) do
     date = NaiveDateTime.to_date(starts_at)
@@ -98,6 +55,7 @@ defmodule TaamolWeb.DashboardLive.EventForm do
     <Layouts.dashboard
       flash={@flash}
       current_scope={@current_scope}
+      unread_messages={@unread_messages}
       active={:events}
       title={@page_title}
     >
@@ -112,54 +70,16 @@ defmodule TaamolWeb.DashboardLive.EventForm do
 
         <Layouts.dashboard_heading title={@page_title} />
 
-        <.form
-          for={@form}
-          id="event-form"
-          phx-change="validate"
-          phx-submit="save"
-          class="space-y-1 rounded-2xl border border-base-300 bg-base-100 p-5"
-        >
-          <.input field={@form[:title]} type="text" label={gettext("Title")} required />
-          <.input
-            field={@form[:kind]}
-            type="select"
-            label={gettext("Type")}
-            options={Enum.map(Event.kinds(), &{kind_name(&1), &1})}
+        <div class="rounded-2xl border border-base-300 bg-base-100 p-5">
+          <.live_component
+            module={TaamolWeb.EventEditorComponent}
+            id="event-page"
+            event={@event}
+            current_scope={@current_scope}
+            dialog={false}
+            focus_return={nil}
           />
-          <.input field={@form[:all_day]} type="checkbox" label={gettext("All day")} />
-          <div class="grid gap-x-4 sm:grid-cols-2">
-            <.input
-              field={@form[:starts_at]}
-              type="datetime-local"
-              label={gettext("Starts")}
-              required
-            />
-            <.input field={@form[:ends_at]} type="datetime-local" label={gettext("Ends (optional)")} />
-          </div>
-          <.input field={@form[:location]} type="text" label={gettext("Location")} />
-          <.input field={@form[:description]} type="textarea" label={gettext("Description")} rows="5" />
-
-          <div class="flex items-center justify-between gap-3 pt-3">
-            <button
-              :if={@live_action == :edit}
-              type="button"
-              id="delete-event"
-              phx-click="delete"
-              data-confirm={gettext("Delete this event?")}
-              class="rounded-xl px-4 py-2.5 text-sm font-semibold text-error transition hover:bg-error/10"
-            >
-              {gettext("Delete")}
-            </button>
-            <button
-              type="submit"
-              id="save-event"
-              phx-disable-with={gettext("Saving…")}
-              class="ms-auto rounded-xl bg-primary px-6 py-2.5 text-sm font-semibold text-primary-content transition hover:opacity-85"
-            >
-              {gettext("Save event")}
-            </button>
-          </div>
-        </.form>
+        </div>
       </div>
     </Layouts.dashboard>
     """

@@ -158,6 +158,7 @@ defmodule TaamolWeb.DashboardLive.ArticleForm do
     <Layouts.dashboard
       flash={@flash}
       current_scope={@current_scope}
+      unread_messages={@unread_messages}
       active={:news}
       title={@page_title}
     >
@@ -361,17 +362,15 @@ defmodule TaamolWeb.DashboardLive.ArticleForm do
         <div class="space-y-4">
           <section class="rounded-2xl border border-base-300 bg-base-100 p-5">
             <h2 class="mb-3 font-semibold">{gettext("Publishing")}</h2>
-            <label for="article-status" class="label mb-1 text-sm">{gettext("Status")}</label>
-            <select
+            <.input
               id="article-status"
+              type="select"
               name="status"
-              class="mb-3 w-full rounded-xl border border-base-300 bg-base-100 px-3 py-2 text-sm outline-none focus:border-primary"
-            >
-              <option value="draft" selected={@status == "draft"}>{gettext("Draft")}</option>
-              <option value="published" selected={@status == "published"}>
-                {gettext("Published")}
-              </option>
-            </select>
+              label={gettext("Status")}
+              value={@status}
+              options={[{gettext("Draft"), "draft"}, {gettext("Published"), "published"}]}
+              wrapper_class="mb-3"
+            />
             <p :if={@article.published} class="mb-3 text-xs text-base-content/55">
               {gettext("Published on %{date}",
                 date: TaamolWeb.NewsComponents.format_date(@article.published, time: true)

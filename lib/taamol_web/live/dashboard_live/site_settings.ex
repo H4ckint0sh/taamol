@@ -44,6 +44,7 @@ defmodule TaamolWeb.DashboardLive.SiteSettings do
     <Layouts.dashboard
       flash={@flash}
       current_scope={@current_scope}
+      unread_messages={@unread_messages}
       active={:site_settings}
       title={gettext("Site settings")}
     >

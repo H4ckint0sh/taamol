@@ -31,6 +31,61 @@ defmodule TaamolWeb.CoreComponents do
 
   alias Phoenix.LiveView.JS
 
+  @doc "A card heading with an icon, description, and optional actions."
+  attr :icon, :string, required: true
+  attr :title, :string, required: true
+  attr :description, :string, required: true
+  slot :actions
+
+  def section_heading(assigns) do
+    ~H"""
+    <div class="flex flex-wrap items-center justify-between gap-3">
+      <div class="flex min-w-0 items-center gap-3">
+        <span class="grid size-10 shrink-0 place-items-center rounded-xl bg-primary/10 text-primary">
+          <.icon name={@icon} class="size-5" />
+        </span>
+        <h2 class="text-lg font-bold">{@title}</h2>
+      </div>
+      <div :if={@actions != []}>{render_slot(@actions)}</div>
+    </div>
+    <p class="mt-1 text-sm leading-relaxed text-base-content/60">{@description}</p>
+    """
+  end
+
+  @doc "A rounded group of navigation or selection controls."
+  attr :id, :string, required: true
+  attr :class, :string, default: nil
+  attr :rest, :global
+  slot :inner_block, required: true
+
+  def segmented_control(assigns) do
+    ~H"""
+    <div
+      id={@id}
+      class={[
+        "segmented-control relative inline-flex max-w-full items-center gap-0.5 overflow-x-auto rounded-full bg-neutral-200 p-1 shadow-inner ring-1 ring-inset ring-black/5 dark:bg-neutral-800 dark:ring-white/10",
+        @class
+      ]}
+      {@rest}
+    >
+      <span
+        id={"#{@id}-indicator"}
+        phx-hook="SegmentedIndicator"
+        phx-update="ignore"
+        data-segment-indicator
+        aria-hidden="true"
+        class="pointer-events-none absolute left-0 top-0 h-0 w-0 rounded-full bg-white opacity-0 shadow-md motion-safe:transition-[transform,width,height,opacity] motion-safe:duration-200 motion-safe:ease-out"
+      />
+      {render_slot(@inner_block)}
+    </div>
+    """
+  end
+
+  @doc "Classes for a segmented control item selected by aria-current, aria-selected, or aria-pressed."
+  def segmented_option_class do
+    "relative inline-flex h-6 shrink-0 items-center gap-1.5 whitespace-nowrap rounded-full px-3 text-xs font-semibold text-neutral-600 transition-colors hover:text-neutral-900 focus-visible:outline-2 focus-visible:outline-primary dark:text-neutral-300 dark:hover:text-white aria-[current=page]:bg-white aria-[current=page]:text-neutral-900 aria-[current=page]:shadow-md dark:aria-[current=page]:text-neutral-900 dark:aria-[current=page]:hover:text-neutral-900 aria-selected:bg-white aria-selected:text-neutral-900 aria-selected:shadow-md dark:aria-selected:text-neutral-900 dark:aria-selected:hover:text-neutral-900 aria-pressed:bg-white aria-pressed:text-neutral-900 aria-pressed:shadow-md dark:aria-pressed:text-neutral-900 dark:aria-pressed:hover:text-neutral-900"
+  end
+
   @doc """
   Renders flash notices.
 
@@ -182,7 +237,9 @@ defmodule TaamolWeb.CoreComponents do
   attr :options, :list, doc: "the options to pass to Phoenix.HTML.Form.options_for_select/2"
   attr :multiple, :boolean, default: false, doc: "the multiple flag for select inputs"
   attr :class, :any, default: nil, doc: "the input class to use over defaults"
+  attr :wrapper_class, :string, default: nil, doc: "additional classes for the field wrapper"
   attr :error_class, :any, default: nil, doc: "the input error class to use over defaults"
+  attr :icon, :string, default: nil, doc: "an optional field icon"
 
   attr :rest, :global,
     include: ~w(accept autocomplete capture cols disabled form list max maxlength min minlength
@@ -212,7 +269,7 @@ defmodule TaamolWeb.CoreComponents do
       end)
 
     ~H"""
-    <div class="fieldset mb-2">
+    <div class={["fieldset mb-2", @wrapper_class]}>
       <%!-- a real checkbox, drawn as a toggle switch --%>
       <label for={@id} class="inline-flex cursor-pointer items-center gap-3 py-1">
         <input
@@ -245,15 +302,24 @@ defmodule TaamolWeb.CoreComponents do
 
   def input(%{type: "select"} = assigns) do
     ~H"""
-    <div class="fieldset mb-2">
-      <label for={@id}>
-        <span :if={@label} class="label mb-1 flex">{@label}</span>
+    <div class={["fieldset mb-2", @wrapper_class]}>
+      <label :if={@label} for={@id} class="mb-1.5 block text-sm font-semibold text-base-content/75">
+        {@label}
+      </label>
+      <div class="form-control form-control-icon relative w-full max-w-lg min-w-0">
+        <.icon
+          name={@icon || "hero-list-bullet"}
+          class="pointer-events-none absolute start-4 top-1/2 size-5 -translate-y-1/2 text-base-content/40"
+        />
         <select
           id={@id}
           name={@name}
+          data-field-input
           class={[
-            @class || "select w-full sm:max-w-72",
-            @errors != [] && (@error_class || "select-error")
+            @class ||
+              "block min-h-10 w-full min-w-0 rounded-xl border border-base-300 bg-base-100 py-2 text-sm text-base-content shadow-sm outline-none transition focus:border-primary focus:ring-4 focus:ring-primary/10 disabled:cursor-not-allowed disabled:opacity-50",
+            !@multiple && "appearance-none",
+            @errors != [] && (@error_class || "border-error")
           ]}
           multiple={@multiple}
           {@rest}
@@ -261,7 +327,12 @@ defmodule TaamolWeb.CoreComponents do
           <option :if={@prompt} value="">{@prompt}</option>
           {Phoenix.HTML.Form.options_for_select(@options, @value)}
         </select>
-      </label>
+        <.icon
+          :if={!@multiple}
+          name="hero-chevron-down"
+          class="pointer-events-none absolute end-4 top-1/2 size-4 -translate-y-1/2 text-base-content/50"
+        />
+      </div>
       <.error :for={msg <- @errors}>{msg}</.error>
     </div>
     """
@@ -269,55 +340,103 @@ defmodule TaamolWeb.CoreComponents do
 
   def input(%{type: "textarea"} = assigns) do
     ~H"""
-    <div class="fieldset mb-2">
-      <label for={@id}>
-        <span :if={@label} class="label mb-1 flex">{@label}</span>
+    <div class={["fieldset mb-2", @wrapper_class]}>
+      <label :if={@label} for={@id} class="mb-1.5 block text-sm font-semibold text-base-content/75">
+        {@label}
+      </label>
+      <div class="form-control form-control-icon relative w-full max-w-lg min-w-0">
+        <.icon
+          name={@icon || "hero-document-text"}
+          class="pointer-events-none absolute start-4 top-2.5 size-5 text-base-content/40"
+        />
         <textarea
           id={@id}
           name={@name}
+          data-field-input
           class={[
-            @class || "w-full textarea",
-            @errors != [] && (@error_class || "textarea-error")
+            @class ||
+              "block min-h-22 w-full min-w-0 resize-y rounded-xl border border-base-300 bg-base-100 py-2 text-sm leading-relaxed text-base-content shadow-sm outline-none transition focus:border-primary focus:ring-4 focus:ring-primary/10 disabled:cursor-not-allowed disabled:opacity-50",
+            @errors != [] && (@error_class || "border-error")
           ]}
           {@rest}
         >{Phoenix.HTML.Form.normalize_value("textarea", @value)}</textarea>
-      </label>
+      </div>
       <.error :for={msg <- @errors}>{msg}</.error>
     </div>
     """
   end
 
-  # All other inputs text, datetime-local, url, password, etc. are handled here...
-  # Short values (numbers, dates, times, phone numbers) get a narrower field on
-  # larger screens; free text uses the full width.
   def input(assigns) do
-    assigns =
-      assign_new(assigns, :width_class, fn ->
-        if assigns.type in ~w(number date time datetime-local tel),
-          do: "sm:max-w-72",
-          else: nil
-      end)
+    assigns = assign(assigns, :field_icon, assigns.icon || input_icon(assigns.type))
 
     ~H"""
-    <div class="fieldset mb-2">
-      <label for={@id}>
-        <span :if={@label} class="label mb-1 flex">{@label}</span>
+    <div class={["fieldset mb-2", @wrapper_class]}>
+      <label :if={@label} for={@id} class="mb-1.5 block text-sm font-semibold text-base-content/75">
+        {@label}
+      </label>
+      <div class={[
+        "form-control relative w-full max-w-lg min-w-0",
+        @field_icon && "form-control-icon"
+      ]}>
+        <.icon
+          :if={@field_icon}
+          name={@field_icon}
+          class="pointer-events-none absolute start-4 top-1/2 size-5 -translate-y-1/2 text-base-content/40"
+        />
         <input
           type={@type}
           name={@name}
           id={@id}
           value={Phoenix.HTML.Form.normalize_value(@type, @value)}
+          data-field-input
           class={[
-            @class || ["input w-full", @width_class],
-            @errors != [] && (@error_class || "input-error")
+            @class ||
+              "block h-10 w-full min-w-0 rounded-xl border border-base-300 bg-base-100 py-2 text-sm text-base-content shadow-sm outline-none transition focus:border-primary focus:ring-4 focus:ring-primary/10 disabled:cursor-not-allowed disabled:opacity-50",
+            @errors != [] && (@error_class || "border-error")
           ]}
           {@rest}
         />
-      </label>
+        <div
+          :if={@type == "number" && @id}
+          id={"#{@id}-stepper"}
+          phx-hook="NumberStepper"
+          phx-update="ignore"
+          data-number-stepper
+          class="absolute end-1.5 top-1/2 hidden -translate-y-1/2 items-center gap-1"
+        >
+          <button
+            type="button"
+            data-step="-1"
+            aria-label={gettext("Decrease %{field}", field: @label || gettext("value"))}
+            class="grid size-8 place-items-center rounded-lg bg-base-200 text-base-content/70 transition hover:bg-primary/15 hover:text-primary focus-visible:outline-2 focus-visible:outline-primary disabled:cursor-not-allowed disabled:opacity-40"
+          >
+            <.icon name="hero-minus" class="size-4" />
+          </button>
+          <button
+            type="button"
+            data-step="1"
+            aria-label={gettext("Increase %{field}", field: @label || gettext("value"))}
+            class="grid size-8 place-items-center rounded-lg bg-base-200 text-base-content/70 transition hover:bg-primary/15 hover:text-primary focus-visible:outline-2 focus-visible:outline-primary disabled:cursor-not-allowed disabled:opacity-40"
+          >
+            <.icon name="hero-plus" class="size-4" />
+          </button>
+        </div>
+      </div>
       <.error :for={msg <- @errors}>{msg}</.error>
     </div>
     """
   end
+
+  defp input_icon(type) when type in ~w(date datetime-local month week), do: "hero-calendar-days"
+  defp input_icon("time"), do: "hero-clock"
+  defp input_icon("number"), do: "hero-hashtag"
+  defp input_icon("email"), do: "hero-envelope"
+  defp input_icon("password"), do: "hero-lock-closed"
+  defp input_icon("search"), do: "hero-magnifying-glass"
+  defp input_icon("tel"), do: "hero-phone"
+  defp input_icon("url"), do: "hero-link"
+  defp input_icon("text"), do: "hero-pencil-square"
+  defp input_icon(_type), do: nil
 
   # Helper used by inputs to generate form errors
   defp error(assigns) do

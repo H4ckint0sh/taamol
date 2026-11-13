@@ -8,9 +8,11 @@ defmodule TaamolWeb.UserLive.Confirmation do
     ~H"""
     <Layouts.app flash={@flash} current_scope={@current_scope}>
       <div class="mx-auto max-w-sm">
-        <div class="text-center">
-          <.header>{gettext("Welcome, %{email}", email: @user.email)}</.header>
-        </div>
+        <header id="confirmation-heading" class="mb-6">
+          <h1 dir="auto" class="break-words text-2xl font-bold tracking-tight sm:text-3xl">
+            {gettext("Welcome, %{email}", email: @user.email)}
+          </h1>
+        </header>
 
         <.form
           :if={!@user.confirmed_at}

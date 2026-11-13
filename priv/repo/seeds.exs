@@ -356,7 +356,9 @@ else
             description_sv:
               "Lokalen för minnesstund, koranläsning och samling efter en begravning.",
             resource: :premises,
-            duration_minutes: 180,
+            duration_minutes: 720,
+            opens_at: ~T[08:00:00],
+            closes_at: ~T[20:00:00],
             icon: "hero-building-library",
             position: 1
           },
@@ -405,8 +407,8 @@ else
       service_id: khatm.id,
       user_id: hasan.id,
       status: :pending,
-      starts_at: at.(6, ~T[16:00:00]),
-      ends_at: at.(6, ~T[19:00:00]),
+      starts_at: at.(6, ~T[08:00:00]),
+      ends_at: at.(6, ~T[20:00:00]),
       contact_name: "حسن محمدی",
       contact_phone: "070 111 22 33",
       guests: 80,

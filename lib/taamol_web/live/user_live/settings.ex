@@ -11,16 +11,15 @@ defmodule TaamolWeb.UserLive.Settings do
     <Layouts.dashboard
       flash={@flash}
       current_scope={@current_scope}
+      unread_messages={@unread_messages}
       active={:account}
       title={gettext("Account settings")}
     >
       <div class="max-w-2xl space-y-4">
-        <div>
-          <.header>
-            {gettext("Account Settings")}
-            <:subtitle>{gettext("Manage your name, email address and password settings")}</:subtitle>
-          </.header>
-        </div>
+        <Layouts.dashboard_heading
+          title={gettext("Account Settings")}
+          subtitle={gettext("Manage your name, email address and password settings")}
+        />
 
         <.form
           for={@name_form}
@@ -42,6 +41,26 @@ defmodule TaamolWeb.UserLive.Settings do
             {gettext("Save name")}
           </.button>
         </.form>
+
+        <div class="divider" />
+
+        <section
+          id="account-prayer-settings"
+          class="rounded-2xl border border-base-300 bg-base-100 p-5"
+        >
+          <h2 class="font-semibold">{gettext("Prayer time preferences")}</h2>
+          <p class="mt-1 text-sm text-base-content/60">
+            {gettext("Choose your location and calculation settings, and save them to your account.")}
+          </p>
+          <.link
+            id="account-prayer-settings-link"
+            navigate={~p"/prayer-times"}
+            class="mt-3 inline-flex items-center gap-1 text-sm font-semibold text-primary hover:underline"
+          >
+            {gettext("Edit prayer time preferences")}
+            <.icon name="hero-arrow-right" class="size-4 rtl:rotate-180" />
+          </.link>
+        </section>
 
         <div class="divider" />
 

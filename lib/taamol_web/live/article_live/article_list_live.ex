@@ -11,6 +11,9 @@ defmodule TaamolWeb.ArticleLive.ArticleListLive do
   def render(assigns) do
     ~H"""
     <Layouts.app flash={@flash} current_scope={@current_scope}>
+      <Layouts.page_hero id="articles-hero" class="mb-6">
+        <:title>{gettext("News")}</:title>
+      </Layouts.page_hero>
       <.table id="articles" rows={@streams.articles} row_item={fn {_id, article} -> article end}>
         <:col :let={article} label={gettext("Title")}><span dir="auto">{article.title}</span></:col>
         <:col :let={article} label={gettext("Body")}><span dir="auto">{article.body}</span></:col>

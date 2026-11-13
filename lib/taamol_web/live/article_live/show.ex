@@ -21,7 +21,11 @@ defmodule TaamolWeb.ArticleLive.Show do
         else: article
 
     scope = socket.assigns.current_scope
-    if connected?(socket), do: Tracking.subscribe_article(article)
+
+    if connected?(socket) do
+      :ok = Tracking.subscribe_article(article)
+      :ok = Taamol.Events.subscribe()
+    end
 
     {:ok,
      socket
@@ -159,6 +163,9 @@ defmodule TaamolWeb.ArticleLive.Show do
   end
 
   @impl true
+  def handle_info(:events_changed, socket),
+    do: {:noreply, assign(socket, :upcoming, Taamol.Events.upcoming(limit: 5))}
+
   def handle_info({:article_likes, count}, socket),
     do: {:noreply, assign(socket, like_count: count)}
 
@@ -203,66 +210,52 @@ defmodule TaamolWeb.ArticleLive.Show do
               <button
                 id="share-article"
                 type="button"
-                phx-hook=".ShareArticle"
+                phx-hook="ShareArticle"
+                phx-update="ignore"
                 data-title={@article.title}
                 data-copied={gettext("Link copied")}
+                data-copy-prompt={gettext("Copy this link to share")}
                 class="inline-flex items-center gap-2 rounded-full border border-base-300 px-3 py-1.5 text-xs font-medium transition hover:border-primary/40 hover:bg-base-200"
               >
                 <.icon name="hero-share" class="size-4" />
-                <span data-label>{gettext("Share")}</span>
+                <span data-label aria-live="polite">{gettext("Share")}</span>
               </button>
-              <script :type={Phoenix.LiveView.ColocatedHook} name=".ShareArticle">
-                export default {
-                  mounted() {
-                    this.el.addEventListener("click", async () => {
-                      const url = window.location.href
-                      if (navigator.share) {
-                        try { await navigator.share({title: this.el.dataset.title, url}) } catch (_e) {}
-                        return
-                      }
-                      try { await navigator.clipboard.writeText(url) } catch (_e) { return }
-                      const label = this.el.querySelector("[data-label]")
-                      const original = label.textContent
-                      label.textContent = this.el.dataset.copied
-                      setTimeout(() => { label.textContent = original }, 2000)
-                    })
-                  }
-                }
-              </script>
             </div>
 
-            <header class="mt-6">
-              <.category_label category={@article.category} />
-              <h1
-                dir="auto"
-                class="mt-2 text-xl font-bold leading-snug text-balance sm:text-2xl"
-              >
-                {@article.title}
-              </h1>
-              <div class="mt-4 flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-base-content/55">
-                <span
-                  :if={@article.author || @article.creator}
-                  dir="auto"
-                  class="font-medium text-base-content/80"
-                >
-                  {@article.author || @article.creator.name}
-                </span>
-                <time datetime={DateTime.to_iso8601(@article.published)}>
-                  {format_date(@article.published, time: true)}
-                </time>
-                <span id="article-views" class="inline-flex items-center gap-1 tabular-nums">
-                  <.icon name="hero-eye-micro" class="size-4" />
-                  {format_count(@article.view_count)}
-                </span>
-                <a
-                  href="#comments"
-                  class="inline-flex items-center gap-1 tabular-nums hover:text-primary"
-                >
-                  <.icon name="hero-chat-bubble-left-micro" class="size-4" />
-                  {format_count(@comment_count)}
-                </a>
-              </div>
-            </header>
+            <Layouts.page_hero
+              id="article-hero"
+              class="mt-6"
+              title_dir="auto"
+              title_class="leading-snug text-balance"
+            >
+              <:eyebrow><.category_label category={@article.category} /></:eyebrow>
+              <:title>{@article.title}</:title>
+              <:subtitle>
+                <div class="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-base-content/55">
+                  <span
+                    :if={@article.author || @article.creator}
+                    dir="auto"
+                    class="font-medium text-base-content/80"
+                  >
+                    {@article.author || @article.creator.name}
+                  </span>
+                  <time datetime={DateTime.to_iso8601(@article.published)}>
+                    {format_date(@article.published, time: true)}
+                  </time>
+                  <span id="article-views" class="inline-flex items-center gap-1 tabular-nums">
+                    <.icon name="hero-eye-micro" class="size-4" />
+                    {format_count(@article.view_count)}
+                  </span>
+                  <a
+                    href="#comments"
+                    class="inline-flex items-center gap-1 tabular-nums hover:text-primary"
+                  >
+                    <.icon name="hero-chat-bubble-left-micro" class="size-4" />
+                    {format_count(@comment_count)}
+                  </a>
+                </div>
+              </:subtitle>
+            </Layouts.page_hero>
 
             <.cover
               :if={@article.cover_image_url}
@@ -312,16 +305,18 @@ defmodule TaamolWeb.ArticleLive.Show do
                 >
                   <Layouts.avatar user={@current_scope.user} class="size-10 text-sm" />
                   <div class="min-w-0 flex-1">
-                    <textarea
+                    <.input
+                      type="textarea"
                       id={"comment-body-#{@comment_key}"}
                       name={@comment_form[:body].name}
+                      value={@comment_form[:body].value}
                       rows="3"
                       maxlength="2000"
                       dir="auto"
                       required
                       placeholder={gettext("Write a comment…")}
-                      class="block w-full resize-y rounded-2xl border border-base-300 bg-base-100 px-4 py-3 text-sm outline-none transition focus:border-primary"
-                    >{@comment_form[:body].value}</textarea>
+                      aria-label={gettext("Write a comment…")}
+                    />
                     <p
                       :for={error <- @comment_form[:body].errors}
                       class="mt-1 text-xs text-error"
@@ -532,17 +527,19 @@ defmodule TaamolWeb.ArticleLive.Show do
         >
           <input type="hidden" name="parent_id" value={@node.id} />
           <input type="hidden" name="root" value={@root} />
-          <textarea
+          <.input
+            type="textarea"
             id={"reply-body-#{@node.id}"}
             name={@reply_form[:body].name}
+            value={@reply_form[:body].value}
             rows="2"
             maxlength="2000"
             dir="auto"
             required
             phx-mounted={JS.focus()}
             placeholder={gettext("Reply to %{name}…", name: @node.comment.creator.name)}
-            class="block w-full resize-y rounded-2xl border border-base-300 bg-base-100 px-4 py-2.5 text-sm outline-none transition focus:border-primary"
-          >{@reply_form[:body].value}</textarea>
+            aria-label={gettext("Reply to %{name}…", name: @node.comment.creator.name)}
+          />
           <p :for={error <- @reply_form[:body].errors} class="mt-1 text-xs text-error">
             {translate_error(error)}
           </p>

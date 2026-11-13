@@ -72,7 +72,11 @@ defmodule TaamolWeb.Router do
     pipe_through [:browser, :require_authenticated_user]
 
     live_session :require_authenticated_user,
-      on_mount: [{TaamolWeb.Locale, :default}, {TaamolWeb.UserAuth, :require_authenticated}] do
+      on_mount: [
+        {TaamolWeb.Locale, :default},
+        {TaamolWeb.UserAuth, :require_authenticated},
+        {TaamolWeb.DashboardNotifications, :default}
+      ] do
       live "/users/settings", UserLive.Settings, :edit
       live "/users/settings/confirm-email/:token", UserLive.Settings, :confirm_email
 
@@ -116,6 +120,7 @@ defmodule TaamolWeb.Router do
       live "/articles/:id", ArticleLive.Show, :show
       live "/menu", MenuLive, :index
       live "/calendar", CalendarLive, :index
+      live "/prayer-times", PrayerTimesLive, :index
       live "/gallery", GalleryLive, :index
       live "/contact", ContactLive, :index
       live "/donate", DonateLive, :index

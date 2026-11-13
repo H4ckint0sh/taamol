@@ -20,6 +20,27 @@ msgstr "تغییر نکرده است"
 msgid "does not match password"
 msgstr "با گذرواژه مطابقت ندارد"
 
+msgid "must be after opening time"
+msgstr "باید پس از ساعت شروع باشد"
+
+msgid "must fit within opening hours"
+msgstr "باید در بازه ساعات قابل رزرو بگنجد"
+
+msgid "must be an angle or minutes, for example 18 or 90 min"
+msgstr "باید زاویه یا دقیقه باشد، برای مثال 18 یا 90 min"
+
+msgid "must be an angle or minutes, for example 4.5 or 1 min"
+msgstr "باید زاویه یا دقیقه باشد، برای مثال 4.5 یا 1 min"
+
+msgid "must be Standard, Hanafi, or a positive shadow factor"
+msgstr "باید Standard، Hanafi یا یک ضریب سایه مثبت باشد"
+
+msgid "must be at most 90 degrees or 180 minutes"
+msgstr "باید حداکثر ۹۰ درجه یا ۱۸۰ دقیقه باشد"
+
+msgid "must be a positive shadow factor at most 1000"
+msgstr "باید ضریب سایه مثبت و حداکثر ۱۰۰۰ باشد"
+
 msgid "can't be blank"
 msgstr "نمی‌تواند خالی باشد"
 

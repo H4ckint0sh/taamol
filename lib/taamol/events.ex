@@ -10,6 +10,16 @@ defmodule Taamol.Events do
   alias Taamol.Events.{Event, Holidays, Hijri}
   alias Taamol.Repo
 
+  @doc "Subscribes to public calendar event changes."
+  def subscribe, do: Phoenix.PubSub.subscribe(Taamol.PubSub, "calendar:events")
+
+  defp notify_change({:ok, _event} = result) do
+    :ok = Phoenix.PubSub.broadcast_from(Taamol.PubSub, self(), "calendar:events", :events_changed)
+    result
+  end
+
+  defp notify_change(result), do: result
+
   @doc """
   A calendar entry: either a computed holiday or a stored event.
 
@@ -120,6 +130,14 @@ defmodule Taamol.Events do
   @doc "Gets an event. Raises if it doesn't exist."
   def get_event!(id), do: Repo.get!(Event, id)
 
+  @doc "Gets an event, or nil if it no longer exists."
+  def get_event(id) do
+    case Ecto.UUID.cast(id) do
+      {:ok, id} -> Repo.get(Event, id)
+      :error -> nil
+    end
+  end
+
   @doc "Returns a changeset for the event form."
   def change_event(%Event{} = event, attrs \\ %{}), do: Event.changeset(event, attrs)
 
@@ -130,6 +148,7 @@ defmodule Taamol.Events do
       |> Event.changeset(attrs)
       |> Repo.insert()
     end)
+    |> notify_change()
   end
 
   @doc "Updates an event. Administrators only."
@@ -137,13 +156,15 @@ defmodule Taamol.Events do
     as_admin(scope, fn _admin ->
       event
       |> Event.changeset(attrs)
-      |> Repo.update()
+      |> Repo.update(stale_error_field: :id)
     end)
+    |> notify_change()
   end
 
   @doc "Deletes an event. Administrators only."
   def delete_event(scope, %Event{} = event) do
-    as_admin(scope, fn _admin -> Repo.delete(event) end)
+    as_admin(scope, fn _admin -> Repo.delete(event, stale_error_field: :id) end)
+    |> notify_change()
   end
 
   @doc "The Hijri date for a Gregorian date."

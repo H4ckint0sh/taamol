@@ -6,8 +6,11 @@ defmodule TaamolWeb.UserLive.RegistrationTest do
 
   describe "Registration page" do
     test "renders registration page", %{conn: conn} do
-      {:ok, _lv, html} = live(conn, ~p"/users/register")
+      {:ok, lv, html} = live(conn, ~p"/users/register")
 
+      assert has_element?(lv, "#registration-heading h1")
+      assert has_element?(lv, "#registration-heading a[href='/users/log-in']")
+      refute has_element?(lv, "#registration-hero")
       assert html =~ "Register"
       assert html =~ "Log in"
     end

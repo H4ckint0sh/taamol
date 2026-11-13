@@ -97,6 +97,7 @@ defmodule TaamolWeb.DashboardLive.Articles do
     <Layouts.dashboard
       flash={@flash}
       current_scope={@current_scope}
+      unread_messages={@unread_messages}
       active={:news}
       title={gettext("News")}
     >
@@ -123,48 +124,39 @@ defmodule TaamolWeb.DashboardLive.Articles do
           phx-submit="filter"
           class="flex flex-wrap items-center gap-3 px-5 py-4"
         >
-          <label class="relative min-w-56 flex-1">
-            <.icon
-              name="hero-magnifying-glass"
-              class="pointer-events-none absolute start-3 top-1/2 size-4 -translate-y-1/2 text-base-content/40"
-            />
-            <input
-              type="search"
-              name="search"
-              value={@filters["search"]}
-              phx-debounce="300"
-              placeholder={gettext("Search titles")}
-              class="w-full rounded-xl border border-base-300 bg-base-100 py-2 pe-3 ps-9 text-sm outline-none transition focus:border-primary"
-            />
-          </label>
-          <select
+          <.input
+            id="articles-search"
+            type="search"
+            name="search"
+            value={@filters["search"]}
+            phx-debounce="300"
+            placeholder={gettext("Search titles")}
+            aria-label={gettext("Search titles")}
+            wrapper_class="mb-0 min-w-56 flex-1"
+          />
+          <.input
+            id="articles-status"
+            type="select"
             name="status"
-            class="rounded-xl border border-base-300 bg-base-100 px-3 py-2 text-sm outline-none focus:border-primary"
-          >
-            <option value="" selected={@filters["status"] == ""}>{gettext("All statuses")}</option>
-            <option
-              :for={status <- [:published, :scheduled, :draft]}
-              value={status}
-              selected={@filters["status"] == to_string(status)}
-            >
-              {status_name(status)}
-            </option>
-          </select>
-          <select
+            value={@filters["status"]}
+            aria-label={gettext("All statuses")}
+            options={[
+              {gettext("All statuses"), ""}
+              | Enum.map([:published, :scheduled, :draft], &{status_name(&1), &1})
+            ]}
+            wrapper_class="mb-0"
+          />
+          <.input
+            id="articles-category"
+            type="select"
             name="category"
-            class="rounded-xl border border-base-300 bg-base-100 px-3 py-2 text-sm outline-none focus:border-primary"
-          >
-            <option value="" selected={@filters["category"] == ""}>
-              {gettext("All categories")}
-            </option>
-            <option
-              :for={category <- categories()}
-              value={category}
-              selected={@filters["category"] == to_string(category)}
-            >
-              {category_name(category)}
-            </option>
-          </select>
+            value={@filters["category"]}
+            aria-label={gettext("All categories")}
+            options={[
+              {gettext("All categories"), ""} | Enum.map(categories(), &{category_name(&1), &1})
+            ]}
+            wrapper_class="mb-0"
+          />
         </.form>
 
         <div class="overflow-x-auto">

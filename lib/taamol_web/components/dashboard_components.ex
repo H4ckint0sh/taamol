@@ -39,8 +39,7 @@ defmodule TaamolWeb.DashboardComponents do
   slot :inner_block, required: true
 
   @doc """
-  A stat-tile style card for a piece of information ("Phone · 070 …"), used on
-  the public contact and donate pages so they match the dashboard.
+  A stat-tile style card for a piece of information ("Phone · 070 …").
   """
   def info_card(assigns) do
     ~H"""

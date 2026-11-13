@@ -32,10 +32,28 @@ defmodule TaamolWeb.NewsLiveTest do
 
       {:ok, view, _html} = live(conn, ~p"/")
       assert has_element?(view, "#lead-article", "Lead story")
+      assert has_element?(view, "#home-news-tabs.rounded-full #tab-latest[aria-selected=true]")
+      assert has_element?(view, "#home-news-tabs-indicator[phx-hook=SegmentedIndicator]")
+      assert has_element?(view, "#home-news-tabs #tab-most-read[aria-selected=false]")
       assert has_element?(view, "#latest-#{other.id}")
       assert has_element?(view, "#feed-#{lead.id}")
       assert has_element?(view, "#feed-#{other.id}")
       assert has_element?(view, "#rail-prayer-times")
+      assert has_element?(view, "#rail-prayer-card .hero-moon")
+      assert has_element?(view, "#rail-prayer-card h2", "Prayer times")
+
+      assert has_element?(
+               view,
+               "#rail-prayer-card p",
+               "Today's prayer times and the next prayer."
+             )
+
+      for id <- ["home-upcoming", "rail-upcoming"] do
+        assert has_element?(view, "##{id} .hero-calendar-days")
+        assert has_element?(view, "##{id} h2", "Upcoming")
+        assert has_element?(view, "##{id} p", "Community events and important dates ahead.")
+        assert has_element?(view, "##{id} a[href='/calendar']")
+      end
     end
 
     test "filters the feed by category", %{conn: conn, creator: creator} do
@@ -66,6 +84,24 @@ defmodule TaamolWeb.NewsLiveTest do
   end
 
   describe "news page" do
+    test "public pages use compact headings without decorative boxes", %{conn: conn} do
+      for {path, id} <- [
+            {~p"/news", "news-hero"},
+            {~p"/gallery", "gallery-hero"},
+            {~p"/calendar", "calendar-hero"},
+            {~p"/contact", "contact-hero"},
+            {~p"/donate", "donate-hero"},
+            {~p"/menu", "menu-hero"},
+            {~p"/prayer-times", "prayer-times-hero"},
+            {~p"/articles", "articles-hero"}
+          ] do
+        {:ok, view, _} = live(conn, path)
+        assert has_element?(view, "##{id} h1")
+        refute has_element?(view, "##{id}.border")
+        refute has_element?(view, "##{id}.bg-gradient-to-br")
+      end
+    end
+
     test "lists all news with the category filter", %{conn: conn, creator: creator} do
       lead = article_fixture(creator, featured: true)
       other = article_fixture(creator, category: :world)
@@ -88,6 +124,7 @@ defmodule TaamolWeb.NewsLiveTest do
       assert_patch(view, ~p"/news?category=sport")
 
       assert has_element?(view, "#news-categories a[aria-current=page]", "Sport")
+      assert has_element?(view, "#news-hero h1", "Sport")
       assert has_element?(view, "#news-lead a[href='/articles/#{sport_lead.id}']")
       assert has_element?(view, "#feed-#{sport.id}")
       refute has_element?(view, "#feed-#{world.id}")
@@ -110,10 +147,17 @@ defmodule TaamolWeb.NewsLiveTest do
       article = article_fixture(creator, title: "Hello world", view_count: 4)
 
       {:ok, view, _html} = live(conn, ~p"/articles/#{article.id}")
-      assert has_element?(view, "#article-#{article.id} h1", "Hello world")
+      assert has_element?(view, "#article-hero h1", "Hello world")
+      assert has_element?(view, "#article-hero", "Community")
+      refute has_element?(view, "#article-hero.border")
       assert has_element?(view, "#article-body p", "Second paragraph.")
       assert has_element?(view, "#article-views", "5")
       assert has_element?(view, "#share-article")
+
+      assert has_element?(
+               view,
+               "#share-article[phx-hook='ShareArticle'][data-title='Hello world']"
+             )
     end
 
     test "drafts are not found", %{conn: conn, creator: creator} do

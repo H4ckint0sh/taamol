@@ -27,6 +27,8 @@ defmodule TaamolWeb.ContactDonateTest do
     test "sends a message to the inbox and emails the admins", %{conn: conn} do
       admin = admin_fixture()
       {:ok, view, _html} = live(conn, ~p"/contact")
+      assert has_element?(view, "#contact-form .hero-envelope")
+      assert has_element?(view, "#contact-form textarea[data-field-input]")
 
       view
       |> form("#contact-form",
@@ -52,19 +54,37 @@ defmodule TaamolWeb.ContactDonateTest do
     test "shows the contact details that are filled in", %{conn: conn} do
       {:ok, view, _html} = live(conn, ~p"/contact")
       refute has_element?(view, "#contact-phone")
+      refute has_element?(view, "#contact-address")
+      refute has_element?(view, "#contact-social")
 
       {:ok, _} =
         Settings.update(Scope.for_user(admin_fixture()), %{
+          "contact_address" => "Example street 12\nVäxjö",
           "contact_phone" => "070 123 45 67",
           "contact_email" => "info@example.com",
-          "opening_hours" => "Fridays 18–23"
+          "opening_hours" => "Fridays 18–23",
+          "instagram_url" => "https://instagram.com/taamol"
         })
 
       {:ok, view, _html} = live(build_conn(), ~p"/contact")
+
+      for {id, icon} <- [
+            {"contact-address", "hero-map-pin"},
+            {"contact-phone", "hero-phone"},
+            {"contact-email", "hero-envelope"},
+            {"contact-opening_hours", "hero-clock"},
+            {"contact-social", "hero-user-group"}
+          ] do
+        assert has_element?(view, "##{id} .#{icon}")
+        assert has_element?(view, "##{id} h2")
+        assert has_element?(view, "##{id} p.text-base-content\\/60")
+      end
+
+      assert has_element?(view, "#contact-address", "Example street 12")
       assert has_element?(view, "#contact-phone a[href='tel:0701234567']")
       assert has_element?(view, "#contact-email a[href='mailto:info@example.com']")
       assert has_element?(view, "#contact-opening_hours", "Fridays 18–23")
-      refute has_element?(view, "#contact-address")
+      assert has_element?(view, "#contact-social a[href='https://instagram.com/taamol']")
     end
 
     test "is pre-filled for logged-in users", %{conn: conn} do
@@ -96,6 +116,112 @@ defmodule TaamolWeb.ContactDonateTest do
   end
 
   describe "inbox" do
+    test "inboxes and dashboard badges update across sessions", %{conn: conn} do
+      admin = admin_fixture()
+      admin_conn = log_in_user(conn, admin)
+      {:ok, first, _} = live(admin_conn, ~p"/dashboard/messages")
+      {:ok, second, _} = live(admin_conn, ~p"/dashboard/messages?filter=unread")
+      {:ok, overview, _} = live(admin_conn, ~p"/dashboard")
+      {:ok, contact, _} = live(build_conn(), ~p"/contact")
+
+      contact
+      |> form("#contact-form",
+        message: %{
+          name: "Live Sender",
+          email: "live@example.com",
+          topic: "question",
+          message: "Can you help me with an upcoming event?"
+        }
+      )
+      |> render_submit()
+
+      assert has_element?(contact, "#contact-sent")
+      assert has_element?(first, "#messages", "Live Sender")
+      assert has_element?(second, "#messages", "Live Sender")
+      assert has_element?(overview, "#unread-messages", "1")
+
+      assert {:ok, %{entries: [message]}} =
+               Contact.list_messages_page(Scope.for_user(admin))
+
+      first |> element("#open-#{message.id}") |> render_click()
+      refute has_element?(second, "#open-#{message.id}")
+      refute has_element?(overview, "#unread-messages")
+      refute has_element?(first, "#unread-messages")
+
+      first |> element("#unread-#{message.id}") |> render_click()
+      assert has_element?(second, "#open-#{message.id}")
+      assert has_element?(overview, "#unread-messages", "1")
+
+      first |> element("#open-#{message.id}") |> render_click()
+      first |> element("#delete-#{message.id}") |> render_click()
+      refute has_element?(second, "#open-#{message.id}")
+      refute has_element?(overview, "#unread-messages")
+    end
+
+    test "only current administrators can subscribe to inbox updates" do
+      admin_scope = Scope.for_user(admin_fixture())
+      member_scope = Scope.for_user(user_fixture())
+      assert {:error, :forbidden} = Contact.subscribe_messages(member_scope)
+      assert :ok = Contact.subscribe_messages(admin_scope)
+
+      Repo.update!(Ecto.Changeset.change(admin_scope.user, role: :user))
+      assert {:error, :forbidden} = Contact.subscribe_messages(admin_scope)
+      assert Contact.unread_count(admin_scope) == 0
+    end
+
+    test "new messages refresh a full inbox without exceeding its page size", %{conn: conn} do
+      for i <- 1..20 do
+        %Taamol.Contact.Message{}
+        |> Taamol.Contact.Message.changeset(%{
+          "name" => "Sender #{i}",
+          "email" => "sender#{i}@example.com",
+          "topic" => "other",
+          "message" => "A message about an upcoming event."
+        })
+        |> Repo.insert!()
+      end
+
+      admin = admin_fixture()
+      {:ok, view, _} = conn |> log_in_user(admin) |> live(~p"/dashboard/messages")
+
+      assert {:ok, _message} =
+               Contact.submit_message(nil, %{
+                 "name" => "Another sender",
+                 "email" => "another@example.com",
+                 "topic" => "question",
+                 "message" => "A question about the community."
+               })
+
+      assert has_element?(view, "#unread-messages", "21")
+      assert has_element?(view, "#messages li:nth-child(21):not(#messages-empty)")
+      refute has_element?(view, "#messages li:nth-child(22)")
+      assert has_element?(view, "nav[aria-label='Pages'] a", "2")
+    end
+
+    test "live inbox updates preserve the page size and correct an empty last page", %{conn: conn} do
+      for i <- 1..21 do
+        %Taamol.Contact.Message{}
+        |> Taamol.Contact.Message.changeset(%{
+          "name" => "Sender #{i}",
+          "email" => "sender#{i}@example.com",
+          "topic" => "other",
+          "message" => "A message about an upcoming event."
+        })
+        |> Repo.insert!()
+      end
+
+      admin = admin_fixture()
+      scope = Scope.for_user(admin)
+      {:ok, view, _} = conn |> log_in_user(admin) |> live(~p"/dashboard/messages?page=2")
+      assert {:ok, %{entries: [last]}} = Contact.list_messages_page(scope, limit: 20, offset: 20)
+      assert has_element?(view, "#open-#{last.id}")
+
+      assert {:ok, _} = Contact.delete_message(scope, last.id)
+      assert_patch(view, ~p"/dashboard/messages")
+      assert has_element?(view, "#messages li:nth-child(21):not(#messages-empty)")
+      refute has_element?(view, "#messages li:nth-child(22)")
+    end
+
     test "admins read, mark unread and delete messages", %{conn: conn} do
       {:ok, message} =
         Contact.submit_message(nil, %{
@@ -107,6 +233,10 @@ defmodule TaamolWeb.ContactDonateTest do
 
       {:ok, view, _html} = conn |> log_in_user(admin_fixture()) |> live(~p"/dashboard/messages")
       assert has_element?(view, "#unread-messages", "1")
+      assert has_element?(view, "#message-filters.rounded-full #messages-all[aria-current=page]")
+      view |> element("#messages-unread") |> render_click()
+      assert has_element?(view, "#messages-unread[aria-current=page]")
+      assert has_element?(view, "#open-#{message.id}")
 
       view |> element("#open-#{message.id}") |> render_click()
       assert Repo.reload!(message).read_at
@@ -141,6 +271,22 @@ defmodule TaamolWeb.ContactDonateTest do
       {:ok, view, _html} = live(conn, ~p"/donate")
 
       assert has_element?(view, "#swish-number", "123 118 11 89")
+      assert has_element?(view, "#custom-amount-input-stepper[phx-hook=NumberStepper]")
+      assert has_element?(view, "#donate-amount-options #amount-200[aria-pressed=true]")
+      assert has_element?(view, "#donate-amount-options-indicator[phx-hook=SegmentedIndicator]")
+
+      for {id, icon} <- [
+            {"donate-number", "hero-device-phone-mobile"},
+            {"donate-message", "hero-chat-bubble-bottom-center-text"},
+            {"donate-contact", "hero-envelope"}
+          ] do
+        assert has_element?(view, "##{id} .#{icon}")
+        assert has_element?(view, "##{id} h2")
+        assert has_element?(view, "##{id} p.text-base-content\\/60")
+      end
+
+      assert has_element?(view, "#donate-message", "Gift to Taamol")
+      assert has_element?(view, "#donate-contact a[href='/contact']")
       view |> element("#amount-500") |> render_click()
       assert has_element?(view, "#amount-500[aria-pressed=true]")
       assert has_element?(view, "#swish-qr[src='/donate/qr.png?amount=500']")
@@ -163,9 +309,18 @@ defmodule TaamolWeb.ContactDonateTest do
 
       view |> form("#custom-amount", custom: %{amount: "250"}) |> render_change()
       assert has_element?(view, "#swish-qr[src='/donate/qr.png?amount=250']")
+      refute has_element?(view, "#donate-amount-options [aria-pressed=true]")
 
       {:ok, home, _html} = live(conn, ~p"/")
-      assert has_element?(home, "#header-donate")
+      assert has_element?(home, "#prayer-times-trigger.h-8")
+      assert has_element?(home, "#header-donate.h-8.ring-inset")
+      assert has_element?(home, "#header-locale-button.h-8.ring-inset")
+      assert has_element?(home, "#header-theme.h-8.ring-inset")
+      assert has_element?(home, "#main-nav-indicator.h-8.ring-inset")
+      assert has_element?(home, "#main-nav a[data-nav-item].h-8")
+
+      {:ok, signed_in, _html} = conn |> log_in_user(user_fixture()) |> live(~p"/")
+      assert has_element?(signed_in, "#user-menu-trigger.h-8")
     end
 
     test "the QR endpoint returns Swish's image", %{conn: conn} do

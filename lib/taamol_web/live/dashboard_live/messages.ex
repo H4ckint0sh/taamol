@@ -23,17 +23,46 @@ defmodule TaamolWeb.DashboardLive.Messages do
     unread? = params["filter"] == "unread"
     page = page_param(params)
 
-    {:ok, %{entries: messages, total: total}} =
-      Contact.list_messages_page(socket.assigns.current_scope,
-        unread: unread?,
-        limit: @per_page,
-        offset: (page - 1) * @per_page
-      )
+    {:noreply, socket |> assign(unread?: unread?, page: page) |> refresh_messages()}
+  end
 
-    {:noreply,
-     socket
-     |> assign(unread?: unread?, page: page, total: total)
-     |> stream(:messages, messages, reset: true)}
+  @impl true
+  def handle_info(:contact_messages_changed, socket) do
+    {:noreply, refresh_messages(socket)}
+  end
+
+  defp refresh_messages(socket) do
+    scope = socket.assigns.current_scope
+    unread? = socket.assigns.unread?
+    page = socket.assigns.page
+
+    case Contact.list_messages_page(scope,
+           unread: unread?,
+           limit: @per_page,
+           offset: (page - 1) * @per_page
+         ) do
+      {:ok, %{entries: messages, total: total}} ->
+        last_page = max(div(total + @per_page - 1, @per_page), 1)
+
+        if page > last_page do
+          push_patch(socket, to: list_path(unread?, last_page), replace: true)
+        else
+          open = if Enum.any?(messages, &(&1.id == socket.assigns.open)), do: socket.assigns.open
+
+          socket
+          |> assign(total: total, open: open)
+          |> stream(:messages, messages, reset: true)
+        end
+
+      {:error, :forbidden} ->
+        socket
+        |> put_flash(:error, gettext("You are not authorized to access this page."))
+        |> push_navigate(to: ~p"/")
+    end
+  end
+
+  defp refresh_unread(socket) do
+    assign(socket, :unread_messages, Contact.unread_count(socket.assigns.current_scope))
   end
 
   defp list_path(unread?, page) do
@@ -54,7 +83,7 @@ defmodule TaamolWeb.DashboardLive.Messages do
     # opening a message marks it read; re-insert both cards so they re-render
     socket =
       case opening? && Contact.set_read(scope, id, true) do
-        {:ok, message} -> stream_insert(socket, :messages, message)
+        {:ok, message} -> socket |> stream_insert(:messages, message) |> refresh_unread()
         _ -> restream(socket, id)
       end
 
@@ -64,7 +93,8 @@ defmodule TaamolWeb.DashboardLive.Messages do
   def handle_event("mark-unread", %{"id" => id}, socket) do
     case Contact.set_read(socket.assigns.current_scope, id, false) do
       {:ok, message} ->
-        {:noreply, socket |> assign(open: nil) |> stream_insert(:messages, message)}
+        {:noreply,
+         socket |> assign(open: nil) |> stream_insert(:messages, message) |> refresh_unread()}
 
       _ ->
         {:noreply, socket}
@@ -73,11 +103,12 @@ defmodule TaamolWeb.DashboardLive.Messages do
 
   def handle_event("delete", %{"id" => id}, socket) do
     case Contact.delete_message(socket.assigns.current_scope, id) do
-      {:ok, message} ->
+      {:ok, _message} ->
         {:noreply,
          socket
-         |> stream_delete(:messages, message)
-         |> update(:total, &(&1 - 1))
+         |> assign(open: nil)
+         |> refresh_unread()
+         |> refresh_messages()
          |> put_flash(:info, gettext("Message deleted."))}
 
       _ ->
@@ -108,6 +139,7 @@ defmodule TaamolWeb.DashboardLive.Messages do
     <Layouts.dashboard
       flash={@flash}
       current_scope={@current_scope}
+      unread_messages={@unread_messages}
       active={:messages}
       title={gettext("Messages")}
     >
@@ -117,15 +149,24 @@ defmodule TaamolWeb.DashboardLive.Messages do
       />
 
       <.card padded={false}>
-        <div class="flex gap-6 px-5 pt-4 text-sm">
-          <.link
-            :for={{unread?, label} <- [{false, gettext("All")}, {true, gettext("Unread")}]}
-            patch={list_path(unread?, 1)}
-            aria-current={if(@unread? == unread?, do: "page")}
-            class="-mb-px border-b-2 border-transparent pb-3 text-base-content/60 transition-colors hover:text-base-content aria-[current=page]:border-primary aria-[current=page]:font-semibold aria-[current=page]:text-primary"
-          >
-            {label}
-          </.link>
+        <div class="px-5 py-4">
+          <.segmented_control id="message-filters" role="group" aria-label={gettext("Messages")}>
+            <.link
+              :for={
+                {unread?, label, icon} <- [
+                  {false, gettext("All"), "hero-inbox-micro"},
+                  {true, gettext("Unread"), "hero-envelope-micro"}
+                ]
+              }
+              id={if(unread?, do: "messages-unread", else: "messages-all")}
+              patch={list_path(unread?, 1)}
+              aria-current={if(@unread? == unread?, do: "page")}
+              class={segmented_option_class()}
+            >
+              <.icon name={icon} class="size-4" />
+              {label}
+            </.link>
+          </.segmented_control>
         </div>
 
         <ul

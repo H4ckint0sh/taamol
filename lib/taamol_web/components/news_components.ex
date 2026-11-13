@@ -393,12 +393,13 @@ defmodule TaamolWeb.NewsComponents do
           id="rail-prayer-card"
           class="rounded-2xl border border-base-300 bg-base-100 p-2"
         >
-          <h2 class="mb-2 flex items-center gap-2 px-2 pt-2 text-sm font-semibold">
-            <span class="grid size-6 place-items-center rounded-full bg-primary/10 text-primary">
-              <.icon name="hero-moon-micro" class="size-4" />
-            </span>
-            {gettext("Prayer times")}
-          </h2>
+          <div class="px-2 pt-2">
+            <.section_heading
+              icon="hero-moon"
+              title={gettext("Prayer times")}
+              description={gettext("Today's prayer times and the next prayer.")}
+            />
+          </div>
           <Layouts.prayer_times id="rail-prayer-times" variant={:card} />
         </section>
         <TaamolWeb.CalendarComponents.upcoming_card

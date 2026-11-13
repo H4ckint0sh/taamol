@@ -8,6 +8,43 @@ defmodule Taamol.Accounts do
 
   alias Taamol.Accounts.{Scope, User, UserToken, UserNotifier}
 
+  @doc "Subscribes an administrator to user-list changes."
+  def subscribe_users(scope) do
+    if fresh_admin?(scope),
+      do: Phoenix.PubSub.subscribe(Taamol.PubSub, "accounts:users"),
+      else: {:error, :forbidden}
+  end
+
+  defp notify_users_changed({:ok, _} = result) do
+    :ok = Phoenix.PubSub.broadcast_from(Taamol.PubSub, self(), "accounts:users", :users_changed)
+    result
+  end
+
+  defp notify_users_changed(result), do: result
+
+  @doc "Saves validated prayer calculation preferences for the signed-in user."
+  def update_prayer_settings(%Scope{user: %User{id: id}}, attrs) do
+    changeset = Taamol.PrayerSettings.changeset(attrs)
+
+    case Ecto.Changeset.apply_action(changeset, :update) do
+      {:ok, settings} ->
+        case Repo.get(User, id) do
+          nil ->
+            {:error, :not_found}
+
+          user ->
+            user
+            |> Ecto.Changeset.change(prayer_settings: Taamol.PrayerSettings.to_map(settings))
+            |> Repo.update()
+        end
+
+      {:error, changeset} ->
+        {:error, changeset}
+    end
+  end
+
+  def update_prayer_settings(_, _), do: {:error, :forbidden}
+
   @doc "Returns whether the scope belongs to an administrator."
   def admin?(%Scope{user: %User{role: :admin}}), do: true
   def admin?(_), do: false
@@ -105,7 +142,7 @@ defmodule Taamol.Accounts do
   """
   def create_user_as_admin(scope, attrs) do
     if fresh_admin?(scope) do
-      %User{} |> User.admin_changeset(attrs) |> Repo.insert()
+      %User{} |> User.admin_changeset(attrs) |> Repo.insert() |> notify_users_changed()
     else
       {:error, :forbidden}
     end
@@ -114,7 +151,7 @@ defmodule Taamol.Accounts do
   @doc "Updates an account's name and email as an administrator."
   def update_user_as_admin(scope, %User{} = user, attrs) do
     if fresh_admin?(scope) do
-      user |> User.admin_changeset(attrs) |> Repo.update()
+      user |> User.admin_changeset(attrs) |> Repo.update() |> notify_users_changed()
     else
       {:error, :forbidden}
     end
@@ -158,6 +195,7 @@ defmodule Taamol.Accounts do
         false -> {:error, :forbidden}
       end
     end)
+    |> notify_users_changed()
   end
 
   def delete_user_as_admin(_scope, _user_id), do: {:error, :forbidden}
@@ -167,7 +205,7 @@ defmodule Taamol.Accounts do
   7 days and sign-ups per week for the last `weeks` weeks (oldest first).
   """
   def user_statistics(scope, weeks \\ 8) do
-    if can?(scope, :view_statistics) do
+    if fresh_statistics_access?(scope) do
       now = DateTime.utc_now()
       week_ago = DateTime.add(now, -7 * 86_400)
       since = DateTime.add(now, -weeks * 7 * 86_400)
@@ -216,6 +254,14 @@ defmodule Taamol.Accounts do
 
   defp fresh_admin?(_), do: false
 
+  defp fresh_statistics_access?(%Scope{user: %User{id: id}}),
+    do:
+      Repo.exists?(
+        from u in User, where: u.id == ^id and u.role == :admin and u.can_view_dashboard
+      )
+
+  defp fresh_statistics_access?(_), do: false
+
   @doc "Returns account totals for an administrator with dashboard access."
   def dashboard_stats(%Scope{user: %User{id: id}}) do
     user = Repo.get(User, id)
@@ -257,6 +303,7 @@ defmodule Taamol.Accounts do
           {:error, :user_not_found}
       end
     end)
+    |> notify_users_changed()
   end
 
   @doc "Lists users for administrators."
@@ -313,6 +360,7 @@ defmodule Taamol.Accounts do
             end
         end
       end)
+      |> notify_users_changed()
     else
       :error -> {:error, :not_found}
     end
@@ -392,6 +440,7 @@ defmodule Taamol.Accounts do
     %User{}
     |> User.registration_changeset(attrs)
     |> Repo.insert()
+    |> notify_users_changed()
   end
 
   @doc """
@@ -453,6 +502,7 @@ defmodule Taamol.Accounts do
         _ -> {:error, :transaction_aborted}
       end
     end)
+    |> notify_users_changed()
   end
 
   @doc """
@@ -475,6 +525,7 @@ defmodule Taamol.Accounts do
     user
     |> User.name_changeset(attrs)
     |> Repo.update()
+    |> notify_users_changed()
   end
 
   @doc """
@@ -581,6 +632,7 @@ defmodule Taamol.Accounts do
         user
         |> User.confirm_changeset()
         |> update_user_and_delete_all_tokens()
+        |> notify_users_changed()
 
       {user, token} ->
         Repo.delete!(token)

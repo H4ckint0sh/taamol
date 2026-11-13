@@ -14,6 +14,7 @@ defmodule TaamolWeb.HomeLive do
 
   @impl true
   def mount(_params, _session, socket) do
+    if connected?(socket), do: :ok = Taamol.Events.subscribe()
     lead = Tracking.get_lead_article()
 
     {:ok,
@@ -27,6 +28,10 @@ defmodule TaamolWeb.HomeLive do
      |> stream(:latest, Tracking.list_public_articles(limit: 5, exclude: lead && lead.id))
      |> stream(:most_read, Tracking.list_most_read_articles(limit: 5))}
   end
+
+  @impl true
+  def handle_info(:events_changed, socket),
+    do: {:noreply, assign(socket, :upcoming, Taamol.Events.upcoming(limit: 5))}
 
   @impl true
   def handle_params(params, _uri, socket) do
@@ -102,7 +107,7 @@ defmodule TaamolWeb.HomeLive do
               <.hero_card id="lead-article" article={@lead} />
 
               <div>
-                <div role="tablist" class="flex gap-6 border-b border-base-300 text-sm">
+                <.segmented_control id="home-news-tabs" role="tablist" class="mb-2">
                   <button
                     id="tab-latest"
                     type="button"
@@ -115,8 +120,9 @@ defmodule TaamolWeb.HomeLive do
                       |> JS.show(to: "#latest")
                       |> JS.hide(to: "#most-read")
                     }
-                    class="-mb-px border-b-2 border-transparent pb-3 text-base-content/60 transition-colors hover:text-base-content aria-selected:border-primary aria-selected:font-semibold aria-selected:text-primary"
+                    class={segmented_option_class()}
                   >
+                    <.icon name="hero-newspaper-micro" class="size-4" />
                     {gettext("Latest news")}
                   </button>
                   <button
@@ -131,11 +137,12 @@ defmodule TaamolWeb.HomeLive do
                       |> JS.show(to: "#most-read")
                       |> JS.hide(to: "#latest")
                     }
-                    class="-mb-px border-b-2 border-transparent pb-3 text-base-content/60 transition-colors hover:text-base-content aria-selected:border-primary aria-selected:font-semibold aria-selected:text-primary"
+                    class={segmented_option_class()}
                   >
+                    <.icon name="hero-chart-bar-micro" class="size-4" />
                     {gettext("Most read")}
                   </button>
-                </div>
+                </.segmented_control>
 
                 <div
                   id="latest"

@@ -91,14 +91,10 @@ defmodule TaamolWeb.GalleryLive do
     ~H"""
     <Layouts.app flash={@flash} current_scope={@current_scope} wide active={:gallery}>
       <div id="gallery" class="mx-auto max-w-7xl px-4 pt-6 sm:px-6 lg:px-8 lg:pt-10">
-        <div class="flex flex-wrap items-end justify-between gap-3">
-          <div>
-            <h1 class="text-2xl font-bold tracking-tight sm:text-3xl">{gettext("Gallery")}</h1>
-            <p class="mt-1 text-sm text-base-content/60">
-              {ngettext("%{count} photo", "%{count} photos", @total)}
-            </p>
-          </div>
-        </div>
+        <Layouts.page_hero id="gallery-hero">
+          <:title>{gettext("Gallery")}</:title>
+          <:subtitle>{ngettext("%{count} photo", "%{count} photos", @total)}</:subtitle>
+        </Layouts.page_hero>
 
         <div
           id="gallery-grid"

@@ -13,8 +13,14 @@ defmodule TaamolWeb.NewsLive do
   @feed_size 10
 
   @impl true
-  def mount(_params, _session, socket),
-    do: {:ok, assign(socket, :upcoming, Taamol.Events.upcoming(limit: 5))}
+  def mount(_params, _session, socket) do
+    if connected?(socket), do: :ok = Taamol.Events.subscribe()
+    {:ok, assign(socket, :upcoming, Taamol.Events.upcoming(limit: 5))}
+  end
+
+  @impl true
+  def handle_info(:events_changed, socket),
+    do: {:noreply, assign(socket, :upcoming, Taamol.Events.upcoming(limit: 5))}
 
   @impl true
   def handle_params(params, _uri, socket) do
@@ -58,13 +64,13 @@ defmodule TaamolWeb.NewsLive do
     ~H"""
     <Layouts.app flash={@flash} current_scope={@current_scope} wide active={:news}>
       <div id="news-page" class="mx-auto max-w-7xl px-4 pt-5 sm:px-6 lg:px-8 lg:pt-8">
-        <div class="grid gap-8 xl:grid-cols-[minmax(0,1fr)_18rem]">
+        <Layouts.page_hero id="news-hero">
+          <:title>{if(@category, do: category_name(@category), else: gettext("News"))}</:title>
+          <:subtitle>{gettext("News for our community")}</:subtitle>
+        </Layouts.page_hero>
+        <div class="mt-8 grid gap-8 xl:grid-cols-[minmax(0,1fr)_18rem]">
           <div class="min-w-0">
-            <h1 class="text-2xl font-bold tracking-tight sm:text-3xl">
-              {if(@category, do: category_name(@category), else: gettext("News"))}
-            </h1>
-
-            <div class="mt-4">
+            <div>
               <.category_tabs
                 id="news-categories"
                 active={@category}

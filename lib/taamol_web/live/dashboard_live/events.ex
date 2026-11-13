@@ -9,6 +9,7 @@ defmodule TaamolWeb.DashboardLive.Events do
   import TaamolWeb.CalendarComponents, only: [kind_name: 1, kind_chip: 1, kind_dot_badge: 1]
 
   alias Taamol.Events
+  alias Taamol.Events.Event
 
   on_mount {TaamolWeb.UserAuth, :require_admin}
 
@@ -16,7 +17,10 @@ defmodule TaamolWeb.DashboardLive.Events do
 
   @impl true
   def mount(_params, _session, socket) do
-    {:ok, assign(socket, page_title: gettext("Calendar events"))}
+    if connected?(socket), do: :ok = Events.subscribe()
+
+    {:ok,
+     assign(socket, page_title: gettext("Calendar events"), event_editor: nil, event_focus: nil)}
   end
 
   @impl true
@@ -24,13 +28,38 @@ defmodule TaamolWeb.DashboardLive.Events do
     period = if params["when"] == "past", do: :past, else: :upcoming
     page = page_param(params)
 
+    {:noreply, socket |> assign(period: period, page: page) |> refresh_events()}
+  end
+
+  @impl true
+  def handle_info(:events_changed, socket), do: {:noreply, refresh_events(socket)}
+
+  def handle_info({:event_editor, action, _event}, socket) when action in [:saved, :deleted] do
+    message = if action == :saved, do: gettext("Event saved."), else: gettext("Event deleted.")
+
+    {:noreply,
+     socket |> assign(:event_editor, nil) |> refresh_events() |> put_flash(:info, message)}
+  end
+
+  def handle_info({:event_editor, :error, message}, socket),
+    do: {:noreply, put_flash(socket, :error, message)}
+
+  defp refresh_events(socket) do
+    period = socket.assigns.period
+    page = socket.assigns.page
+
     %{entries: events, total: total} =
       Events.list_events_page(when: period, limit: @per_page, offset: (page - 1) * @per_page)
 
-    {:noreply,
-     socket
-     |> assign(period: period, page: page, total: total)
-     |> stream(:events, events, reset: true)}
+    last_page = max(div(total + @per_page - 1, @per_page), 1)
+
+    if page > last_page do
+      push_patch(socket, to: list_path(period, last_page), replace: true)
+    else
+      socket
+      |> assign(total: total)
+      |> stream(:events, events, reset: true)
+    end
   end
 
   defp list_path(period, page) do
@@ -43,18 +72,30 @@ defmodule TaamolWeb.DashboardLive.Events do
   end
 
   @impl true
+  def handle_event("new-event", _params, socket) do
+    event = %Event{starts_at: NaiveDateTime.new!(Date.utc_today(), ~T[18:00:00])}
+    {:noreply, assign(socket, event_editor: event, event_focus: "#new-event")}
+  end
+
+  def handle_event("edit-event", %{"id" => id}, socket) do
+    case Events.get_event(id) do
+      nil -> {:noreply, put_flash(socket, :error, gettext("This event no longer exists."))}
+      event -> {:noreply, assign(socket, event_editor: event, event_focus: "#edit-#{event.id}")}
+    end
+  end
+
+  def handle_event("close-event", _params, socket),
+    do: {:noreply, assign(socket, :event_editor, nil)}
+
   def handle_event("delete", %{"id" => id}, socket) do
-    event = Events.get_event!(id)
-
-    case Events.delete_event(socket.assigns.current_scope, event) do
-      {:ok, event} ->
-        {:noreply,
-         socket
-         |> stream_delete(:events, event)
-         |> update(:total, &(&1 - 1))
-         |> put_flash(:info, gettext("Event deleted."))}
-
-      {:error, _} ->
+    with %Taamol.Events.Event{} = event <- Events.get_event(id),
+         {:ok, _event} <- Events.delete_event(socket.assigns.current_scope, event) do
+      {:noreply,
+       socket
+       |> refresh_events()
+       |> put_flash(:info, gettext("Event deleted."))}
+    else
+      _ ->
         {:noreply, put_flash(socket, :error, gettext("The event could not be deleted."))}
     end
   end
@@ -78,6 +119,7 @@ defmodule TaamolWeb.DashboardLive.Events do
     <Layouts.dashboard
       flash={@flash}
       current_scope={@current_scope}
+      unread_messages={@unread_messages}
       active={:events}
       title={gettext("Calendar events")}
     >
@@ -92,26 +134,36 @@ defmodule TaamolWeb.DashboardLive.Events do
           >
             {gettext("Open calendar")}
           </.link>
-          <.link
+          <button
             id="new-event"
-            navigate={~p"/dashboard/events/new"}
+            type="button"
+            phx-click="new-event"
             class="inline-flex items-center gap-1.5 rounded-xl bg-primary px-4 py-2 text-sm font-semibold text-primary-content transition hover:opacity-85"
           >
             <.icon name="hero-plus" class="size-4" />{gettext("Add event")}
-          </.link>
+          </button>
         </:actions>
       </Layouts.dashboard_heading>
 
       <.card padded={false}>
-        <div class="flex gap-6 px-5 pt-4 text-sm">
-          <.link
-            :for={{period, label} <- [upcoming: gettext("Upcoming"), past: gettext("Past")]}
-            patch={list_path(period, 1)}
-            aria-current={if(@period == period, do: "page")}
-            class="-mb-px border-b-2 border-transparent pb-3 text-base-content/60 transition-colors hover:text-base-content aria-[current=page]:border-primary aria-[current=page]:font-semibold aria-[current=page]:text-primary"
-          >
-            {label}
-          </.link>
+        <div class="px-5 py-4">
+          <.segmented_control id="event-periods" role="group" aria-label={gettext("Calendar events")}>
+            <.link
+              :for={
+                {period, label, icon} <- [
+                  {:upcoming, gettext("Upcoming"), "hero-calendar-days-micro"},
+                  {:past, gettext("Past"), "hero-clock-micro"}
+                ]
+              }
+              id={"event-period-#{period}"}
+              patch={list_path(period, 1)}
+              aria-current={if(@period == period, do: "page")}
+              class={segmented_option_class()}
+            >
+              <.icon name={icon} class="size-4" />
+              {label}
+            </.link>
+          </.segmented_control>
         </div>
         <div class="overflow-x-auto">
           <table class="w-full text-sm">
@@ -153,14 +205,16 @@ defmodule TaamolWeb.DashboardLive.Events do
                 </td>
                 <td class="px-5 py-3">
                   <div class="flex items-center justify-end gap-1">
-                    <.link
+                    <button
                       id={"edit-#{event.id}"}
-                      navigate={~p"/dashboard/events/#{event.id}/edit"}
+                      type="button"
+                      phx-click="edit-event"
+                      phx-value-id={event.id}
                       aria-label={gettext("Edit")}
                       class="grid size-8 place-items-center rounded-lg text-base-content/60 transition hover:bg-base-200 hover:text-base-content"
                     >
                       <.icon name="hero-pencil-square" class="size-4" />
-                    </.link>
+                    </button>
                     <button
                       type="button"
                       id={"delete-#{event.id}"}
@@ -185,6 +239,15 @@ defmodule TaamolWeb.DashboardLive.Events do
           path={fn page -> list_path(@period, page) end}
         />
       </.card>
+      <.live_component
+        :if={@event_editor}
+        module={TaamolWeb.EventEditorComponent}
+        id="dashboard-event"
+        event={@event_editor}
+        current_scope={@current_scope}
+        dialog={true}
+        focus_return={@event_focus}
+      />
     </Layouts.dashboard>
     """
   end

@@ -6,8 +6,11 @@ defmodule TaamolWeb.UserLive.LoginTest do
 
   describe "login page" do
     test "renders login page", %{conn: conn} do
-      {:ok, _lv, html} = live(conn, ~p"/users/log-in")
+      {:ok, lv, html} = live(conn, ~p"/users/log-in")
 
+      assert has_element?(lv, "#login-heading h1")
+      assert has_element?(lv, "#login-heading a[href='/users/register']")
+      refute has_element?(lv, "#login-hero")
       assert html =~ "Log in"
       assert html =~ "Sign up"
       assert html =~ "Log in with email"

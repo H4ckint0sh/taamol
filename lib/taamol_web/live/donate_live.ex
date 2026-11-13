@@ -7,7 +7,7 @@ defmodule TaamolWeb.DonateLive do
 
   alias Taamol.{Donations, Settings}
 
-  import TaamolWeb.DashboardComponents, only: [card: 1, info_card: 1]
+  import TaamolWeb.DashboardComponents, only: [card: 1]
 
   @amounts [100, 200, 500, 1000]
 
@@ -82,21 +82,17 @@ defmodule TaamolWeb.DonateLive do
       <div id="donate" class="mx-auto max-w-7xl px-4 pt-6 sm:px-6 lg:px-8 lg:pt-10">
         <%!-- what a gift supports --%>
         <section id="donate-causes" class="mb-12">
-          <div class="max-w-3xl">
-            <p class="inline-flex items-center gap-2 rounded-full border border-base-300 bg-base-100 px-4 py-1.5 text-sm font-semibold text-primary">
-              <Layouts.donate_icon class="size-4" />
-              {gettext("What your gift does")}
-            </p>
-            <h1 class="mt-6 text-2xl font-bold sm:text-3xl">
+          <Layouts.page_hero id="donate-hero">
+            <:title>
               {gettext("Support")}
               {gettext("where it matters most.")}
-            </h1>
-            <p class="mt-1.5 text-sm leading-relaxed text-base-content/60 sm:text-base">
+            </:title>
+            <:subtitle>
               {gettext(
                 "Your gift helps us run the centre, the weekend school, youth activities and the programmes during Muharram and Ramadan."
               )}
-            </p>
-          </div>
+            </:subtitle>
+          </Layouts.page_hero>
 
           <ul class="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             <li
@@ -141,11 +137,10 @@ defmodule TaamolWeb.DonateLive do
           <.card id="donate-amounts" title={gettext("Choose an amount")}>
             <div class="grid gap-8 lg:grid-cols-[minmax(0,1fr)_auto]">
               <div>
-                <%!-- a segmented switch, like the language and day/night switches --%>
-                <div
+                <.segmented_control
+                  id="donate-amount-options"
                   role="group"
                   aria-label={gettext("Choose an amount")}
-                  class="inline-flex max-w-full items-center gap-0.5 overflow-x-auto rounded-full bg-neutral-200 p-1 shadow-inner ring-1 ring-black/5 dark:bg-neutral-800 dark:ring-white/10"
                 >
                   <button
                     :for={amount <- @amounts}
@@ -154,11 +149,11 @@ defmodule TaamolWeb.DonateLive do
                     phx-click="pick"
                     phx-value-amount={amount}
                     aria-pressed={to_string(@amount == amount)}
-                    class="h-7 shrink-0 whitespace-nowrap rounded-full px-3.5 text-[13px] font-bold tabular-nums text-neutral-600 transition duration-200 hover:text-neutral-900 active:scale-95 dark:text-neutral-300 dark:hover:text-white aria-pressed:bg-white aria-pressed:text-neutral-900 aria-pressed:shadow-md dark:aria-pressed:text-neutral-900"
+                    class={segmented_option_class()}
                   >
                     {gettext("%{amount} kr", amount: amount)}
                   </button>
-                </div>
+                </.segmented_control>
 
                 <.form
                   for={@custom_form}
@@ -167,29 +162,20 @@ defmodule TaamolWeb.DonateLive do
                   phx-submit="custom"
                   class="mt-5"
                 >
-                  <div class="fieldset mb-2">
-                    <label for="custom-amount-input" class="label mb-1">
-                      {gettext("Or another amount")}
-                    </label>
-                    <div class="relative w-full sm:max-w-72">
-                      <input
-                        type="number"
-                        id="custom-amount-input"
-                        name={@custom_form[:amount].name}
-                        value={@custom_form[:amount].value}
-                        min="1"
-                        max="100000"
-                        step="1"
-                        inputmode="numeric"
-                        phx-debounce="300"
-                        placeholder="250"
-                        class="input w-full pe-12 tabular-nums [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
-                      />
-                      <span class="pointer-events-none absolute end-4 top-1/2 -translate-y-1/2 text-sm text-base-content/50">
-                        {gettext("kr")}
-                      </span>
-                    </div>
-                  </div>
+                  <.input
+                    field={@custom_form[:amount]}
+                    type="number"
+                    id="custom-amount-input"
+                    icon="hero-banknotes"
+                    label={"#{gettext("Or another amount")} (#{gettext("kr")})"}
+                    min="1"
+                    max="100000"
+                    step="1"
+                    inputmode="numeric"
+                    phx-debounce="300"
+                    placeholder="250"
+                    wrapper_class="sm:max-w-72"
+                  />
                 </.form>
                 <p class="text-xs text-base-content/50">
                   {gettext("You can change the amount in Swish before you confirm.")}
@@ -233,27 +219,46 @@ defmodule TaamolWeb.DonateLive do
           </.card>
 
           <aside id="donate-details" class="grid gap-4 sm:grid-cols-3 lg:grid-cols-1 lg:content-start">
-            <.info_card
+            <section
               id="donate-number"
-              icon="hero-device-phone-mobile"
-              title={gettext("Swish number")}
+              class="rounded-2xl border border-base-300 bg-base-100 p-5 shadow-sm"
             >
-              <span id="swish-number" dir="ltr" class="tabular-nums">
-                {Donations.format_number(@swish.number)}
-              </span>
-            </.info_card>
-            <.info_card
+              <.section_heading
+                icon="hero-device-phone-mobile"
+                title={gettext("Swish number")}
+                description={gettext("Use this number when donating with Swish.")}
+              />
+              <p class="mt-4 text-base font-bold tabular-nums">
+                <span id="swish-number" dir="ltr">{Donations.format_number(@swish.number)}</span>
+              </p>
+            </section>
+            <section
               id="donate-message"
-              icon="hero-chat-bubble-bottom-center-text"
-              title={gettext("Message")}
+              class="rounded-2xl border border-base-300 bg-base-100 p-5 shadow-sm"
             >
-              <span dir="auto">{@swish.message}</span>
-            </.info_card>
-            <.info_card id="donate-contact" icon="hero-envelope" title={gettext("Contact us")}>
-              <.link navigate={~p"/contact"} class="transition-colors hover:text-primary">
+              <.section_heading
+                icon="hero-chat-bubble-bottom-center-text"
+                title={gettext("Message")}
+                description={gettext("Include this message with your donation.")}
+              />
+              <p dir="auto" class="mt-4 text-base font-bold">{@swish.message}</p>
+            </section>
+            <section
+              id="donate-contact"
+              class="rounded-2xl border border-base-300 bg-base-100 p-5 shadow-sm"
+            >
+              <.section_heading
+                icon="hero-envelope"
+                title={gettext("Contact us")}
+                description={gettext("We're here to help with your donation.")}
+              />
+              <.link
+                navigate={~p"/contact"}
+                class="mt-4 inline-flex text-sm font-semibold text-primary transition hover:opacity-75"
+              >
                 {gettext("Questions about giving? Write to us.")}
               </.link>
-            </.info_card>
+            </section>
           </aside>
         </div>
       </div>

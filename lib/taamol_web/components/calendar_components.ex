@@ -178,20 +178,20 @@ defmodule TaamolWeb.CalendarComponents do
   def upcoming_card(assigns) do
     ~H"""
     <section id={@id} class={["rounded-2xl border border-base-300 bg-base-100 p-4", @class]}>
-      <div class="flex items-center justify-between gap-2">
-        <h2 class="flex items-center gap-2 text-sm font-semibold">
-          <span class="grid size-6 place-items-center rounded-full bg-primary/10 text-primary">
-            <.icon name="hero-calendar-days-micro" class="size-4" />
-          </span>
-          {gettext("Upcoming")}
-        </h2>
-        <.link
-          navigate={~p"/calendar"}
-          class="text-[13px] font-semibold text-primary transition hover:opacity-75"
-        >
-          {gettext("Calendar")}
-        </.link>
-      </div>
+      <.section_heading
+        icon="hero-calendar-days"
+        title={gettext("Upcoming")}
+        description={gettext("Community events and important dates ahead.")}
+      >
+        <:actions>
+          <.link
+            navigate={~p"/calendar"}
+            class="text-[13px] font-semibold text-primary transition hover:opacity-75"
+          >
+            {gettext("Calendar")}
+          </.link>
+        </:actions>
+      </.section_heading>
 
       <p :if={@entries == []} class="mt-3 text-xs text-base-content/55">
         {gettext("Nothing coming up.")}

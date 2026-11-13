@@ -20,6 +20,27 @@ msgstr "har inte ändrats"
 msgid "does not match password"
 msgstr "stämmer inte med lösenordet"
 
+msgid "must be after opening time"
+msgstr "måste vara efter öppningstiden"
+
+msgid "must fit within opening hours"
+msgstr "måste rymmas inom öppettiderna"
+
+msgid "must be an angle or minutes, for example 18 or 90 min"
+msgstr "måste vara en vinkel eller minuter, till exempel 18 eller 90 min"
+
+msgid "must be an angle or minutes, for example 4.5 or 1 min"
+msgstr "måste vara en vinkel eller minuter, till exempel 4.5 eller 1 min"
+
+msgid "must be Standard, Hanafi, or a positive shadow factor"
+msgstr "måste vara Standard, Hanafi eller en positiv skuggfaktor"
+
+msgid "must be at most 90 degrees or 180 minutes"
+msgstr "får vara högst 90 grader eller 180 minuter"
+
+msgid "must be a positive shadow factor at most 1000"
+msgstr "måste vara en positiv skuggfaktor på högst 1000"
+
 msgid "can't be blank"
 msgstr "får inte vara tomt"
 

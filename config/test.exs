@@ -56,3 +56,4 @@ config :taamol, :default_locale, "en"
 
 # Never call Swish's QR generator from tests
 config :taamol, :swish_req_options, plug: {Req.Test, Taamol.Donations}
+config :taamol, :city_search_req_options, plug: {Req.Test, Taamol.CitySearch}

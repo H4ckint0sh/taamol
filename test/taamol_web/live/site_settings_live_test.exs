@@ -27,6 +27,18 @@ defmodule TaamolWeb.SiteSettingsLiveTest do
 
     assert Settings.get(:prayer_method) == "Jafari"
     assert Hijri.to_date(1448, 1, 10) == Date.add(before, 1)
+
+    {:ok, calculator, _} = live(conn, ~p"/prayer-times")
+    assert has_element?(calculator, "#prayer_method option[value=Jafari][selected]")
+
+    calculator
+    |> form("#prayer-settings-form", prayer: %{method: "ISNA", fajr: "15", tune_fajr: "5"})
+    |> render_change()
+
+    calculator |> element("#site-prayer-preset") |> render_click()
+    assert has_element?(calculator, "#prayer_method option[value=Jafari][selected]")
+    assert has_element?(calculator, "#prayer_fajr:not([value='15'])")
+    assert has_element?(calculator, "#prayer_tune_fajr[value='0']")
   end
 
   test "rejects out-of-range values and non-admins" do

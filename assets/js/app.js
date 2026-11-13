@@ -25,12 +25,16 @@ import {LiveSocket} from "phoenix_live_view"
 import {hooks as colocatedHooks} from "phoenix-colocated/taamol"
 import topbar from "../vendor/topbar"
 import "./prayer_times"
+import {CityPrayerTime, CityToday, CitySearch} from "./city_prayer_time"
+import {SegmentedIndicator} from "./segmented_indicator"
+import {NumberStepper} from "./number_stepper"
+import {ShareArticle} from "./share_article"
 
 const csrfToken = document.querySelector("meta[name='csrf-token']").getAttribute("content")
 const liveSocket = new LiveSocket("/live", Socket, {
   longPollFallbackMs: 2500,
   params: {_csrf_token: csrfToken},
-  hooks: {...colocatedHooks},
+  hooks: {...colocatedHooks, CityPrayerTime, CityToday, CitySearch, SegmentedIndicator, NumberStepper, ShareArticle},
 })
 
 // Show progress bar on live navigation and form submits

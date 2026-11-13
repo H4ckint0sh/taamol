@@ -11,6 +11,23 @@ defmodule Taamol.Contact do
   alias Taamol.Repo
 
   @per_hour 3
+  @messages_topic "contact:messages"
+
+  @doc "Subscribes an administrator to inbox changes."
+  def subscribe_messages(scope) do
+    if Accounts.can?(scope, :manage_messages) and admin?(scope),
+      do: Phoenix.PubSub.subscribe(Taamol.PubSub, @messages_topic),
+      else: {:error, :forbidden}
+  end
+
+  defp broadcast_messages_changed do
+    Phoenix.PubSub.broadcast_from(
+      Taamol.PubSub,
+      self(),
+      @messages_topic,
+      :contact_messages_changed
+    )
+  end
 
   @doc "A changeset for the contact form."
   def change_message(%Message{} = message \\ %Message{}, attrs \\ %{}),
@@ -40,6 +57,7 @@ defmodule Taamol.Contact do
 
       true ->
         with {:ok, message} <- Repo.insert(changeset) do
+          :ok = broadcast_messages_changed()
           Notifier.deliver_new_message(admin_emails(), message)
           {:ok, message}
         end
@@ -91,7 +109,7 @@ defmodule Taamol.Contact do
 
   @doc "Number of unread messages (0 for non-administrators)."
   def unread_count(scope) do
-    if Accounts.can?(scope, :manage_messages),
+    if Accounts.can?(scope, :manage_messages) and admin?(scope),
       do: Repo.aggregate(from(m in Message, where: is_nil(m.read_at)), :count),
       else: 0
   end
@@ -100,9 +118,13 @@ defmodule Taamol.Contact do
   def set_read(scope, id, read?) do
     with true <- admin?(scope),
          %Message{} = message <- get(id) do
-      message
-      |> Ecto.Changeset.change(read_at: if(read?, do: DateTime.utc_now(:second)))
-      |> Repo.update()
+      with {:ok, message} <-
+             message
+             |> Ecto.Changeset.change(read_at: if(read?, do: DateTime.utc_now(:second)))
+             |> Repo.update() do
+        :ok = broadcast_messages_changed()
+        {:ok, message}
+      end
     else
       false -> {:error, :forbidden}
       nil -> {:error, :not_found}
@@ -113,7 +135,10 @@ defmodule Taamol.Contact do
   def delete_message(scope, id) do
     with true <- admin?(scope),
          %Message{} = message <- get(id) do
-      Repo.delete(message)
+      with {:ok, message} <- Repo.delete(message) do
+        :ok = broadcast_messages_changed()
+        {:ok, message}
+      end
     else
       false -> {:error, :forbidden}
       nil -> {:error, :not_found}

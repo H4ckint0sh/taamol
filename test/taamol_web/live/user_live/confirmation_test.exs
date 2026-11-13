@@ -17,7 +17,10 @@ defmodule TaamolWeb.UserLive.ConfirmationTest do
           Accounts.deliver_login_instructions(user, url)
         end)
 
-      {:ok, _lv, html} = live(conn, ~p"/users/log-in/#{token}")
+      {:ok, lv, html} = live(conn, ~p"/users/log-in/#{token}")
+      assert has_element?(lv, "#confirmation-heading h1", user.email)
+      assert has_element?(lv, "#confirmation_form")
+      refute has_element?(lv, "#confirmation-hero")
       assert html =~ "Confirm and stay logged in"
     end
 
@@ -27,7 +30,9 @@ defmodule TaamolWeb.UserLive.ConfirmationTest do
           Accounts.deliver_login_instructions(user, url)
         end)
 
-      {:ok, _lv, html} = live(conn, ~p"/users/log-in/#{token}")
+      {:ok, lv, html} = live(conn, ~p"/users/log-in/#{token}")
+      assert has_element?(lv, "#confirmation-heading h1", user.email)
+      assert has_element?(lv, "#login_form")
       refute html =~ "Confirm my account"
       assert html =~ "Keep me logged in on this device"
     end

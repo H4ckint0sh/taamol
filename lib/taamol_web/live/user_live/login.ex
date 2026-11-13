@@ -8,22 +8,20 @@ defmodule TaamolWeb.UserLive.Login do
     ~H"""
     <Layouts.app flash={@flash} current_scope={@current_scope}>
       <div class="mx-auto max-w-sm space-y-4">
-        <div class="text-center">
-          <.header>
-            <p>{gettext("Log in")}</p>
-            <:subtitle>
-              <%= if @current_scope do %>
-                {gettext("You need to reauthenticate to perform sensitive actions on your account.")}
-              <% else %>
-                {gettext("Don't have an account?")} <.link
-                  navigate={~p"/users/register"}
-                  class="font-semibold text-brand hover:underline"
-                  phx-no-format
-                >{gettext("Sign up")}</.link>
-              <% end %>
-            </:subtitle>
-          </.header>
-        </div>
+        <header id="login-heading" class="mb-6">
+          <h1 class="text-2xl font-bold tracking-tight sm:text-3xl">{gettext("Log in")}</h1>
+          <p class="mt-2 text-sm leading-relaxed text-base-content/60">
+            <%= if @current_scope do %>
+              {gettext("You need to reauthenticate to perform sensitive actions on your account.")}
+            <% else %>
+              {gettext("Don't have an account?")} <.link
+                navigate={~p"/users/register"}
+                class="font-semibold text-primary hover:underline"
+                phx-no-format
+              >{gettext("Sign up")}</.link>
+            <% end %>
+          </p>
+        </header>
 
         <div :if={local_mail_adapter?()} class="alert alert-info">
           <.icon name="hero-information-circle" class="size-6 shrink-0" />

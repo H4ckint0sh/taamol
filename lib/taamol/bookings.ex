@@ -23,6 +23,23 @@ defmodule Taamol.Bookings do
   @min_notice_hours 24
   @max_days_ahead 365
 
+  @doc "Subscribes to changes that affect calendar availability."
+  def subscribe_availability, do: Phoenix.PubSub.subscribe(Taamol.PubSub, "bookings:availability")
+
+  defp notify_availability({:ok, _} = result) do
+    :ok =
+      Phoenix.PubSub.broadcast_from(
+        Taamol.PubSub,
+        self(),
+        "bookings:availability",
+        :booking_availability_changed
+      )
+
+    result
+  end
+
+  defp notify_availability(result), do: result
+
   ## Services
 
   @doc "Bookable services in display order (`active_only: false` for all)."
@@ -44,15 +61,19 @@ defmodule Taamol.Bookings do
 
   def change_service(%Service{} = service, attrs \\ %{}), do: Service.changeset(service, attrs)
 
-  def create_service(scope, attrs),
-    do: as_admin(scope, fn _ -> %Service{} |> Service.changeset(attrs) |> Repo.insert() end)
+  def create_service(scope, attrs) do
+    as_admin(scope, fn _ -> %Service{} |> Service.changeset(attrs) |> Repo.insert() end)
+    |> notify_availability()
+  end
 
-  def update_service(scope, %Service{} = service, attrs),
-    do: as_admin(scope, fn _ -> service |> Service.changeset(attrs) |> Repo.update() end)
+  def update_service(scope, %Service{} = service, attrs) do
+    as_admin(scope, fn _ -> service |> Service.changeset(attrs) |> Repo.update() end)
+    |> notify_availability()
+  end
 
   ## Availability
 
-  @doc "Booking rules shown to members."
+  @doc "Default service hours and the minimum booking notice."
   def rules, do: %{opens: @opens, closes: @closes, min_notice_hours: @min_notice_hours}
 
   @doc "Free start times for a service on a date: `[%{starts_at:, ends_at:}]`."
@@ -75,6 +96,19 @@ defmodule Taamol.Bookings do
     end)
   end
 
+  @doc "Whether at least one active service has an available time on each day."
+  def bookable_days(services, %Date{} = from, %Date{} = to) when is_list(services) do
+    Enum.reduce(
+      Enum.filter(services, & &1.active),
+      Map.new(Date.range(from, to), &{&1, false}),
+      fn service, days ->
+        Enum.reduce(availability(service, from, to), days, fn {date, %{free: free}}, acc ->
+          Map.update!(acc, date, &(&1 or free > 0))
+        end)
+      end
+    )
+  end
+
   defp slots_for_day(service, date, blocking, now) do
     earliest = NaiveDateTime.add(now, @min_notice_hours * 3600)
 
@@ -92,8 +126,13 @@ defmodule Taamol.Bookings do
 
   # every start time from opening until the booking would end after closing
   defp day_starts(service, date) do
-    first = NaiveDateTime.new!(date, @opens)
-    last = NaiveDateTime.add(NaiveDateTime.new!(date, @closes), -service.duration_minutes * 60)
+    first = NaiveDateTime.new!(date, service.opens_at)
+
+    last =
+      NaiveDateTime.add(
+        NaiveDateTime.new!(date, service.closes_at),
+        -service.duration_minutes * 60
+      )
 
     if NaiveDateTime.compare(first, last) == :gt do
       []
@@ -218,6 +257,7 @@ defmodule Taamol.Bookings do
       )
       |> Repo.update()
       |> notify_admins(:accepted_proposal)
+      |> notify_availability()
     else
       {:error, :conflict}
     end
@@ -246,6 +286,7 @@ defmodule Taamol.Bookings do
     |> Ecto.Changeset.change(status: :cancelled)
     |> Repo.update()
     |> notify_admins(:cancelled)
+    |> notify_availability()
   end
 
   def cancel_booking(_scope, _booking), do: {:error, :forbidden}
@@ -320,6 +361,7 @@ defmodule Taamol.Bookings do
         {:error, :conflict}
       end
     end)
+    |> notify_availability()
   end
 
   @doc "Offers the member another start time (must be free)."
@@ -331,23 +373,31 @@ defmodule Taamol.Bookings do
       )
       when status in [:pending, :proposed] do
     as_admin(scope, fn admin ->
-      booking = Repo.preload(booking, :service)
+      booking = Repo.preload(booking, :service, force: true)
       ends_at = NaiveDateTime.add(starts_at, booking.service.duration_minutes * 60)
 
-      if conflicts(booking, starts_at, ends_at) == [] do
-        booking
-        |> Ecto.Changeset.change(
-          decided(admin,
-            status: :proposed,
-            proposed_starts_at: starts_at,
-            proposed_ends_at: ends_at,
-            admin_message: blank_to_nil(message)
+      cond do
+        conflicts(booking, starts_at, ends_at) != [] ->
+          {:error, :conflict}
+
+        not Enum.any?(
+          available_slots(booking.service, NaiveDateTime.to_date(starts_at)),
+          &(&1.starts_at == starts_at)
+        ) ->
+          {:error, :unavailable}
+
+        true ->
+          booking
+          |> Ecto.Changeset.change(
+            decided(admin,
+              status: :proposed,
+              proposed_starts_at: starts_at,
+              proposed_ends_at: ends_at,
+              admin_message: blank_to_nil(message)
+            )
           )
-        )
-        |> Repo.update()
-        |> notify_member(:proposed)
-      else
-        {:error, :conflict}
+          |> Repo.update()
+          |> notify_member(:proposed)
       end
     end)
   end
@@ -363,6 +413,7 @@ defmodule Taamol.Bookings do
       |> Repo.update()
       |> notify_member(:declined)
     end)
+    |> notify_availability()
   end
 
   @doc "Confirmed bookings in a date range, for the calendar."

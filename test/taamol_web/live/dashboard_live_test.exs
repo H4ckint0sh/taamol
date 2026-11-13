@@ -28,6 +28,7 @@ defmodule TaamolWeb.DashboardLiveTest do
       conn = log_in_user(conn, user_fixture())
 
       {:ok, view, _html} = live(conn, ~p"/dashboard")
+      assert has_element?(view, "#dashboard-heading h1")
       assert has_element?(view, "#my-activity")
       assert has_element?(view, "#dashboard-nav-account")
       refute has_element?(view, "#statistics")
@@ -46,6 +47,7 @@ defmodule TaamolWeb.DashboardLiveTest do
       end
 
       {:ok, settings, _html} = live(conn, ~p"/users/settings")
+      assert has_element?(settings, "#dashboard-heading h1")
       assert has_element?(settings, "#dashboard-nav-account[aria-current=page]")
     end
 
@@ -62,6 +64,17 @@ defmodule TaamolWeb.DashboardLiveTest do
       for item <- ~w(news events users site_settings account) do
         assert has_element?(view, "#dashboard-nav-#{item}")
       end
+    end
+
+    test "dashboard headings keep the title, context, and actions without a hero", %{conn: conn} do
+      admin = admin_fixture()
+      article_fixture(admin)
+
+      {:ok, view, _html} = conn |> log_in_user(admin) |> live(~p"/dashboard/news")
+      assert has_element?(view, "#dashboard-heading h1", "News")
+      assert has_element?(view, "#dashboard-heading p", "1 article")
+      assert has_element?(view, "#dashboard-heading #new-article[href='/dashboard/news/new']")
+      refute has_element?(view, "#dashboard-heading.bg-gradient-to-br")
     end
 
     test "admins without statistics access can still manage content", %{conn: conn} do
@@ -147,6 +160,71 @@ defmodule TaamolWeb.DashboardLiveTest do
 
       assert {:error, :cannot_delete_self} =
                Accounts.delete_user_as_admin(Scope.for_user(admin), admin.id)
+    end
+
+    test "other sessions see account changes and retain their filters", %{
+      conn: conn,
+      admin: admin
+    } do
+      {:ok, users, _} = live(conn, ~p"/dashboard/users?search=liveperson")
+      {:ok, admins, _} = live(conn, ~p"/dashboard/users?search=liveperson&role=admin")
+      {:ok, overview, _} = live(conn, ~p"/dashboard")
+
+      user = unconfirmed_user_fixture(%{name: "Liveperson", email: "liveperson@example.com"})
+      assert has_element?(users, "#users-#{user.id}", "Invited")
+      assert has_element?(overview, "#stat-users [data-value]", "2")
+      refute has_element?(admins, "#users-#{user.id}")
+
+      token = generate_user_magic_link_token(user) |> elem(0)
+      assert {:ok, {user, _}} = Accounts.login_user_by_magic_link(token)
+      assert has_element?(users, "#users-#{user.id}", "Confirmed")
+
+      assert {:ok, user} =
+               Accounts.update_user_name(Scope.for_user(user), %{name: "Liveperson Edited"})
+
+      assert has_element?(users, "#users-#{user.id}", "Liveperson Edited")
+
+      assert {:ok, user} =
+               Accounts.update_user_as_admin(Scope.for_user(admin), user, %{
+                 email: "liveperson-edited@example.com"
+               })
+
+      assert has_element?(users, "#users-#{user.id}", "liveperson-edited@example.com")
+
+      assert {:ok, {user, _}} =
+               Accounts.update_user_access(Scope.for_user(admin), user.id, "promote")
+
+      assert has_element?(admins, "#users-#{user.id}")
+      assert {:ok, {_, _}} = Accounts.delete_user_as_admin(Scope.for_user(admin), user.id)
+      refute has_element?(users, "#users-#{user.id}")
+      refute has_element?(admins, "#users-#{user.id}")
+      assert has_element?(overview, "#stat-users [data-value]", "1")
+    end
+
+    test "local deletion repairs an empty last filtered page", %{conn: conn, admin: admin} do
+      for i <- 1..21 do
+        unconfirmed_user_fixture(%{name: "Page Person #{i}"})
+      end
+
+      assert {:ok, %{entries: [last]}} =
+               Accounts.list_users_page(Scope.for_user(admin),
+                 search: "Page Person",
+                 limit: 20,
+                 offset: 20
+               )
+
+      {:ok, view, _} = live(conn, ~p"/dashboard/users?search=Page%20Person&page=2")
+      view |> element("#delete-#{last.id}") |> render_click()
+      assert_patch(view, ~p"/dashboard/users?search=Page+Person")
+      assert has_element?(view, "#users tr[id^=users-]")
+    end
+
+    test "user notifications and statistics require current admin access", %{admin: admin} do
+      scope = Scope.for_user(admin)
+      assert {:error, :forbidden} = Accounts.subscribe_users(Scope.for_user(user_fixture()))
+      admin |> Ecto.Changeset.change(role: :user, can_view_dashboard: false) |> Repo.update!()
+      assert {:error, :forbidden} = Accounts.subscribe_users(scope)
+      assert {:error, :forbidden} = Accounts.user_statistics(scope)
     end
   end
 
@@ -244,6 +322,17 @@ defmodule TaamolWeb.DashboardLiveTest do
 
       {:ok, view, _html} = live(conn, ~p"/dashboard/events")
       assert has_element?(view, "#events-#{event.id}", "Majlis")
+
+      assert has_element?(
+               view,
+               "#event-periods.rounded-full #event-period-upcoming[aria-current=page]"
+             )
+
+      view |> element("#event-period-past") |> render_click()
+      assert has_element?(view, "#event-period-past[aria-current=page]")
+      refute has_element?(view, "#events-#{event.id}")
+      view |> element("#event-period-upcoming") |> render_click()
+      assert has_element?(view, "#events-#{event.id}")
 
       view |> element("#delete-#{event.id}") |> render_click()
       refute has_element?(view, "#events-#{event.id}")

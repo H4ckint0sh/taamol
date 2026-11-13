@@ -80,6 +80,7 @@ defmodule TaamolWeb.DashboardLive.UserForm do
     <Layouts.dashboard
       flash={@flash}
       current_scope={@current_scope}
+      unread_messages={@unread_messages}
       active={:users}
       title={@page_title}
     >

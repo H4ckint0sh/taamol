@@ -8,7 +8,7 @@ defmodule TaamolWeb.ContactLive do
   alias Taamol.Contact
   alias Taamol.Contact.Message
 
-  import TaamolWeb.DashboardComponents, only: [card: 1, info_card: 1]
+  import TaamolWeb.DashboardComponents, only: [card: 1]
 
   @impl true
   def mount(_params, _session, socket) do
@@ -78,14 +78,14 @@ defmodule TaamolWeb.ContactLive do
     ~H"""
     <Layouts.app flash={@flash} current_scope={@current_scope} wide active={:contact}>
       <div id="contact" class="mx-auto max-w-7xl px-4 pt-6 sm:px-6 lg:px-8 lg:pt-10">
-        <Layouts.dashboard_heading
-          title={gettext("Get in touch")}
-          subtitle={
-            gettext(
+        <Layouts.page_hero id="contact-hero" class="mb-6">
+          <:title>{gettext("Get in touch")}</:title>
+          <:subtitle>
+            {gettext(
               "Feedback, a question or an idea for an activity? Write to us and we will get back to you."
-            )
-          }
-        />
+            )}
+          </:subtitle>
+        </Layouts.page_hero>
 
         <div class="grid gap-6 lg:grid-cols-[minmax(0,1fr)_22rem]">
           <.card id="contact-card">
@@ -171,24 +171,41 @@ defmodule TaamolWeb.ContactLive do
 
           <%!-- how else to reach us --%>
           <aside id="contact-details" class="space-y-4">
-            <.info_card
+            <section
               :for={{key, value} <- @details}
               id={"contact-#{key}"}
-              icon={detail_icon(key)}
-              title={detail_title(key)}
+              class="rounded-2xl border border-base-300 bg-base-100 p-5 shadow-sm"
             >
-              <%= if href = detail_href(key, value) do %>
-                <a href={href} dir="ltr" class="transition-colors hover:text-primary">{value}</a>
-              <% else %>
-                <p
-                  class="whitespace-pre-line leading-relaxed [unicode-bidi:plaintext] ltr:text-left rtl:text-right"
-                  phx-no-format
-                >{value}</p>
-              <% end %>
-            </.info_card>
+              <.section_heading
+                icon={detail_icon(key)}
+                title={detail_title(key)}
+                description={detail_description(key)}
+              />
+              <div class="mt-4 text-base font-bold">
+                <%= if href = detail_href(key, value) do %>
+                  <a href={href} dir="ltr" class="break-words transition-colors hover:text-primary">
+                    {value}
+                  </a>
+                <% else %>
+                  <p
+                    class="whitespace-pre-line leading-relaxed [unicode-bidi:plaintext] ltr:text-left rtl:text-right"
+                    phx-no-format
+                  >{value}</p>
+                <% end %>
+              </div>
+            </section>
 
-            <.card :if={@social_links != []} id="contact-social" title={gettext("Follow us")}>
-              <ul class="flex flex-wrap gap-2">
+            <section
+              :if={@social_links != []}
+              id="contact-social"
+              class="rounded-2xl border border-base-300 bg-base-100 p-5 shadow-sm"
+            >
+              <.section_heading
+                icon="hero-user-group"
+                title={gettext("Follow us")}
+                description={gettext("Connect with us on social media.")}
+              />
+              <ul class="mt-4 flex flex-wrap gap-2">
                 <li :for={{network, url} <- @social_links}>
                   <a
                     href={url}
@@ -202,7 +219,7 @@ defmodule TaamolWeb.ContactLive do
                   </a>
                 </li>
               </ul>
-            </.card>
+            </section>
           </aside>
         </div>
       </div>
@@ -219,6 +236,11 @@ defmodule TaamolWeb.ContactLive do
   defp detail_title(:phone), do: gettext("Phone")
   defp detail_title(:email), do: gettext("Email")
   defp detail_title(:opening_hours), do: gettext("Opening hours")
+
+  defp detail_description(:address), do: gettext("Visit us at this address.")
+  defp detail_description(:phone), do: gettext("Call us at this number.")
+  defp detail_description(:email), do: gettext("Email us at this address.")
+  defp detail_description(:opening_hours), do: gettext("Our current opening hours.")
 
   defp detail_href(:phone, phone), do: "tel:" <> String.replace(phone, ~r/[^\d+]/, "")
   defp detail_href(:email, email), do: "mailto:" <> email

@@ -11,6 +11,55 @@
 /* Required for Tailwind to automatically pick up changes in colocated CSS files in dev */
 @source "../../_build/dev/phoenix-colocated/taamol/*/";
 
+.form-control > [data-field-input] {
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+
+.form-control-icon > [data-field-input] {
+  padding-left: 3rem;
+}
+
+.form-control-icon:dir(rtl) > [data-field-input] {
+  padding-left: 1rem;
+  padding-right: 3rem;
+}
+
+.form-control > select[data-field-input] {
+  padding-right: 2.75rem;
+}
+
+.form-control:dir(rtl) > select[data-field-input] {
+  padding-left: 2.75rem;
+  padding-right: 3rem;
+}
+
+.form-control:has([data-number-stepper][data-ready="true"]) > input[type="number"] {
+  appearance: textfield;
+  padding-right: 5.25rem;
+}
+
+.form-control:dir(rtl):has([data-number-stepper][data-ready="true"]) > input[type="number"] {
+  padding-left: 5.25rem;
+  padding-right: 3rem;
+}
+
+.form-control:has([data-number-stepper][data-ready="true"]) > input[type="number"]::-webkit-inner-spin-button,
+.form-control:has([data-number-stepper][data-ready="true"]) > input[type="number"]::-webkit-outer-spin-button {
+  appearance: none;
+  margin: 0;
+}
+
+[data-number-stepper][data-ready="true"] {
+  display: flex;
+}
+
+.segmented-control:has(> [data-segment-indicator][data-ready="true"])
+  > :is([aria-current="page"], [aria-selected="true"], [aria-pressed="true"]) {
+  background-color: transparent;
+  box-shadow: none;
+}
+
 /* Arad (SIL OFL 1.1, https://github.com/MohamadDarvishi/Arad): one variable
    font covering Latin (incl. å ä ö), Persian and both digit sets, weights
    100–1000. Served from priv/static/fonts. */

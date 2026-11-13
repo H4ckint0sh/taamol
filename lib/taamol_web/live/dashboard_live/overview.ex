@@ -14,6 +14,14 @@ defmodule TaamolWeb.DashboardLive.Overview do
   def mount(_params, _session, socket) do
     scope = socket.assigns.current_scope
 
+    if connected?(socket) do
+      :ok = Events.subscribe()
+
+      if Accounts.can?(scope, :view_statistics) do
+        Accounts.subscribe_users(scope)
+      end
+    end
+
     socket =
       socket
       |> assign(page_title: gettext("Dashboard"))
@@ -38,11 +46,31 @@ defmodule TaamolWeb.DashboardLive.Overview do
   end
 
   @impl true
+  def handle_info(:events_changed, socket) do
+    socket = assign(socket, :upcoming, Events.upcoming(limit: 5))
+
+    socket =
+      if socket.assigns.stats?,
+        do: assign(socket, :upcoming_30, length(Events.upcoming(limit: 1000, days: 30))),
+        else: socket
+
+    {:noreply, socket}
+  end
+
+  def handle_info(:users_changed, socket) do
+    case Accounts.user_statistics(socket.assigns.current_scope) do
+      {:ok, users} -> {:noreply, assign(socket, :users, users)}
+      {:error, :forbidden} -> {:noreply, assign(socket, :stats?, false)}
+    end
+  end
+
+  @impl true
   def render(assigns) do
     ~H"""
     <Layouts.dashboard
       flash={@flash}
       current_scope={@current_scope}
+      unread_messages={@unread_messages}
       active={:overview}
       title={gettext("Overview")}
     >

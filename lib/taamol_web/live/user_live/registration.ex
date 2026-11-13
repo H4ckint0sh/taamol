@@ -9,17 +9,17 @@ defmodule TaamolWeb.UserLive.Registration do
     ~H"""
     <Layouts.app flash={@flash} current_scope={@current_scope}>
       <div class="mx-auto max-w-sm">
-        <div class="text-center">
-          <.header>
+        <header id="registration-heading" class="mb-6">
+          <h1 class="text-2xl font-bold tracking-tight sm:text-3xl">
             {gettext("Register for an account")}
-            <:subtitle>
-              {gettext("Already registered?")}
-              <.link navigate={~p"/users/log-in"} class="font-semibold text-brand hover:underline">
-                {gettext("Log in")}
-              </.link>
-            </:subtitle>
-          </.header>
-        </div>
+          </h1>
+          <p class="mt-2 text-sm leading-relaxed text-base-content/60">
+            {gettext("Already registered?")}
+            <.link navigate={~p"/users/log-in"} class="font-semibold text-primary hover:underline">
+              {gettext("Log in")}
+            </.link>
+          </p>
+        </header>
 
         <.form for={@form} id="registration_form" phx-submit="save" phx-change="validate">
           <.input

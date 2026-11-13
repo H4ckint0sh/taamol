@@ -71,6 +71,7 @@ defmodule TaamolWeb.DashboardLive.BookingServices do
     <Layouts.dashboard
       flash={@flash}
       current_scope={@current_scope}
+      unread_messages={@unread_messages}
       active={:booking_services}
       title={gettext("Booking services")}
     >
@@ -187,6 +188,15 @@ defmodule TaamolWeb.DashboardLive.BookingServices do
                 options={Enum.map(Service.icons(), &{String.replace_prefix(&1, "hero-", ""), &1})}
               />
               <.input field={@form[:position]} type="number" label={gettext("Order")} />
+            </div>
+            <div class="grid grid-cols-2 gap-x-3">
+              <.input field={@form[:opens_at]} type="time" label={gettext("Available from")} required />
+              <.input
+                field={@form[:closes_at]}
+                type="time"
+                label={gettext("Available until")}
+                required
+              />
             </div>
             <.input field={@form[:active]} type="checkbox" label={gettext("Can be booked")} />
             <p class="mb-3 text-xs text-base-content/55">

@@ -18,6 +18,9 @@ defmodule TaamolWeb.MenuLive do
     ~H"""
     <Layouts.app flash={@flash} current_scope={@current_scope} active={:menu}>
       <div id="menu" class="space-y-6">
+        <Layouts.page_hero id="menu-hero">
+          <:title>{gettext("Profile")}</:title>
+        </Layouts.page_hero>
         <%= if @current_scope do %>
           <div id="menu-account" class="flex items-center gap-4">
             <Layouts.avatar user={@current_scope.user} class="size-14 text-lg" />
@@ -78,6 +81,9 @@ defmodule TaamolWeb.MenuLive do
         <% end %>
 
         <ul class="divide-y divide-base-300/70 rounded-2xl border border-base-300 bg-base-100">
+          <.menu_item id="menu-prayer-times" to={~p"/prayer-times"} icon="hero-moon">
+            {gettext("Prayer times")}
+          </.menu_item>
           <.menu_item id="menu-calendar" to={~p"/calendar"} icon="hero-calendar-days">
             {gettext("Calendar")}
           </.menu_item>

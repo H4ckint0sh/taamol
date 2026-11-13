@@ -145,6 +145,14 @@ defmodule TaamolWeb.DashboardLive.Bookings do
       {:error, :no_time} ->
         {:noreply, put_flash(socket, :error, gettext("Choose a date and a time to offer."))}
 
+      {:error, :unavailable} ->
+        {:noreply,
+         put_flash(
+           socket,
+           :error,
+           gettext("That time is no longer available. Please choose another time.")
+         )}
+
       _ ->
         {:noreply, put_flash(socket, :error, gettext("The booking could not be updated."))}
     end
@@ -160,6 +168,7 @@ defmodule TaamolWeb.DashboardLive.Bookings do
     <Layouts.dashboard
       flash={@flash}
       current_scope={@current_scope}
+      unread_messages={@unread_messages}
       active={:bookings}
       title={gettext("Bookings")}
     >
@@ -182,23 +191,31 @@ defmodule TaamolWeb.DashboardLive.Bookings do
         </:actions>
       </Layouts.dashboard_heading>
 
-      <div :if={@admin?} class="mb-4 flex gap-6 border-b border-base-300 text-sm">
+      <.segmented_control
+        :if={@admin?}
+        id="booking-views"
+        role="group"
+        aria-label={gettext("Bookings")}
+        class="mb-4"
+      >
         <.link
           :for={
-            {view, label} <- [
-              requests: gettext("Requests"),
-              upcoming: gettext("Upcoming"),
-              all: gettext("All"),
-              mine: gettext("My bookings")
+            {view, label, icon} <- [
+              {:requests, gettext("Requests"), "hero-inbox-micro"},
+              {:upcoming, gettext("Upcoming"), "hero-calendar-days-micro"},
+              {:all, gettext("All"), "hero-queue-list-micro"},
+              {:mine, gettext("My bookings"), "hero-bookmark-square-micro"}
             ]
           }
+          id={"booking-view-#{view}"}
           patch={tab_path(view)}
           aria-current={if(@view == view, do: "page")}
-          class="-mb-px border-b-2 border-transparent pb-3 text-base-content/60 transition-colors hover:text-base-content aria-[current=page]:border-primary aria-[current=page]:font-semibold aria-[current=page]:text-primary"
+          class={segmented_option_class()}
         >
+          <.icon name={icon} class="size-4" />
           {label}
         </.link>
-      </div>
+      </.segmented_control>
 
       <p
         :if={@empty?}
@@ -331,13 +348,16 @@ defmodule TaamolWeb.DashboardLive.Bookings do
             <div :if={@open == booking.id} id={"decide-#{booking.id}"} class="mt-3 space-y-3">
               <form id={"decide-form-#{booking.id}"} phx-submit="decide" class="space-y-3">
                 <input type="hidden" name="booking_id" value={booking.id} />
-                <textarea
+                <.input
+                  type="textarea"
+                  id={"decision-message-#{booking.id}"}
                   name="message"
+                  value=""
                   rows="2"
                   dir="auto"
                   placeholder={gettext("Message to the member (optional)")}
-                  class="block w-full rounded-xl border border-base-300 bg-base-100 px-3 py-2 text-sm outline-none focus:border-primary"
-                ></textarea>
+                  aria-label={gettext("Message to the member (optional)")}
+                />
                 <div class="flex flex-wrap gap-2">
                   <button
                     type="submit"
@@ -363,28 +383,34 @@ defmodule TaamolWeb.DashboardLive.Bookings do
                 <div class="rounded-xl border border-base-300 p-3">
                   <p class="text-sm font-semibold">{gettext("Offer another time")}</p>
                   <div class="mt-2 flex flex-wrap items-end gap-2">
-                    <input
+                    <.input
                       type="date"
                       id={"offer-date-#{booking.id}"}
                       name="offer[date]"
                       value={@offer_date && Date.to_iso8601(@offer_date)}
                       phx-change="offer-date"
-                      class="rounded-lg border border-base-300 bg-base-100 px-2 py-1.5 text-sm"
+                      aria-label={gettext("Date")}
+                      wrapper_class="mb-0"
                     />
-                    <select
+                    <.input
                       :if={@offer_date}
+                      type="select"
                       name="slot"
                       id={"offer-slot-#{booking.id}"}
-                      class="rounded-lg border border-base-300 bg-base-100 px-2 py-1.5 text-sm"
-                    >
-                      <option :if={@offer_slots == []} value="">{gettext("No free times")}</option>
-                      <option
-                        :for={slot <- @offer_slots}
-                        value={NaiveDateTime.to_iso8601(slot.starts_at) |> String.slice(0, 16)}
-                      >
-                        {time_range(slot.starts_at, slot.ends_at)}
-                      </option>
-                    </select>
+                      value={nil}
+                      aria-label={gettext("Time")}
+                      options={
+                        if @offer_slots == [] do
+                          [{gettext("No free times"), ""}]
+                        else
+                          Enum.map(@offer_slots, fn slot ->
+                            {time_range(slot.starts_at, slot.ends_at),
+                             slot.starts_at |> NaiveDateTime.to_iso8601() |> String.slice(0, 16)}
+                          end)
+                        end
+                      }
+                      wrapper_class="mb-0"
+                    />
                     <button
                       :if={@offer_date && @offer_slots != []}
                       type="submit"

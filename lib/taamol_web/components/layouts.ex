@@ -75,7 +75,7 @@ defmodule TaamolWeb.Layouts do
               phx-update="ignore"
               data-role="nav-indicator"
               aria-hidden="true"
-              class="pointer-events-none absolute top-1/2 h-9 -translate-y-1/2 rounded-full bg-primary/10 opacity-0 ring-1 ring-primary/15 transition-[left,width,opacity,background-color] duration-300 ease-out data-[preview]:bg-base-content/[0.06] data-[preview]:ring-transparent"
+              class="pointer-events-none absolute top-1/2 h-8 -translate-y-1/2 rounded-full bg-primary/10 opacity-0 ring-1 ring-inset ring-primary/15 transition-[left,width,opacity,background-color] duration-300 ease-out data-[preview]:bg-base-content/[0.06] data-[preview]:ring-transparent"
             />
             <li class="flex">
               <.nav_link to={~p"/"} active={@active == :home}>{gettext("Home")}</.nav_link>
@@ -167,9 +167,9 @@ defmodule TaamolWeb.Layouts do
 
         <div class="ms-auto flex items-center gap-2 sm:gap-3">
           <.prayer_times />
-          <.locale_toggle id="header-locale" />
+          <.locale_toggle id="header-locale" class="ring-inset" />
           <div class="hidden lg:block">
-            <.theme_switch id="header-theme" compact />
+            <.theme_switch id="header-theme" compact class="ring-inset" />
           </div>
           <.link
             :if={@donations?}
@@ -177,7 +177,7 @@ defmodule TaamolWeb.Layouts do
             navigate={~p"/donate"}
             title={gettext("Donate")}
             aria-label={gettext("Donate")}
-            class="hidden h-8 items-center gap-1.5 rounded-full bg-rose-500/10 px-2.5 text-[13px] font-semibold text-rose-600 ring-1 ring-rose-500/20 transition hover:bg-rose-500/15 active:scale-95 lg:inline-flex 2xl:px-3.5 dark:text-rose-400"
+            class="hidden h-8 items-center gap-1.5 rounded-full bg-rose-500/10 px-2.5 text-[13px] font-semibold text-rose-600 ring-1 ring-inset ring-rose-500/20 transition hover:bg-rose-500/15 active:scale-95 lg:inline-flex 2xl:px-3.5 dark:text-rose-400"
           >
             <.donate_icon class="size-4" />
             <span class="hidden 2xl:inline">{gettext("Donate")}</span>
@@ -187,7 +187,7 @@ defmodule TaamolWeb.Layouts do
           <% else %>
             <.link
               href={~p"/users/log-in"}
-              class="hidden whitespace-nowrap text-sm font-medium transition-colors hover:text-primary lg:inline"
+              class="hidden h-8 items-center whitespace-nowrap text-sm font-medium transition-colors hover:text-primary lg:inline-flex"
             >
               {gettext("Log in")}
             </.link>
@@ -280,6 +280,7 @@ defmodule TaamolWeb.Layouts do
   attr :current_scope, :map, required: true
   attr :active, :atom, default: nil, doc: "the current sidebar item"
   attr :title, :string, required: true, doc: "shown in the breadcrumb"
+  attr :unread_messages, :integer, required: true
   slot :inner_block, required: true
 
   def dashboard(assigns) do
@@ -323,7 +324,6 @@ defmodule TaamolWeb.Layouts do
     assigns =
       assigns
       |> assign(:groups, groups)
-      |> assign(:unread_messages, Taamol.Contact.unread_count(scope))
       |> assign(:pending_bookings, Taamol.Bookings.pending_count(scope))
 
     ~H"""
@@ -432,6 +432,51 @@ defmodule TaamolWeb.Layouts do
     """
   end
 
+  attr :id, :string, default: nil
+  attr :class, :string, default: nil
+  attr :title_id, :string, default: nil
+  attr :title_dir, :string, default: nil
+  attr :title_class, :string, default: nil
+  slot :eyebrow
+  slot :title, required: true
+  slot :subtitle
+  slot :actions
+
+  @doc "A compact page heading with optional context and actions."
+  def page_hero(assigns) do
+    ~H"""
+    <header
+      id={@id}
+      class={[
+        "flex flex-wrap items-end justify-between gap-4",
+        @class
+      ]}
+    >
+      <div class="min-w-0 flex-1 basis-64">
+        <div :if={@eyebrow != []} class="mb-2 text-sm font-semibold text-primary">
+          {render_slot(@eyebrow)}
+        </div>
+        <h1
+          id={@title_id}
+          dir={@title_dir}
+          class={["text-2xl font-bold tracking-tight sm:text-3xl", @title_class]}
+        >
+          {render_slot(@title)}
+        </h1>
+        <div
+          :if={@subtitle != []}
+          class="mt-1 max-w-2xl text-sm leading-relaxed text-base-content/60"
+        >
+          {render_slot(@subtitle)}
+        </div>
+      </div>
+      <div :if={@actions != []} class="flex flex-wrap items-center gap-2">
+        {render_slot(@actions)}
+      </div>
+    </header>
+    """
+  end
+
   attr :title, :string, required: true
   attr :subtitle, :string, default: nil
   slot :actions
@@ -439,15 +484,17 @@ defmodule TaamolWeb.Layouts do
   @doc "Page heading with optional action buttons, used inside the dashboard."
   def dashboard_heading(assigns) do
     ~H"""
-    <div class="mb-6 flex flex-wrap items-end justify-between gap-4">
-      <div>
-        <h1 class="text-2xl font-bold tracking-tight">{@title}</h1>
-        <p :if={@subtitle} class="mt-1 text-sm text-base-content/60">{@subtitle}</p>
+    <header id="dashboard-heading" class="mb-6 flex flex-wrap items-end justify-between gap-4">
+      <div class="min-w-0">
+        <h1 class="text-2xl font-bold tracking-tight sm:text-3xl">{@title}</h1>
+        <p :if={@subtitle} class="mt-1 text-sm leading-relaxed text-base-content/60">
+          {@subtitle}
+        </p>
       </div>
       <div :if={@actions != []} class="flex flex-wrap items-center gap-2">
         {render_slot(@actions)}
       </div>
-    </div>
+    </header>
     """
   end
 
@@ -809,7 +856,7 @@ defmodule TaamolWeb.Layouts do
       aria-current={if(@active, do: "page")}
       data-nav-item
       data-active={@active}
-      class="relative z-10 flex h-9 items-center whitespace-nowrap rounded-full px-3.5 transition-colors duration-300 hover:text-primary aria-[current=page]:text-primary"
+      class="relative z-10 flex h-8 items-center whitespace-nowrap rounded-full px-3.5 transition-colors duration-300 hover:text-primary aria-[current=page]:text-primary"
     >
       {render_slot(@inner_block)}
     </.link>
@@ -884,14 +931,14 @@ defmodule TaamolWeb.Layouts do
         type="button"
         id="user-menu-trigger"
         aria-haspopup="true"
-        class="flex items-center gap-3 rounded-full pe-2 transition hover:bg-base-200"
+        class="flex h-8 items-center gap-3 rounded-full pe-2 transition hover:bg-base-200"
       >
         <.avatar user={@current_scope.user} class="size-8 text-xs" />
         <span class="hidden text-start leading-tight xl:block">
-          <span class="block max-w-40 truncate text-sm font-semibold" dir="auto">
+          <span class="block max-w-40 truncate text-sm font-semibold leading-4" dir="auto">
             {@current_scope.user.name}
           </span>
-          <span class="block max-w-40 truncate text-xs text-base-content/55">
+          <span class="block max-w-40 truncate text-xs leading-4 text-base-content/55">
             {@current_scope.user.email}
           </span>
         </span>
@@ -1048,6 +1095,7 @@ defmodule TaamolWeb.Layouts do
   end
 
   attr :id, :string, default: "locale-toggle"
+  attr :class, :string, default: nil
 
   @doc """
   Language switch, styled like the day/night switch: a pill with a globe
@@ -1078,7 +1126,10 @@ defmodule TaamolWeb.Layouts do
         aria-label={@label}
         title={@label}
         dir="ltr"
-        class="inline-flex h-8 shrink-0 items-center gap-2 rounded-full bg-neutral-200 p-1 pe-3 text-neutral-800 shadow-inner ring-1 ring-black/5 transition-colors duration-300 hover:bg-neutral-300/80 active:scale-95 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary [[data-theme=dark]_&]:bg-neutral-800 [[data-theme=dark]_&]:text-white [[data-theme=dark]_&]:ring-white/10 [[data-theme=dark]_&]:hover:bg-neutral-700"
+        class={[
+          "inline-flex h-8 shrink-0 items-center gap-2 rounded-full bg-neutral-200 p-1 pe-3 text-neutral-800 shadow-inner ring-1 ring-black/5 transition-colors duration-300 hover:bg-neutral-300/80 active:scale-95 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary [[data-theme=dark]_&]:bg-neutral-800 [[data-theme=dark]_&]:text-white [[data-theme=dark]_&]:ring-white/10 [[data-theme=dark]_&]:hover:bg-neutral-700",
+          @class
+        ]}
       >
         <%!-- white knob with the globe, like the day/night switch --%>
         <span class="grid size-6 place-items-center rounded-full bg-white shadow-md">
@@ -1414,6 +1465,14 @@ defmodule TaamolWeb.Layouts do
         <p class="mt-3 hidden rounded-xl bg-base-200 px-3 py-2 text-center text-xs text-base-content/70 group-data-[state=error]/prayer:block">
           {gettext("Prayer times could not be loaded. Click to try again.")}
         </p>
+        <.link
+          id={"#{@id}-settings"}
+          navigate={~p"/prayer-times"}
+          class="mt-3 flex items-center justify-center gap-1 text-xs font-semibold text-primary transition hover:underline"
+        >
+          {gettext("Prayer time calculator")}
+          <.icon name="hero-arrow-right" class="size-3.5 rtl:rotate-180" />
+        </.link>
       </section>
     </div>
     """

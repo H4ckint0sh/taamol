@@ -113,6 +113,7 @@ defmodule TaamolWeb.DashboardLive.Gallery do
     <Layouts.dashboard
       flash={@flash}
       current_scope={@current_scope}
+      unread_messages={@unread_messages}
       active={:gallery}
       title={gettext("Gallery")}
     >
@@ -225,15 +226,16 @@ defmodule TaamolWeb.DashboardLive.Gallery do
             class="flex items-center gap-2 p-3"
           >
             <input type="hidden" name="image_id" value={image.id} />
-            <input
+            <.input
               type="text"
+              id={"caption-input-#{image.id}"}
               name="caption"
               value={image.caption}
               maxlength="255"
               dir="auto"
               placeholder={gettext("Add a caption")}
               aria-label={gettext("Caption")}
-              class="min-w-0 flex-1 rounded-lg border border-base-300 bg-base-100 px-2.5 py-1.5 text-sm outline-none transition focus:border-primary"
+              wrapper_class="mb-0 min-w-0 flex-1"
             />
             <button
               type="submit"

@@ -16,7 +16,11 @@ defmodule TaamolWeb.DashboardLive.Users do
 
   @impl true
   def mount(_params, _session, socket) do
-    {:ok, assign(socket, page_title: gettext("Users"))}
+    if connected?(socket) && Accounts.subscribe_users(socket.assigns.current_scope) != :ok do
+      {:ok, push_navigate(socket, to: ~p"/dashboard")}
+    else
+      {:ok, assign(socket, page_title: gettext("Users"))}
+    end
   end
 
   @impl true
@@ -28,6 +32,19 @@ defmodule TaamolWeb.DashboardLive.Users do
 
     page = page_param(params)
 
+    {:noreply,
+     socket
+     |> assign(filters: filters, filter_form: to_form(filters), page: page)
+     |> refresh_users()}
+  end
+
+  @impl true
+  def handle_info(:users_changed, socket), do: {:noreply, refresh_users(socket)}
+
+  defp refresh_users(socket) do
+    filters = socket.assigns.filters
+    page = socket.assigns.page
+
     opts = [
       search: filters["search"],
       role: role_atom(filters["role"]),
@@ -37,13 +54,18 @@ defmodule TaamolWeb.DashboardLive.Users do
 
     case Accounts.list_users_page(socket.assigns.current_scope, opts) do
       {:ok, %{entries: users, total: total}} ->
-        {:noreply,
-         socket
-         |> assign(filters: filters, filter_form: to_form(filters), page: page, total: total)
-         |> stream(:users, users, reset: true)}
+        last_page = max(div(total + @per_page - 1, @per_page), 1)
+
+        if page > last_page do
+          push_patch(socket, to: list_path(filters, last_page), replace: true)
+        else
+          socket
+          |> assign(total: total)
+          |> stream(:users, users, reset: true)
+        end
 
       {:error, :forbidden} ->
-        {:noreply, push_navigate(socket, to: ~p"/dashboard")}
+        push_navigate(socket, to: ~p"/dashboard")
     end
   end
 
@@ -69,11 +91,10 @@ defmodule TaamolWeb.DashboardLive.Users do
   def handle_event("access", %{"id" => id, "action" => action}, socket)
       when action in ["promote", "demote", "grant_dashboard", "revoke_dashboard"] do
     case Accounts.update_user_access(socket.assigns.current_scope, id, action) do
-      {:ok, {user, tokens}} ->
+      {:ok, {_user, tokens}} ->
         UserAuth.disconnect_sessions(tokens)
 
-        {:noreply,
-         socket |> stream_insert(:users, user) |> put_flash(:info, gettext("Access updated."))}
+        {:noreply, socket |> refresh_users() |> put_flash(:info, gettext("Access updated."))}
 
       {:error, :cannot_demote_self} ->
         {:noreply, put_flash(socket, :error, gettext("You can't remove your own admin access."))}
@@ -85,13 +106,12 @@ defmodule TaamolWeb.DashboardLive.Users do
 
   def handle_event("delete", %{"id" => id}, socket) do
     case Accounts.delete_user_as_admin(socket.assigns.current_scope, id) do
-      {:ok, {user, tokens}} ->
+      {:ok, {_user, tokens}} ->
         UserAuth.disconnect_sessions(tokens)
 
         {:noreply,
          socket
-         |> stream_delete(:users, user)
-         |> update(:total, &(&1 - 1))
+         |> refresh_users()
          |> put_flash(:info, gettext("User deleted."))}
 
       {:error, :cannot_delete_self} ->
@@ -116,6 +136,7 @@ defmodule TaamolWeb.DashboardLive.Users do
     <Layouts.dashboard
       flash={@flash}
       current_scope={@current_scope}
+      unread_messages={@unread_messages}
       active={:users}
       title={gettext("Users")}
     >
@@ -142,32 +163,29 @@ defmodule TaamolWeb.DashboardLive.Users do
           phx-submit="filter"
           class="flex flex-wrap items-center gap-3 px-5 py-4"
         >
-          <label class="relative min-w-56 flex-1">
-            <.icon
-              name="hero-magnifying-glass"
-              class="pointer-events-none absolute start-3 top-1/2 size-4 -translate-y-1/2 text-base-content/40"
-            />
-            <input
-              type="search"
-              name="search"
-              value={@filters["search"]}
-              phx-debounce="300"
-              placeholder={gettext("Search name or email")}
-              class="w-full rounded-xl border border-base-300 bg-base-100 py-2 pe-3 ps-9 text-sm outline-none transition focus:border-primary"
-            />
-          </label>
-          <select
+          <.input
+            id="users-search"
+            type="search"
+            name="search"
+            value={@filters["search"]}
+            phx-debounce="300"
+            placeholder={gettext("Search name or email")}
+            aria-label={gettext("Search name or email")}
+            wrapper_class="mb-0 min-w-56 flex-1"
+          />
+          <.input
+            id="users-role"
+            type="select"
             name="role"
-            class="rounded-xl border border-base-300 bg-base-100 px-3 py-2 text-sm outline-none focus:border-primary"
-          >
-            <option value="" selected={@filters["role"] == ""}>{gettext("All roles")}</option>
-            <option value="admin" selected={@filters["role"] == "admin"}>
-              {gettext("Administrators")}
-            </option>
-            <option value="user" selected={@filters["role"] == "user"}>
-              {gettext("Users")}
-            </option>
-          </select>
+            value={@filters["role"]}
+            aria-label={gettext("All roles")}
+            options={[
+              {gettext("All roles"), ""},
+              {gettext("Administrators"), "admin"},
+              {gettext("Users"), "user"}
+            ]}
+            wrapper_class="mb-0"
+          />
         </.form>
 
         <div class="overflow-x-auto">
